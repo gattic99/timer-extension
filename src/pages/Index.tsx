@@ -1,26 +1,31 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
 import { useTimer } from "@/hooks/useTimer";
 import FocusMode from "@/components/FocusMode";
 import BreakMode from "@/components/BreakMode";
 import { TimerSettings } from "@/types";
-import { Sliders, Timer as TimerIcon, X } from "lucide-react";
+import { Sliders, Timer as TimerIcon, X, Save } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { 
   Dialog, 
   DialogContent, 
   DialogHeader, 
   DialogTitle,
-  DialogTrigger 
+  DialogTrigger,
+  DialogFooter
 } from "@/components/ui/dialog";
 import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
+import { toast } from "sonner";
 
 const Index: React.FC = () => {
   const [settings, setSettings] = useState<TimerSettings>(defaultTimerSettings);
+  const [tempSettings, setTempSettings] = useState<TimerSettings>(defaultTimerSettings);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSettingsChanged, setIsSettingsChanged] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const { 
     timerState, 
@@ -30,26 +35,43 @@ const Index: React.FC = () => {
     selectBreakActivity 
   } = useTimer({ settings });
   
+  useEffect(() => {
+    setTempSettings(settings);
+  }, [isDialogOpen]);
+  
+  useEffect(() => {
+    const hasChanged = 
+      tempSettings.focusDuration !== settings.focusDuration || 
+      tempSettings.breakDuration !== settings.breakDuration;
+    
+    setIsSettingsChanged(hasChanged);
+  }, [tempSettings, settings]);
+  
   const updateFocusDuration = (value: number[]) => {
-    setSettings({
-      ...settings,
+    setTempSettings({
+      ...tempSettings,
       focusDuration: value[0]
     });
-    
-    if (timerState.mode === 'focus' && !timerState.isRunning) {
-      resetTimer('focus');
-    }
   };
   
   const updateBreakDuration = (value: number[]) => {
-    setSettings({
-      ...settings,
+    setTempSettings({
+      ...tempSettings,
       breakDuration: value[0]
     });
+  };
+  
+  const saveSettings = () => {
+    setSettings(tempSettings);
     
-    if (timerState.mode === 'break' && !timerState.isRunning) {
+    if (timerState.mode === 'focus' && !timerState.isRunning) {
+      resetTimer('focus');
+    } else if (timerState.mode === 'break' && !timerState.isRunning) {
       resetTimer('break');
     }
+    
+    toast.success("Settings saved successfully");
+    setIsSettingsChanged(false);
   };
   
   const togglePopup = () => {
@@ -73,7 +95,7 @@ const Index: React.FC = () => {
               <h1 className="text-2xl font-bold text-focus-purple">Focus Timer</h1>
               
               <div className="flex space-x-2">
-                <Dialog>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <button 
                       className="p-2 rounded-full hover:bg-gray-100"
@@ -91,10 +113,10 @@ const Index: React.FC = () => {
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
                           <label className="font-medium">Focus Duration</label>
-                          <span className="text-sm text-muted-foreground">{settings.focusDuration} minutes</span>
+                          <span className="text-sm text-muted-foreground">{tempSettings.focusDuration} minutes</span>
                         </div>
                         <Slider 
-                          value={[settings.focusDuration]} 
+                          value={[tempSettings.focusDuration]} 
                           min={5} 
                           max={60} 
                           step={5} 
@@ -105,10 +127,10 @@ const Index: React.FC = () => {
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
                           <label className="font-medium">Break Duration</label>
-                          <span className="text-sm text-muted-foreground">{settings.breakDuration} minutes</span>
+                          <span className="text-sm text-muted-foreground">{tempSettings.breakDuration} minutes</span>
                         </div>
                         <Slider 
-                          value={[settings.breakDuration]} 
+                          value={[tempSettings.breakDuration]} 
                           min={1} 
                           max={15} 
                           step={1} 
@@ -116,6 +138,18 @@ const Index: React.FC = () => {
                         />
                       </div>
                     </div>
+                    
+                    <DialogFooter>
+                      {isSettingsChanged && (
+                        <button
+                          onClick={saveSettings}
+                          className="flex items-center gap-2 px-4 py-2 bg-focus-purple text-white rounded-md hover:bg-focus-purple-dark transition-colors"
+                        >
+                          <Save size={16} />
+                          Save Changes
+                        </button>
+                      )}
+                    </DialogFooter>
                   </DialogContent>
                 </Dialog>
                 
