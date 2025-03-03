@@ -113,3 +113,29 @@
     @apply w-full max-w-sm p-8 rounded-2xl transition-all duration-300 cursor-pointer;
   }
 }
+
+/* Add hover variants for button colors */
+.bg-focus-purple-dark {
+  background-color: rgb(124, 93, 250);
+}
+
+.bg-break-green-dark {
+  background-color: rgb(75, 185, 140);
+}
+
+/* Add animation for the floating timer */
+@keyframes pulse-subtle {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite ease-in-out;
+}

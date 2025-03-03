@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -5,7 +6,7 @@ import { useTimer } from "@/hooks/useTimer";
 import FocusMode from "@/components/FocusMode";
 import BreakMode from "@/components/BreakMode";
 import { TimerSettings } from "@/types";
-import { Sliders, Timer, X } from "lucide-react";
+import { Sliders, Timer as TimerIcon, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { 
   Dialog, 
@@ -15,6 +16,7 @@ import {
   DialogTrigger 
 } from "@/components/ui/dialog";
 import FigmaBackground from "@/components/FigmaBackground";
+import FloatingTimer from "@/components/FloatingTimer";
 
 const Index: React.FC = () => {
   const [settings, setSettings] = useState<TimerSettings>(defaultTimerSettings);
@@ -58,13 +60,11 @@ const Index: React.FC = () => {
     <div className="min-h-screen relative overflow-hidden">
       <FigmaBackground />
       
-      <button 
-        onClick={togglePopup}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-focus-purple shadow-lg flex items-center justify-center hover:bg-focus-purple-dark transition-colors duration-200"
-        aria-label="Open Focus Timer"
-      >
-        <Timer size={24} className="text-white" />
-      </button>
+      <FloatingTimer 
+        isOpen={isOpen}
+        timerState={timerState}
+        togglePopup={togglePopup}
+      />
       
       {isOpen && (
         <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
