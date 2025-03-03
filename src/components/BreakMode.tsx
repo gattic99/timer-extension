@@ -1,9 +1,8 @@
-
 import React from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
-import MemoryGame from "./MemoryGame";
+import PlatformerGame from "./PlatformerGame";
 import RelaxGuide from "./RelaxGuide";
 import { AlarmClock, Gamepad, Dumbbell } from "lucide-react";
 
@@ -29,11 +28,11 @@ const BreakMode: React.FC<BreakModeProps> = ({
   
   // If a break activity is selected, render it
   if (breakActivity === 'game') {
-    return <MemoryGame onReturn={() => onSelectActivity(null)} />;
+    return <PlatformerGame onReturn={() => onSelectActivity(null)} timerState={timerState} />;
   }
   
   if (breakActivity === 'relax') {
-    return <RelaxGuide onReturn={() => onSelectActivity(null)} />;
+    return <RelaxGuide onReturn={() => onSelectActivity(null)} timerState={timerState} />;
   }
   
   // Otherwise render break timer with activity options
@@ -67,7 +66,7 @@ const BreakMode: React.FC<BreakModeProps> = ({
             <Gamepad size={36} className="mb-4 text-game-orange" />
             <h4 className="text-lg font-semibold mb-2">Play a Game</h4>
             <p className="text-sm text-center text-muted-foreground">
-              Have fun with a quick memory matching game to refresh your mind.
+              Have fun with a platformer game to refresh your mind.
             </p>
           </div>
           

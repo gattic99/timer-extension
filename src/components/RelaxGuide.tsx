@@ -2,12 +2,15 @@
 import React, { useState } from "react";
 import { getRelaxationSteps } from "@/utils/timerUtils";
 import { ChevronLeft, ChevronRight, Dumbbell } from "lucide-react";
+import { TimerState } from "@/types";
+import { formatTime } from "@/utils/timerUtils";
 
 interface RelaxGuideProps {
   onReturn: () => void;
+  timerState: TimerState;
 }
 
-const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn }) => {
+const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn, timerState }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const relaxSteps = getRelaxationSteps();
   
@@ -35,7 +38,7 @@ const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn }) => {
         </p>
       </div>
       
-      <div className="p-6 bg-white bg-opacity-60 rounded-lg shadow-sm mb-8">
+      <div className="p-6 bg-white bg-opacity-60 rounded-lg shadow-sm mb-8 relative">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-muted-foreground">
             Step {currentStep + 1} of {relaxSteps.length}
@@ -63,6 +66,11 @@ const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn }) => {
         <div className="min-h-[200px]">
           <h3 className="text-xl font-semibold mb-3">{relaxSteps[currentStep].title}</h3>
           <p className="text-dark-text leading-relaxed">{relaxSteps[currentStep].description}</p>
+        </div>
+        
+        {/* Timer in bottom left */}
+        <div className="absolute bottom-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md">
+          {formatTime(timerState.timeRemaining)}
         </div>
       </div>
       
