@@ -1,10 +1,11 @@
+
 import React from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
 import MemoryGame from "./MemoryGame";
 import RelaxGuide from "./RelaxGuide";
-import { AlarmClock, Gamepad, Yoga } from "lucide-react";
+import { AlarmClock, Gamepad, Dumbbell } from "lucide-react";
 
 interface BreakModeProps {
   timerState: TimerState;
@@ -75,7 +76,7 @@ const BreakMode: React.FC<BreakModeProps> = ({
             style={{ animationDelay: '0.1s' }}
             onClick={() => onSelectActivity('relax')}
           >
-            <Yoga size={36} className="mb-4 text-break-green" />
+            <Dumbbell size={36} className="mb-4 text-break-green" />
             <h4 className="text-lg font-semibold mb-2">Relax & Stretch</h4>
             <p className="text-sm text-center text-muted-foreground">
               Follow guided stretching exercises to relieve tension.
