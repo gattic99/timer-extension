@@ -51,70 +51,65 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
     <Collapsible 
       open={isOpen} 
       onOpenChange={handleOpenChange}
-      className="w-full"
+      className="w-full rounded-xl overflow-hidden"
     >
       <CollapsibleTrigger asChild>
         <Button 
           variant="outline" 
-          className="w-full p-4 flex items-center justify-between bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded-lg transition-all duration-200 shadow-sm"
+          className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded-xl transition-all duration-200"
           disabled={disabled}
         >
           <div className="flex items-center">
-            <Coffee className="mr-2 text-focus-purple" size={20} />
+            <Coffee className="mr-2 text-focus-purple" size={18} />
             <span className="font-medium">Break duration</span>
           </div>
           <div className="flex items-center">
             <span className="mr-2">{breakDuration} minutes</span>
-            {isOpen ? <ChevronUp className="text-focus-purple" size={18} /> : <ChevronDown className="text-focus-purple" size={18} />}
+            {isOpen ? <ChevronUp className="text-focus-purple" size={16} /> : <ChevronDown className="text-focus-purple" size={16} />}
           </div>
         </Button>
       </CollapsibleTrigger>
       
-      <CollapsibleContent className="overflow-hidden">
-        <div className="p-6 bg-white border border-gray-200 border-t-0 rounded-b-lg shadow-inner">
-          <div className="mt-2 mb-6">
-            <p className="text-muted-foreground text-center mb-6">
-              The break will start automatically after the focus timer ends.
-            </p>
+      <CollapsibleContent className="bg-gray-100 border border-t-0 border-gray-200 rounded-b-xl">
+        <div className="p-5">
+          <p className="text-muted-foreground text-center text-sm mb-5">
+            The break will start automatically after the focus timer ends.
+          </p>
+          
+          <div className="text-center mb-5">
+            <div className="flex items-center justify-center">
+              <span className="text-6xl font-bold text-focus-purple">{tempDuration}</span>
+              <span className="text-xl ml-2 text-focus-purple">minutes</span>
+            </div>
             
-            <div className="text-center mb-6">
-              <div className="text-5xl font-bold text-focus-purple mb-6">
-                {tempDuration} <span className="text-2xl">minutes</span>
-              </div>
-              
-              <div className="flex justify-center gap-6">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={decreaseDuration}
-                  disabled={tempDuration <= 1}
-                  className="rounded-full h-14 w-14 text-lg bg-gray-100 hover:bg-gray-200 border-gray-200"
-                >
-                  <Minus size={24} />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={increaseDuration}
-                  disabled={tempDuration >= 15}
-                  className="rounded-full h-14 w-14 text-lg bg-gray-100 hover:bg-gray-200 border-gray-200"
-                >
-                  <Plus size={24} />
-                </Button>
-              </div>
+            <div className="flex justify-center gap-6 mt-4">
+              <button
+                onClick={decreaseDuration}
+                disabled={tempDuration <= 1}
+                className="h-12 w-12 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors"
+              >
+                <Minus size={20} />
+              </button>
+              <button
+                onClick={increaseDuration}
+                disabled={tempDuration >= 15}
+                className="h-12 w-12 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors"
+              >
+                <Plus size={20} />
+              </button>
             </div>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <Button
               variant="outline"
-              className="py-3 px-6 text-gray-700 border-gray-200 bg-gray-100 hover:bg-gray-200"
+              className="py-2 px-4 text-gray-700 border-gray-200 bg-gray-50 hover:bg-gray-200 rounded-xl"
               onClick={handleCancel}
             >
               Cancel
             </Button>
             <Button
-              className="py-3 px-6 bg-focus-purple text-white hover:bg-indigo-500"
+              className="py-2 px-4 bg-focus-purple text-white hover:bg-focus-purple-dark rounded-xl"
               onClick={handleSave}
               disabled={tempDuration === breakDuration}
             >
