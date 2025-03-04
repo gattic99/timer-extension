@@ -28,6 +28,7 @@ const BreakMode: React.FC<BreakModeProps> = ({
 }) => {
   const { breakActivity, timeRemaining } = timerState;
   
+  // Start the timer automatically when component mounts
   useEffect(() => {
     if (!timerState.isRunning) {
       onStart();

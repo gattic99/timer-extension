@@ -69,7 +69,11 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     up: false
   });
   
-  // Game loop
+  useEffect(() => {
+    setGameStarted(true);
+    resetGame();
+  }, []);
+  
   useEffect(() => {
     if (!gameStarted) return;
     
@@ -87,7 +91,6 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     return () => clearInterval(gameLoop);
   }, [gameStarted]);
   
-  // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' || e.key === 'a') keysRef.current.left = true;
@@ -110,11 +113,6 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     };
   }, []);
   
-  const startGame = () => {
-    setGameStarted(true);
-    resetGame();
-  };
-  
   const resetGame = () => {
     characterRef.current = {
       x: 50,
@@ -133,36 +131,30 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
   const updateGame = () => {
     const character = characterRef.current;
     
-    // Handle movement
     if (keysRef.current.left) character.velocityX = -5;
     else if (keysRef.current.right) character.velocityX = 5;
     else character.velocityX = 0;
     
-    // Handle jumping
     if (keysRef.current.up && !character.isJumping) {
       character.velocityY = -12;
       character.isJumping = true;
     }
     
-    // Apply gravity
     character.velocityY += 0.5;
     
-    // Update position
     character.x += character.velocityX;
     character.y += character.velocityY;
     
-    // Keep character within canvas bounds
     if (character.x < 0) character.x = 0;
     if (character.x + character.width > 700) character.x = 700 - character.width;
     
-    // Check platform collisions
     let onPlatform = false;
     platformsRef.current.forEach(platform => {
       if (
         character.x + character.width > platform.x &&
         character.x < platform.x + platform.width &&
-        character.y + character.height > platform.y &&
-        character.y + character.height < platform.y + platform.height / 2 &&
+        character.y + character.height >= platform.y &&
+        character.y + character.height <= platform.y + platform.height / 2 &&
         character.velocityY > 0
       ) {
         character.y = platform.y - character.height;
@@ -172,12 +164,10 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       }
     });
     
-    // If character falls below the canvas
     if (character.y > 400) {
       resetGame();
     }
     
-    // Check coin collisions
     coinsRef.current.forEach((coin, index) => {
       if (
         !coin.collected &&
@@ -193,19 +183,15 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
   };
   
   const renderGame = (ctx: CanvasRenderingContext2D) => {
-    // Clear canvas
     ctx.clearRect(0, 0, 700, 400);
     
-    // Draw sky background
     ctx.fillStyle = '#87CEEB';
     ctx.fillRect(0, 0, 700, 400);
     
-    // Draw platforms
     ctx.fillStyle = '#8B4513';
     platformsRef.current.forEach(platform => {
       ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
       
-      // Draw brick pattern
       ctx.strokeStyle = '#3E2723';
       ctx.lineWidth = 1;
       for (let i = 0; i < platform.width; i += 20) {
@@ -223,7 +209,6 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       }
     });
     
-    // Draw coins
     coinsRef.current.forEach(coin => {
       if (!coin.collected) {
         ctx.fillStyle = '#FFD700';
@@ -236,31 +221,26 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       }
     });
     
-    // Draw character
     const character = characterRef.current;
     ctx.fillStyle = '#FF6347';
     ctx.fillRect(character.x, character.y, character.width, character.height);
     
-    // Character details (face, hat, etc.)
     ctx.fillStyle = '#0000FF';
-    ctx.fillRect(character.x, character.y + character.height - 15, character.width, 15); // overalls
+    ctx.fillRect(character.x, character.y + character.height - 15, character.width, 15);
     ctx.fillStyle = '#A52A2A';
-    ctx.fillRect(character.x, character.y, character.width, 10); // hat
+    ctx.fillRect(character.x, character.y, character.width, 10);
     ctx.fillStyle = '#FFA07A';
-    ctx.fillRect(character.x + 5, character.y + 10, character.width - 10, 15); // face
+    ctx.fillRect(character.x + 5, character.y + 10, character.width - 10, 15);
     
-    // Draw score
     ctx.fillStyle = '#000';
     ctx.font = '20px Arial';
     ctx.fillText(`Score: ${score}`, 10, 30);
     
-    // Draw controls info
     ctx.fillStyle = '#000';
     ctx.font = '12px Arial';
     ctx.fillText('Arrow Keys/WASD to move, Up/Space to jump', 400, 20);
   };
   
-  // Mobile control handlers
   const handleLeftPress = () => {
     keysRef.current.left = true;
   };
@@ -286,83 +266,66 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
   };
 
   return (
-    <div className="game-card p-6 w-full max-w-4xl mx-auto animate-scale-in">
-      <div className="text-center mb-4">
-        <h2 className="text-2xl font-bold text-dark-text">Platformer Adventure</h2>
-        <p className="text-muted-foreground mb-2">
+    <div className="w-full max-w-4xl mx-auto animate-scale-in flex flex-col items-center">
+      <div className="text-center mb-2">
+        <h2 className="text-xl font-bold text-focus-purple">Platformer Adventure</h2>
+        <p className="text-muted-foreground text-sm">
           Collect coins and jump between platforms!
         </p>
       </div>
       
-      {!gameStarted ? (
-        <div className="flex flex-col items-center gap-6 my-10">
-          <p className="text-lg">Press play to start your platformer adventure!</p>
-          <button 
-            className="btn-game flex items-center gap-2 animate-pulse"
-            onClick={startGame}
+      <div className="relative w-full">
+        <canvas 
+          ref={canvasRef} 
+          width={700} 
+          height={400} 
+          className="bg-white border border-gray-200 rounded-lg shadow-md mx-auto"
+        />
+        
+        <div className="absolute bottom-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md">
+          {formatTime(timerState.timeRemaining)}
+        </div>
+        
+        <div className="flex justify-between mt-2 md:hidden">
+          <div className="flex gap-2">
+            <button
+              className="bg-focus-purple text-white p-3 rounded-full"
+              onTouchStart={handleLeftPress}
+              onTouchEnd={handleLeftRelease}
+              onMouseDown={handleLeftPress}
+              onMouseUp={handleLeftRelease}
+              onMouseLeave={handleLeftRelease}
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <button
+              className="bg-focus-purple text-white p-3 rounded-full"
+              onTouchStart={handleRightPress}
+              onTouchEnd={handleRightRelease}
+              onMouseDown={handleRightPress}
+              onMouseUp={handleRightRelease}
+              onMouseLeave={handleRightRelease}
+            >
+              <ArrowRight size={20} />
+            </button>
+          </div>
+          <button
+            className="bg-focus-purple text-white p-3 rounded-full"
+            onTouchStart={handleJumpPress}
+            onTouchEnd={handleJumpRelease}
+            onMouseDown={handleJumpPress}
+            onMouseUp={handleJumpRelease}
+            onMouseLeave={handleJumpRelease}
           >
-            <Play size={20} />
-            <span>Start Game</span>
+            <ArrowUp size={20} />
           </button>
         </div>
-      ) : (
-        <>
-          <div className="mb-4 relative">
-            <canvas 
-              ref={canvasRef} 
-              width={700} 
-              height={400} 
-              className="bg-white border border-gray-300 rounded-lg shadow-md mx-auto"
-            />
-            
-            {/* Timer in bottom left */}
-            <div className="absolute bottom-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md">
-              {formatTime(timerState.timeRemaining)}
-            </div>
-            
-            {/* Mobile controls */}
-            <div className="flex justify-between mt-4 md:hidden">
-              <div className="flex gap-2">
-                <button
-                  className="bg-gray-800 text-white p-4 rounded-full"
-                  onTouchStart={handleLeftPress}
-                  onTouchEnd={handleLeftRelease}
-                  onMouseDown={handleLeftPress}
-                  onMouseUp={handleLeftRelease}
-                  onMouseLeave={handleLeftRelease}
-                >
-                  <ArrowLeft size={24} />
-                </button>
-                <button
-                  className="bg-gray-800 text-white p-4 rounded-full"
-                  onTouchStart={handleRightPress}
-                  onTouchEnd={handleRightRelease}
-                  onMouseDown={handleRightPress}
-                  onMouseUp={handleRightRelease}
-                  onMouseLeave={handleRightRelease}
-                >
-                  <ArrowRight size={24} />
-                </button>
-              </div>
-              <button
-                className="bg-gray-800 text-white p-4 rounded-full"
-                onTouchStart={handleJumpPress}
-                onTouchEnd={handleJumpRelease}
-                onMouseDown={handleJumpPress}
-                onMouseUp={handleJumpRelease}
-                onMouseLeave={handleJumpRelease}
-              >
-                <ArrowUp size={24} />
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+      </div>
       
       <div className="flex justify-center mt-4">
         <button 
           onClick={onReturn} 
-          className="btn-secondary"
+          className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-md hover:bg-focus-purple hover:text-white transition-colors"
         >
           Return to Timer
         </button>
