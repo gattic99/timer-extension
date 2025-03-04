@@ -5,7 +5,7 @@ import { defaultTimerSettings } from "@/utils/timerUtils";
 import { useTimer } from "@/hooks/useTimer";
 import FocusMode from "@/components/FocusMode";
 import BreakMode from "@/components/BreakMode";
-import { TimerSettings } from "@/types";
+import { TimerSettings, TimerMode } from "@/types";
 import { Timer as TimerIcon, X } from "lucide-react";
 import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
@@ -37,6 +37,13 @@ const Index: React.FC = () => {
     resetTimer(timerState.mode);
   };
   
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    if (value === 'focus' || value === 'break') {
+      resetTimer(value as TimerMode);
+    }
+  };
+  
   return (
     <div className="min-h-screen relative overflow-hidden">
       <FigmaBackground />
@@ -66,7 +73,11 @@ const Index: React.FC = () => {
               </div>
             </div>
             
-            <Tabs defaultValue={timerState.mode} className="w-full">
+            <Tabs 
+              defaultValue={timerState.mode} 
+              className="w-full"
+              onValueChange={handleTabChange}
+            >
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger 
                   value="focus"
