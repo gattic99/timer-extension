@@ -164,25 +164,15 @@ export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], c
       
       // Only render coins that are visible on screen or near it
       if (adjustedX < 700 && adjustedX + coin.width > -20) {
-        // Circle background (yellow)
-        ctx.beginPath();
         const centerX = adjustedX + coin.width / 2;
         const centerY = coin.y + coin.height / 2;
-        const radius = coin.width / 2 + 3; // Slightly larger than the coin
         
-        // Draw yellow border
-        ctx.strokeStyle = '#FEF7CD'; // Soft yellow border
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.stroke();
-        
-        // Draw the collectible image using the uploaded face image
+        // Draw the collectible using the new image
         try {
           const image = new Image();
-          image.src = '/lovable-uploads/f50ea79b-8e46-407d-8d22-ed3fcdfd80a4.png';
+          image.src = '/lovable-uploads/b0fc72cd-6b6c-40c8-bc58-8737a1163194.png';
           
-          // Draw the face image directly (no clip needed since it will fill the whole circle)
+          // Draw the image directly
           ctx.drawImage(
             image, 
             adjustedX, 
@@ -190,13 +180,6 @@ export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], c
             coin.width, 
             coin.height
           );
-          
-          // Add a bright orange outline for better contrast with the yellow border
-          ctx.strokeStyle = '#F97316'; // Bright orange
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
-          ctx.stroke();
         } catch (error) {
           console.error("Error loading collectible image:", error);
           // Fallback if image fails to load
