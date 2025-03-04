@@ -32,9 +32,9 @@ const Timer: React.FC<TimerProps> = ({
     : 'text-break-green';
 
   return (
-    <div className="flex flex-col items-center space-y-6 animate-fade-in">
-      <div className="timer-display">
-        <div className={`timer-text ${timerTextColor}`}>
+    <div className="flex flex-col items-center space-y-4 animate-fade-in">
+      <div className="timer-display mb-2">
+        <div className={`timer-text ${timerTextColor} text-4xl font-bold`}>
           {formatTime(timeRemaining)}
         </div>
       </div>
@@ -44,37 +44,6 @@ const Timer: React.FC<TimerProps> = ({
           value={timePercentage} 
           className={`h-2 ${progressColor} transition-all duration-500`}
         />
-      </div>
-      
-      <div className="flex items-center space-x-4 mt-6">
-        {isRunning ? (
-          <button 
-            onClick={onPause}
-            className="btn-secondary flex items-center space-x-2 animate-fade-in"
-            aria-label="Pause Timer"
-          >
-            <Pause size={20} />
-            <span>Pause</span>
-          </button>
-        ) : (
-          <button 
-            onClick={onStart}
-            className="btn-primary flex items-center space-x-2 animate-fade-in"
-            aria-label="Start Timer"
-          >
-            <Play size={20} />
-            <span>Start</span>
-          </button>
-        )}
-        
-        <button 
-          onClick={onReset}
-          className="btn-secondary flex items-center space-x-2"
-          aria-label="Reset Timer"
-        >
-          <RotateCcw size={20} />
-          <span>Reset</span>
-        </button>
       </div>
     </div>
   );

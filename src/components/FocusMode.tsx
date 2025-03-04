@@ -79,13 +79,56 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </p>
       </div>
       
-      <Timer
-        timerState={timerState}
-        onStart={onStart}
-        onPause={onPause}
-        onReset={onReset}
-        totalDuration={totalDuration}
-      />
+      <div className="relative">
+        {/* Timer component */}
+        <Timer
+          timerState={timerState}
+          onStart={onStart}
+          onPause={onPause}
+          onReset={onReset}
+          totalDuration={totalDuration}
+        />
+        
+        {/* Duration controls overlaid on the timer */}
+        <div className="mt-3 text-center">
+          <div className="flex items-center justify-center gap-3">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={decreaseFocusDuration}
+              disabled={focusDuration <= 5 || timerState.isRunning}
+              className="rounded-full bg-muted/30 hover:bg-muted/50 h-8 w-8"
+            >
+              <Minus size={16} />
+            </Button>
+            
+            <div className="flex items-baseline">
+              <div className="relative w-16 text-center">
+                <Input
+                  type="text"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onBlur={handleInputBlur}
+                  onKeyDown={handleKeyDown}
+                  disabled={timerState.isRunning}
+                  className="w-full text-center font-bold text-focus-purple text-lg px-0 py-1 border-none focus:ring-0 focus:outline-none"
+                />
+                <span className="text-xs ml-1 text-focus-purple">minutes</span>
+              </div>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={increaseFocusDuration}
+              disabled={focusDuration >= 60 || timerState.isRunning}
+              className="rounded-full bg-muted/30 hover:bg-muted/50 h-8 w-8"
+            >
+              <Plus size={16} />
+            </Button>
+          </div>
+        </div>
+      </div>
       
       <div className="flex justify-center gap-8 mt-8 mb-6">
         <Button 
@@ -102,46 +145,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
         >
           Reset
         </Button>
-      </div>
-      
-      {/* Focus Duration Controls - Between the timer and buttons */}
-      <div className="mb-4 text-center">
-        <div className="flex items-center justify-center gap-3">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={decreaseFocusDuration}
-            disabled={focusDuration <= 5 || timerState.isRunning}
-            className="rounded-full bg-muted/30 hover:bg-muted/50 h-9 w-9"
-          >
-            <Minus size={18} />
-          </Button>
-          
-          <div className="flex items-baseline">
-            <div className="relative w-16 text-center">
-              <Input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-                onKeyDown={handleKeyDown}
-                disabled={timerState.isRunning}
-                className="w-full text-center font-bold text-focus-purple text-lg px-0 py-1 border-none focus:ring-0 focus:outline-none"
-              />
-              <span className="text-xs ml-1 text-focus-purple">minutes</span>
-            </div>
-          </div>
-          
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={increaseFocusDuration}
-            disabled={focusDuration >= 60 || timerState.isRunning}
-            className="rounded-full bg-muted/30 hover:bg-muted/50 h-9 w-9"
-          >
-            <Plus size={18} />
-          </Button>
-        </div>
       </div>
       
       {/* Break Duration Dialog */}
