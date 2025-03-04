@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Coffee, Minus, Plus, ArrowLeft, ChevronRight, Save } from "lucide-react";
+import { Coffee, Minus, Plus, X, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -80,9 +80,9 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
               variant="ghost"
               size="icon"
               onClick={handleCancel}
-              className="hover:bg-muted/30"
+              className="text-gray-500 hover:bg-gray-100"
             >
-              <ArrowLeft size={20} />
+              <X size={20} />
             </Button>
             <DialogTitle className="text-2xl font-bold text-focus-purple">Break duration</DialogTitle>
             <div className="w-10"></div> {/* Spacer for alignment */}
@@ -94,8 +94,8 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
             </p>
             
             <div className="text-center mb-8">
-              <div className="text-4xl font-bold text-focus-purple mb-6">
-                {tempDuration} <span className="text-2xl">minutes</span>
+              <div className="text-6xl font-bold text-focus-purple mb-6">
+                {tempDuration} <span className="text-3xl">minutes</span>
               </div>
               
               <div className="flex justify-center gap-6">
@@ -104,7 +104,7 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
                   size="icon"
                   onClick={decreaseDuration}
                   disabled={tempDuration <= 1}
-                  className="rounded-full h-12 w-12 text-lg bg-muted/30 hover:bg-muted/50"
+                  className="rounded-full h-14 w-14 text-lg bg-gray-100 hover:bg-gray-200 border-gray-200"
                 >
                   <Minus size={24} />
                 </Button>
@@ -113,7 +113,7 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
                   size="icon"
                   onClick={increaseDuration}
                   disabled={tempDuration >= 15}
-                  className="rounded-full h-12 w-12 text-lg bg-muted/30 hover:bg-muted/50"
+                  className="rounded-full h-14 w-14 text-lg bg-gray-100 hover:bg-gray-200 border-gray-200"
                 >
                   <Plus size={24} />
                 </Button>
@@ -121,16 +121,16 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
             </div>
           </div>
           
-          <div className="flex justify-between space-x-4">
+          <div className="grid grid-cols-2 gap-4">
             <Button
               variant="outline"
-              className="flex-1"
+              className="py-3 px-6 text-gray-700 border-gray-200 bg-gray-100 hover:bg-gray-200"
               onClick={handleCancel}
             >
               Cancel
             </Button>
             <Button
-              className="flex-1 bg-focus-purple text-white hover:bg-focus-purple-dark"
+              className="py-3 px-6 bg-focus-purple text-white hover:bg-indigo-500"
               onClick={handleSave}
               disabled={tempDuration === breakDuration}
             >

@@ -3,7 +3,7 @@ import React from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
-import { Clock, Minus, Plus, Coffee } from "lucide-react";
+import { Clock, Minus, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 import BreakDurationDialog from "./BreakDurationDialog";
 
