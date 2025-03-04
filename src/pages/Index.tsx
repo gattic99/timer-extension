@@ -87,7 +87,7 @@ const Index: React.FC = () => {
                 onReset={() => resetTimer('break')}
                 onSelectActivity={selectBreakActivity}
                 breakDuration={settings.breakDuration}
-                onChangeBreakDuration={handleBreakDuration}
+                onChangeBreakDuration={handleBreakDurationChange}
               />
             )}
             
