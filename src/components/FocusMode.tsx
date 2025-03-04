@@ -68,19 +68,18 @@ const FocusMode: React.FC<FocusModeProps> = ({
   };
   
   return (
-    <div className="focus-card p-6 w-full max-w-md mx-auto animate-scale-in">
-      <div className="text-center mb-4">
-        <div className="flex items-center justify-center mb-1">
-          <Clock className="text-focus-purple mr-2" size={20} />
-          <h2 className="text-xl font-bold text-dark-text">Focus Time</h2>
+    <div className="focus-card p-4 w-full max-w-sm mx-auto animate-scale-in">
+      <div className="text-center mb-2">
+        <div className="flex items-center justify-center">
+          <Clock className="text-focus-purple mr-2" size={18} />
+          <h2 className="text-lg font-bold text-dark-text">Focus Time</h2>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Stay focused and productive. Take a break when the timer ends.
+        <p className="text-xs text-muted-foreground">
+          Stay focused and productive
         </p>
       </div>
       
       <div className="relative">
-        {/* Timer component */}
         <Timer
           timerState={timerState}
           onStart={onStart}
@@ -89,21 +88,20 @@ const FocusMode: React.FC<FocusModeProps> = ({
           totalDuration={totalDuration}
         />
         
-        {/* Duration controls overlaid on the timer */}
-        <div className="mt-3 text-center">
-          <div className="flex items-center justify-center gap-3">
+        <div className="mt-2 text-center">
+          <div className="flex items-center justify-center gap-2">
             <Button 
               variant="outline" 
               size="icon" 
               onClick={decreaseFocusDuration}
               disabled={focusDuration <= 5 || timerState.isRunning}
-              className="rounded-full bg-muted/30 hover:bg-muted/50 h-8 w-8"
+              className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7"
             >
-              <Minus size={16} />
+              <Minus size={14} />
             </Button>
             
             <div className="flex items-baseline">
-              <div className="relative w-16 text-center">
+              <div className="relative w-12 text-center">
                 <Input
                   type="text"
                   value={inputValue}
@@ -111,9 +109,9 @@ const FocusMode: React.FC<FocusModeProps> = ({
                   onBlur={handleInputBlur}
                   onKeyDown={handleKeyDown}
                   disabled={timerState.isRunning}
-                  className="w-full text-center font-bold text-focus-purple text-lg px-0 py-1 border-none focus:ring-0 focus:outline-none"
+                  className="w-full text-center font-bold text-focus-purple text-base px-0 py-0.5 border-none focus:ring-0 focus:outline-none h-7"
                 />
-                <span className="text-xs ml-1 text-focus-purple">minutes</span>
+                <span className="text-xs ml-0.5 text-focus-purple">min</span>
               </div>
             </div>
             
@@ -122,18 +120,18 @@ const FocusMode: React.FC<FocusModeProps> = ({
               size="icon" 
               onClick={increaseFocusDuration}
               disabled={focusDuration >= 60 || timerState.isRunning}
-              className="rounded-full bg-muted/30 hover:bg-muted/50 h-8 w-8"
+              className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7"
             >
-              <Plus size={16} />
+              <Plus size={14} />
             </Button>
           </div>
         </div>
       </div>
       
-      <div className="flex justify-center gap-8 mt-8 mb-6">
+      <div className="flex justify-center gap-4 mt-4 mb-3">
         <Button 
           onClick={timerState.isRunning ? onPause : onStart}
-          className="bg-focus-purple hover:bg-focus-purple-dark text-white font-semibold px-8 py-2 rounded-full"
+          className="bg-focus-purple hover:bg-focus-purple-dark text-white font-semibold px-6 py-1.5 rounded-full text-sm h-9"
         >
           {timerState.isRunning ? "Pause" : "Start"}
         </Button>
@@ -141,14 +139,13 @@ const FocusMode: React.FC<FocusModeProps> = ({
         <Button 
           variant="outline"
           onClick={onReset}
-          className="border-gray-300 text-gray-700 font-semibold px-8 py-2 rounded-full"
+          className="border-gray-300 text-gray-700 font-semibold px-6 py-1.5 rounded-full text-sm h-9"
         >
           Reset
         </Button>
       </div>
       
-      {/* Break Duration Dialog */}
-      <div className="mt-4 max-w-md mx-auto">
+      <div className="max-w-xs mx-auto">
         <BreakDurationDialog 
           breakDuration={breakDuration}
           onChangeBreakDuration={onChangeBreakDuration}
@@ -156,8 +153,8 @@ const FocusMode: React.FC<FocusModeProps> = ({
         />
       </div>
       
-      <div className="mt-4 text-center text-sm text-muted-foreground">
-        <p>Stay in the flow state. Minimize distractions.</p>
+      <div className="mt-2 text-center text-xs text-muted-foreground">
+        <p>Minimize distractions</p>
       </div>
     </div>
   );

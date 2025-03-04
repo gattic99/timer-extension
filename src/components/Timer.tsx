@@ -3,7 +3,6 @@ import React from "react";
 import { formatTime, getTimePercentage } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
 import { Progress } from "@/components/ui/progress";
-import { Play, Pause, RotateCcw } from "lucide-react";
 
 interface TimerProps {
   timerState: TimerState;
@@ -15,12 +14,9 @@ interface TimerProps {
 
 const Timer: React.FC<TimerProps> = ({
   timerState,
-  onStart,
-  onPause,
-  onReset,
   totalDuration
 }) => {
-  const { timeRemaining, isRunning, mode } = timerState;
+  const { timeRemaining, mode } = timerState;
   const timePercentage = getTimePercentage(timeRemaining, totalDuration);
   
   const progressColor = mode === 'focus' 
@@ -32,17 +28,17 @@ const Timer: React.FC<TimerProps> = ({
     : 'text-break-green';
 
   return (
-    <div className="flex flex-col items-center space-y-4 animate-fade-in">
-      <div className="timer-display mb-2">
-        <div className={`timer-text ${timerTextColor} text-4xl font-bold`}>
+    <div className="flex flex-col items-center space-y-2 animate-fade-in">
+      <div className="timer-display mb-1" style={{width: "180px", height: "180px"}}>
+        <div className={`timer-text ${timerTextColor} text-3xl font-bold`}>
           {formatTime(timeRemaining)}
         </div>
       </div>
       
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-sm">
         <Progress 
           value={timePercentage} 
-          className={`h-2 ${progressColor} transition-all duration-500`}
+          className={`h-1.5 ${progressColor} transition-all duration-500`}
         />
       </div>
     </div>
