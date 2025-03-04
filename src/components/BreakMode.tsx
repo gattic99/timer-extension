@@ -1,12 +1,10 @@
-
 import React from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
 import PlatformerGame from "./PlatformerGame";
 import RelaxGuide from "./RelaxGuide";
-import { AlarmClock, Gamepad, Dumbbell, Minus, Plus } from "lucide-react";
-import { Button } from "./ui/button";
+import { AlarmClock, Gamepad, Dumbbell } from "lucide-react";
 
 interface BreakModeProps {
   timerState: TimerState;
@@ -30,18 +28,6 @@ const BreakMode: React.FC<BreakModeProps> = ({
   const totalDuration = minutesToSeconds(breakDuration);
   const { breakActivity } = timerState;
   
-  const decreaseDuration = () => {
-    if (breakDuration > 1) {
-      onChangeBreakDuration(breakDuration - 1);
-    }
-  };
-  
-  const increaseDuration = () => {
-    if (breakDuration < 15) {
-      onChangeBreakDuration(breakDuration + 1);
-    }
-  };
-  
   // If a break activity is selected, render it
   if (breakActivity === 'game') {
     return <PlatformerGame onReturn={() => onSelectActivity(null)} timerState={timerState} />;
@@ -53,45 +39,15 @@ const BreakMode: React.FC<BreakModeProps> = ({
   
   // Otherwise render break timer with activity options
   return (
-    <div className="break-card p-8 w-full max-w-xl mx-auto animate-scale-in">
-      <div className="text-center mb-8">
+    <div className="bg-white bg-opacity-80 backdrop-blur-md rounded-xl border border-white border-opacity-20 shadow-md p-6 w-full max-w-xl mx-auto animate-scale-in">
+      <div className="text-center mb-6">
         <div className="flex items-center justify-center mb-2">
-          <AlarmClock className="text-break-green mr-2" size={24} />
-          <h2 className="text-2xl font-bold text-dark-text">Break Time</h2>
+          <AlarmClock className="text-break-green mr-2" size={20} />
+          <h2 className="text-xl font-bold text-dark-text">Break Time</h2>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Take a moment to relax. Choose an activity below or just take a break.
         </p>
-      </div>
-      
-      {/* Horizontal layout for break duration controls */}
-      <div className="mb-6 text-center">
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={decreaseDuration}
-            disabled={breakDuration <= 1 || timerState.isRunning}
-            className="rounded-full bg-muted/30 hover:bg-muted/50 h-9 w-9"
-          >
-            <Minus size={18} />
-          </Button>
-          
-          <div className="flex items-baseline">
-            <span className="text-2xl font-bold text-focus-purple">{breakDuration}</span>
-            <span className="text-sm ml-1 text-focus-purple">minutes</span>
-          </div>
-          
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={increaseDuration}
-            disabled={breakDuration >= 15 || timerState.isRunning}
-            className="rounded-full bg-muted/30 hover:bg-muted/50 h-9 w-9"
-          >
-            <Plus size={18} />
-          </Button>
-        </div>
       </div>
       
       <Timer
@@ -102,30 +58,24 @@ const BreakMode: React.FC<BreakModeProps> = ({
         totalDuration={totalDuration}
       />
       
-      <div className="mt-10">
-        <h3 className="text-center text-lg font-semibold mb-4">Choose a break activity:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mt-8">
+        <h3 className="text-center text-base font-semibold mb-3">Choose a break activity:</h3>
+        <div className="grid grid-cols-2 gap-3">
           <div 
-            className="option-card game-card flex flex-col items-center animate-slide-up" 
+            className="bg-white bg-opacity-80 backdrop-blur-md rounded-lg border border-white border-opacity-20 shadow-sm p-4 flex flex-col items-center animate-slide-up cursor-pointer" 
             onClick={() => onSelectActivity('game')}
           >
-            <Gamepad size={36} className="mb-4 text-game-orange" />
-            <h4 className="text-lg font-semibold mb-2">Play a Game</h4>
-            <p className="text-sm text-center text-muted-foreground">
-              Have fun with a platformer game to refresh your mind.
-            </p>
+            <Gamepad size={24} className="mb-2 text-game-orange" />
+            <h4 className="text-sm font-medium">Play a Game</h4>
           </div>
           
           <div 
-            className="option-card break-card flex flex-col items-center animate-slide-up" 
+            className="bg-white bg-opacity-80 backdrop-blur-md rounded-lg border border-white border-opacity-20 shadow-sm p-4 flex flex-col items-center animate-slide-up cursor-pointer" 
             style={{ animationDelay: '0.1s' }}
             onClick={() => onSelectActivity('relax')}
           >
-            <Dumbbell size={36} className="mb-4 text-break-green" />
-            <h4 className="text-lg font-semibold mb-2">Relax & Stretch</h4>
-            <p className="text-sm text-center text-muted-foreground">
-              Follow guided stretching exercises to relieve tension.
-            </p>
+            <Dumbbell size={24} className="mb-2 text-break-green" />
+            <h4 className="text-sm font-medium">Relax & Stretch</h4>
           </div>
         </div>
       </div>
