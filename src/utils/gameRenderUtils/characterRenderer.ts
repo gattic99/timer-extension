@@ -3,6 +3,8 @@ import { GameCharacter } from "@/types/gameTypes";
 
 // Draw character
 export const drawCharacter = (ctx: CanvasRenderingContext2D, character: GameCharacter) => {
+  console.log("Drawing character at:", character.x, character.y);
+  
   // Body (shirt)
   ctx.fillStyle = '#3F51B5'; // Blue shirt
   ctx.fillRect(character.x, character.y, character.width, character.height - 15);

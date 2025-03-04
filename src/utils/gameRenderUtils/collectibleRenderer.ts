@@ -3,6 +3,13 @@ import { Coin } from "@/types/gameTypes";
 
 // Create the face image outside the function to ensure it's only created once
 const faceImage = new Image();
+// Add an onload handler to ensure the image is fully loaded before use
+faceImage.onload = () => {
+  console.log("Coin image loaded successfully");
+};
+faceImage.onerror = (err) => {
+  console.error("Error loading coin image:", err);
+};
 faceImage.src = '/lovable-uploads/5126de49-ffe0-494c-88af-14aab80c9d42.png';
 
 // Draw collectibles (face in yellow circle)
@@ -23,23 +30,32 @@ export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], c
         ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
         ctx.fill();
         
-        // Create circular clipping path
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, coin.width / 2 - 1, 0, Math.PI * 2);
-        ctx.clip();
-        
-        // Draw the image within the clipping path
-        ctx.drawImage(
-          faceImage, 
-          adjustedX, 
-          coin.y, 
-          coin.width, 
-          coin.height
-        );
-        
-        // Restore the context
-        ctx.restore();
+        // Only try to draw the image if it's fully loaded
+        if (faceImage.complete && faceImage.naturalWidth > 0) {
+          // Create circular clipping path
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, coin.width / 2 - 1, 0, Math.PI * 2);
+          ctx.clip();
+          
+          // Draw the image within the clipping path
+          ctx.drawImage(
+            faceImage, 
+            adjustedX, 
+            coin.y, 
+            coin.width, 
+            coin.height
+          );
+          
+          // Restore the context
+          ctx.restore();
+        } else {
+          // Fallback if image isn't loaded yet
+          ctx.fillStyle = '#FFA500';
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, coin.width / 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
         
         // Add a subtle border
         ctx.strokeStyle = '#B8860B';
