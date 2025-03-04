@@ -27,7 +27,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
       <div className="text-center mb-4">
         <div className="flex items-center justify-center mb-2">
           <Clock className="text-focus-purple mr-2" size={24} />
-          <h2 className="text-2xl font-semibold text-dark-text">Focus Time</h2>
+          <h2 className="text-xl font-semibold text-dark-text">Focus Session</h2>
         </div>
         <p className="text-muted-foreground text-sm">
           Stay focused and productive. Take a break when the timer ends.
@@ -44,7 +44,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
       
       <div className="mt-6 text-center text-sm text-muted-foreground">
         <p>Stay in the flow state. Minimize distractions.</p>
-        <p className="mt-1">A break will begin automatically when the timer ends.</p>
       </div>
     </div>
   );
