@@ -54,26 +54,32 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </p>
       </div>
       
+      {/* Horizontal layout for focus duration controls */}
       <div className="mb-6 text-center">
-        <div className="text-2xl font-bold mb-2 text-focus-purple">{focusDuration} minutes</div>
-        <div className="flex justify-center gap-4 mb-4">
+        <div className="flex items-center justify-center gap-4 mb-4">
           <Button 
             variant="outline" 
             size="icon" 
             onClick={decreaseFocusDuration}
             disabled={focusDuration <= 5 || timerState.isRunning}
-            className="rounded-full bg-muted/30 hover:bg-muted/50"
+            className="rounded-full bg-muted/30 hover:bg-muted/50 h-9 w-9"
           >
-            <Minus size={20} />
+            <Minus size={18} />
           </Button>
+          
+          <div className="flex items-baseline">
+            <span className="text-2xl font-bold text-focus-purple">{focusDuration}</span>
+            <span className="text-sm ml-1 text-focus-purple">minutes</span>
+          </div>
+          
           <Button 
             variant="outline" 
             size="icon" 
             onClick={increaseFocusDuration}
             disabled={focusDuration >= 60 || timerState.isRunning}
-            className="rounded-full bg-muted/30 hover:bg-muted/50"
+            className="rounded-full bg-muted/30 hover:bg-muted/50 h-9 w-9"
           >
-            <Plus size={20} />
+            <Plus size={18} />
           </Button>
         </div>
       </div>
