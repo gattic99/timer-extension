@@ -280,7 +280,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 w-full animate-scale-in flex flex-col items-center bg-blue-100 pb-4">
+    <div className="fixed inset-x-0 bottom-0 w-full animate-scale-in flex flex-col items-center bg-blue-100 pb-4">
       <div className="text-center mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Platformer Adventure</h2>
         <p className="text-muted-foreground text-sm">
