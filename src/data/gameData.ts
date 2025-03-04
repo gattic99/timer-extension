@@ -1,5 +1,4 @@
-
-import { Platform, Obstacle, Coin } from "@/types/gameTypes";
+import { Platform, Obstacle, Coin, GameCharacter } from "@/types/gameTypes";
 
 // Office-themed platforms (desks, floors, shelves) with spacing
 export const initialPlatforms: Platform[] = [
