@@ -32,7 +32,9 @@ const Index: React.FC = () => {
     startTimer, 
     pauseTimer, 
     resetTimer, 
-    selectBreakActivity 
+    selectBreakActivity,
+    updateFocusDuration,
+    updateBreakDuration
   } = useTimer({ settings });
   
   useEffect(() => {
@@ -47,14 +49,14 @@ const Index: React.FC = () => {
     setIsSettingsChanged(hasChanged);
   }, [tempSettings, settings]);
   
-  const updateFocusDuration = (value: number[]) => {
+  const updateFocusDurationSetting = (value: number[]) => {
     setTempSettings({
       ...tempSettings,
       focusDuration: value[0]
     });
   };
   
-  const updateBreakDuration = (value: number[]) => {
+  const updateBreakDurationSetting = (value: number[]) => {
     setTempSettings({
       ...tempSettings,
       breakDuration: value[0]
@@ -72,6 +74,18 @@ const Index: React.FC = () => {
     
     toast.success("Settings saved successfully");
     setIsSettingsChanged(false);
+  };
+  
+  const handleFocusDurationChange = (newDuration: number) => {
+    const newSettings = { ...settings, focusDuration: newDuration };
+    setSettings(newSettings);
+    updateFocusDuration(newDuration);
+  };
+  
+  const handleBreakDurationChange = (newDuration: number) => {
+    const newSettings = { ...settings, breakDuration: newDuration };
+    setSettings(newSettings);
+    updateBreakDuration(newDuration);
   };
   
   const togglePopup = () => {
@@ -120,7 +134,7 @@ const Index: React.FC = () => {
                           min={5} 
                           max={60} 
                           step={5} 
-                          onValueChange={updateFocusDuration}
+                          onValueChange={updateFocusDurationSetting}
                         />
                       </div>
                       
@@ -134,7 +148,7 @@ const Index: React.FC = () => {
                           min={1} 
                           max={15} 
                           step={1} 
-                          onValueChange={updateBreakDuration}
+                          onValueChange={updateBreakDurationSetting}
                         />
                       </div>
                     </div>
@@ -170,6 +184,7 @@ const Index: React.FC = () => {
                 onPause={pauseTimer}
                 onReset={() => resetTimer('focus')}
                 focusDuration={settings.focusDuration}
+                onChangeFocusDuration={handleFocusDurationChange}
               />
             ) : (
               <BreakMode
@@ -179,6 +194,7 @@ const Index: React.FC = () => {
                 onReset={() => resetTimer('break')}
                 onSelectActivity={selectBreakActivity}
                 breakDuration={settings.breakDuration}
+                onChangeBreakDuration={handleBreakDurationChange}
               />
             )}
             

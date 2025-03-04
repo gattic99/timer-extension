@@ -3,7 +3,8 @@ import React from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
-import { Clock } from "lucide-react";
+import { Clock, Minus, Plus } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface FocusModeProps {
   timerState: TimerState;
@@ -11,6 +12,7 @@ interface FocusModeProps {
   onPause: () => void;
   onReset: () => void;
   focusDuration: number;
+  onChangeFocusDuration: (duration: number) => void;
 }
 
 const FocusMode: React.FC<FocusModeProps> = ({
@@ -18,9 +20,22 @@ const FocusMode: React.FC<FocusModeProps> = ({
   onStart,
   onPause,
   onReset,
-  focusDuration
+  focusDuration,
+  onChangeFocusDuration
 }) => {
   const totalDuration = minutesToSeconds(focusDuration);
+  
+  const decreaseDuration = () => {
+    if (focusDuration > 5) {
+      onChangeFocusDuration(focusDuration - 5);
+    }
+  };
+  
+  const increaseDuration = () => {
+    if (focusDuration < 60) {
+      onChangeFocusDuration(focusDuration + 5);
+    }
+  };
   
   return (
     <div className="focus-card p-8 w-full max-w-xl mx-auto animate-scale-in">
@@ -32,6 +47,30 @@ const FocusMode: React.FC<FocusModeProps> = ({
         <p className="text-muted-foreground">
           Stay focused and productive. Take a break when the timer ends.
         </p>
+      </div>
+      
+      <div className="mb-6 text-center">
+        <div className="text-2xl font-bold mb-2 text-focus-purple">{focusDuration} minutes</div>
+        <div className="flex justify-center gap-4 mb-4">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={decreaseDuration}
+            disabled={focusDuration <= 5 || timerState.isRunning}
+            className="rounded-full bg-muted/30 hover:bg-muted/50"
+          >
+            <Minus size={20} />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={increaseDuration}
+            disabled={focusDuration >= 60 || timerState.isRunning}
+            className="rounded-full bg-muted/30 hover:bg-muted/50"
+          >
+            <Plus size={20} />
+          </Button>
+        </div>
       </div>
       
       <Timer

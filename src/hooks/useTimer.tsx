@@ -124,6 +124,26 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     });
   }, [settings]);
 
+  // Update focus duration
+  const updateFocusDuration = useCallback((newDuration: number) => {
+    if (timerState.mode === 'focus' && !timerState.isRunning) {
+      setTimerState(prev => ({
+        ...prev,
+        timeRemaining: minutesToSeconds(newDuration)
+      }));
+    }
+  }, [timerState]);
+
+  // Update break duration
+  const updateBreakDuration = useCallback((newDuration: number) => {
+    if (timerState.mode === 'break' && !timerState.isRunning) {
+      setTimerState(prev => ({
+        ...prev,
+        timeRemaining: minutesToSeconds(newDuration)
+      }));
+    }
+  }, [timerState]);
+
   // Select break activity
   const selectBreakActivity = useCallback((activity: BreakActivity) => {
     setTimerState(prev => ({ ...prev, breakActivity: activity }));
@@ -143,6 +163,8 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     startTimer,
     pauseTimer,
     resetTimer,
-    selectBreakActivity
+    selectBreakActivity,
+    updateFocusDuration,
+    updateBreakDuration
   };
 };

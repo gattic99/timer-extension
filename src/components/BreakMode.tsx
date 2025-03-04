@@ -1,10 +1,12 @@
+
 import React from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
 import PlatformerGame from "./PlatformerGame";
 import RelaxGuide from "./RelaxGuide";
-import { AlarmClock, Gamepad, Dumbbell } from "lucide-react";
+import { AlarmClock, Gamepad, Dumbbell, Minus, Plus } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface BreakModeProps {
   timerState: TimerState;
@@ -13,6 +15,7 @@ interface BreakModeProps {
   onReset: () => void;
   onSelectActivity: (activity: BreakActivity) => void;
   breakDuration: number;
+  onChangeBreakDuration: (duration: number) => void;
 }
 
 const BreakMode: React.FC<BreakModeProps> = ({
@@ -21,10 +24,23 @@ const BreakMode: React.FC<BreakModeProps> = ({
   onPause,
   onReset,
   onSelectActivity,
-  breakDuration
+  breakDuration,
+  onChangeBreakDuration
 }) => {
   const totalDuration = minutesToSeconds(breakDuration);
   const { breakActivity } = timerState;
+  
+  const decreaseDuration = () => {
+    if (breakDuration > 1) {
+      onChangeBreakDuration(breakDuration - 1);
+    }
+  };
+  
+  const increaseDuration = () => {
+    if (breakDuration < 15) {
+      onChangeBreakDuration(breakDuration + 1);
+    }
+  };
   
   // If a break activity is selected, render it
   if (breakActivity === 'game') {
@@ -46,6 +62,30 @@ const BreakMode: React.FC<BreakModeProps> = ({
         <p className="text-muted-foreground">
           Take a moment to relax. Choose an activity below or just take a break.
         </p>
+      </div>
+      
+      <div className="mb-6 text-center">
+        <div className="text-2xl font-bold mb-2 text-break-green">{breakDuration} minutes</div>
+        <div className="flex justify-center gap-4 mb-4">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={decreaseDuration}
+            disabled={breakDuration <= 1 || timerState.isRunning}
+            className="rounded-full bg-muted/30 hover:bg-muted/50"
+          >
+            <Minus size={20} />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={increaseDuration}
+            disabled={breakDuration >= 15 || timerState.isRunning}
+            className="rounded-full bg-muted/30 hover:bg-muted/50"
+          >
+            <Plus size={20} />
+          </Button>
+        </div>
       </div>
       
       <Timer
