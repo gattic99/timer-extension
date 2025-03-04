@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
