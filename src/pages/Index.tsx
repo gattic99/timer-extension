@@ -27,6 +27,15 @@ const Index: React.FC = () => {
   const togglePopup = () => {
     setIsOpen(!isOpen);
   };
+
+  const updateSettings = (newSettings: Partial<TimerSettings>) => {
+    setSettings(prev => ({
+      ...prev,
+      ...newSettings
+    }));
+    // Reset the timer when settings change
+    resetTimer(timerState.mode);
+  };
   
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -81,6 +90,7 @@ const Index: React.FC = () => {
                     onPause={pauseTimer}
                     onReset={() => resetTimer('focus')}
                     focusDuration={settings.focusDuration}
+                    onDurationChange={(value) => updateSettings({ focusDuration: value })}
                   />
                 </TabsContent>
                 
@@ -92,6 +102,7 @@ const Index: React.FC = () => {
                     onReset={() => resetTimer('break')}
                     onSelectActivity={selectBreakActivity}
                     breakDuration={settings.breakDuration}
+                    onDurationChange={(value) => updateSettings({ breakDuration: value })}
                   />
                 </TabsContent>
               </div>

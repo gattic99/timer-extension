@@ -102,3 +102,106 @@
 .focus-purple-slider button:hover {
   background-color: #7E69AB;
 }
+
+/* Animations */
+@keyframes scale-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Timer duration control styles */
+.option-card {
+  @apply bg-white rounded-xl p-4 shadow-sm border border-gray-100 
+         hover:shadow-md transition-all cursor-pointer;
+}
+
+.game-card:hover {
+  @apply border-game-orange;
+}
+
+.break-card:hover {
+  @apply border-break-green;
+}
+
+.timer-text {
+  @apply text-5xl font-bold;
+}
+
+/* Custom colors */
+@layer utilities {
+  .text-focus-purple {
+    color: #9b87f5;
+  }
+  
+  .text-break-green {
+    color: #4ade80;
+  }
+  
+  .text-game-orange {
+    color: #f97316;
+  }
+  
+  .bg-focus-purple {
+    background-color: #9b87f5;
+  }
+  
+  .bg-break-green {
+    background-color: #4ade80;
+  }
+  
+  .bg-game-orange {
+    background-color: #f97316;
+  }
+  
+  .text-dark-text {
+    color: #1f2937;
+  }
+  
+  .btn-primary {
+    @apply bg-focus-purple text-white px-4 py-2 rounded-lg 
+           hover:bg-opacity-90 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-800 px-4 py-2 rounded-lg 
+           hover:bg-gray-200 transition-colors;
+  }
+}
