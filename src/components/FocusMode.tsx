@@ -86,7 +86,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
         totalDuration={totalDuration}
       />
       
-      {/* Break Duration Dialog - now positioned below the timer */}
+      {/* Break Duration Dropdown - now positioned below the timer */}
       <div className="mt-8">
         <BreakDurationDialog 
           breakDuration={breakDuration}

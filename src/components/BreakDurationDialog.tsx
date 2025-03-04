@@ -1,15 +1,8 @@
 
 import React, { useState } from "react";
-import { Coffee, Minus, Plus, X, ChevronRight } from "lucide-react";
+import { Coffee, Minus, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface BreakDurationDialogProps {
   breakDuration: number;
@@ -23,14 +16,7 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
   disabled = false
 }) => {
   const [tempDuration, setTempDuration] = useState<number>(breakDuration);
-  const [open, setOpen] = useState(false);
-  
-  const handleOpen = (isOpen: boolean) => {
-    if (isOpen) {
-      setTempDuration(breakDuration);
-    }
-    setOpen(isOpen);
-  };
+  const [isOpen, setIsOpen] = useState(false);
   
   const decreaseDuration = () => {
     if (tempDuration > 1) {
@@ -46,17 +32,28 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
   
   const handleSave = () => {
     onChangeBreakDuration(tempDuration);
-    toast.success("Break duration updated");
-    setOpen(false);
+    setIsOpen(false);
   };
   
   const handleCancel = () => {
-    setOpen(false);
+    setTempDuration(breakDuration);
+    setIsOpen(false);
+  };
+  
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      setTempDuration(breakDuration);
+    }
   };
   
   return (
-    <Dialog open={open} onOpenChange={handleOpen}>
-      <DialogTrigger asChild>
+    <Collapsible 
+      open={isOpen} 
+      onOpenChange={handleOpenChange}
+      className="w-full"
+    >
+      <CollapsibleTrigger asChild>
         <Button 
           variant="outline" 
           className="w-full p-4 flex items-center justify-between bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded-lg transition-all duration-200 shadow-sm"
@@ -68,34 +65,21 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
           </div>
           <div className="flex items-center">
             <span className="mr-2">{breakDuration} minutes</span>
-            <ChevronRight className="text-focus-purple" size={18} />
+            {isOpen ? <ChevronUp className="text-focus-purple" size={18} /> : <ChevronDown className="text-focus-purple" size={18} />}
           </div>
         </Button>
-      </DialogTrigger>
+      </CollapsibleTrigger>
       
-      <DialogContent className="p-0 max-w-md rounded-lg">
-        <div className="p-6">
-          <DialogHeader className="flex-row justify-between items-center mb-6">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleCancel}
-              className="text-gray-500 hover:bg-gray-100"
-            >
-              <X size={20} />
-            </Button>
-            <DialogTitle className="text-2xl font-bold text-focus-purple">Break duration</DialogTitle>
-            <div className="w-10"></div> {/* Spacer for alignment */}
-          </DialogHeader>
-          
-          <div className="mt-4 mb-8">
-            <p className="text-muted-foreground text-center mb-8">
+      <CollapsibleContent className="overflow-hidden">
+        <div className="p-6 bg-white border border-gray-200 border-t-0 rounded-b-lg shadow-inner">
+          <div className="mt-2 mb-6">
+            <p className="text-muted-foreground text-center mb-6">
               The break will start automatically after the focus timer ends.
             </p>
             
-            <div className="text-center mb-8">
-              <div className="text-6xl font-bold text-focus-purple mb-6">
-                {tempDuration} <span className="text-3xl">minutes</span>
+            <div className="text-center mb-6">
+              <div className="text-5xl font-bold text-focus-purple mb-6">
+                {tempDuration} <span className="text-2xl">minutes</span>
               </div>
               
               <div className="flex justify-center gap-6">
@@ -138,8 +122,8 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 
