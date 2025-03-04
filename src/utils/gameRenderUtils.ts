@@ -170,23 +170,19 @@ export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], c
         const centerY = coin.y + coin.height / 2;
         const radius = coin.width / 2 + 3; // Slightly larger than the coin
         
-        // Draw yellow circle background
-        ctx.fillStyle = '#FEC6A1'; // Soft orange/yellow color
+        // Draw yellow border
+        ctx.strokeStyle = '#FEF7CD'; // Soft yellow border
+        ctx.lineWidth = 4;
+        ctx.beginPath();
         ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.stroke();
         
         // Draw the collectible image using the uploaded face image
         try {
           const image = new Image();
           image.src = '/lovable-uploads/f50ea79b-8e46-407d-8d22-ed3fcdfd80a4.png';
           
-          // Use a circular clipping path for the image
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
-          ctx.clip();
-          
-          // Draw the face image within the clip region
+          // Draw the face image directly (no clip needed since it will fill the whole circle)
           ctx.drawImage(
             image, 
             adjustedX, 
@@ -195,14 +191,11 @@ export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], c
             coin.height
           );
           
-          // Restore canvas to remove clipping
-          ctx.restore();
-          
-          // Add a slight border for better visibility
+          // Add a bright orange outline for better contrast with the yellow border
           ctx.strokeStyle = '#F97316'; // Bright orange
           ctx.lineWidth = 1.5;
           ctx.beginPath();
-          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
           ctx.stroke();
         } catch (error) {
           console.error("Error loading collectible image:", error);
