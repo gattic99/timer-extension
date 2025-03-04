@@ -82,7 +82,7 @@ const Index: React.FC = () => {
                 </TabsTrigger>
               </TabsList>
               
-              <div className="p-4 bg-white rounded-xl shadow-sm h-[420px] overflow-auto">
+              <div className="p-4 bg-white rounded-xl shadow-sm h-[720px] overflow-auto">
                 <TabsContent value="focus" className="mt-0 h-full">
                   <FocusMode
                     timerState={timerState}
