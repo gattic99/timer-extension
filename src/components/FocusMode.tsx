@@ -43,20 +43,28 @@ const FocusMode: React.FC<FocusModeProps> = ({
   };
   
   return (
-    <div className="focus-card p-8 w-full max-w-xl mx-auto animate-scale-in">
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center mb-2">
-          <Clock className="text-focus-purple mr-2" size={24} />
-          <h2 className="text-2xl font-bold text-dark-text">Focus Time</h2>
+    <div className="focus-card p-6 w-full max-w-md mx-auto animate-scale-in">
+      <div className="text-center mb-4">
+        <div className="flex items-center justify-center mb-1">
+          <Clock className="text-focus-purple mr-2" size={20} />
+          <h2 className="text-xl font-bold text-dark-text">Focus Time</h2>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Stay focused and productive. Take a break when the timer ends.
         </p>
       </div>
       
-      {/* Horizontal layout for focus duration controls */}
-      <div className="mb-6 text-center">
-        <div className="flex items-center justify-center gap-4 mb-4">
+      <Timer
+        timerState={timerState}
+        onStart={onStart}
+        onPause={onPause}
+        onReset={onReset}
+        totalDuration={totalDuration}
+      />
+      
+      {/* Focus Duration Controls - Moved below the timer */}
+      <div className="mb-4 mt-6 text-center">
+        <div className="flex items-center justify-center gap-3">
           <Button 
             variant="outline" 
             size="icon" 
@@ -68,8 +76,8 @@ const FocusMode: React.FC<FocusModeProps> = ({
           </Button>
           
           <div className="flex items-baseline">
-            <span className="text-2xl font-bold text-focus-purple">{focusDuration}</span>
-            <span className="text-sm ml-1 text-focus-purple">minutes</span>
+            <span className="text-lg font-bold text-focus-purple">{focusDuration}</span>
+            <span className="text-xs ml-1 text-focus-purple">minutes</span>
           </div>
           
           <Button 
@@ -84,16 +92,8 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </div>
       </div>
       
-      <Timer
-        timerState={timerState}
-        onStart={onStart}
-        onPause={onPause}
-        onReset={onReset}
-        totalDuration={totalDuration}
-      />
-      
-      {/* Break Duration Dialog positioned below the timer */}
-      <div className="mt-8 max-w-md mx-auto">
+      {/* Break Duration Dialog */}
+      <div className="mt-4 max-w-md mx-auto">
         <BreakDurationDialog 
           breakDuration={breakDuration}
           onChangeBreakDuration={onChangeBreakDuration}
@@ -101,9 +101,8 @@ const FocusMode: React.FC<FocusModeProps> = ({
         />
       </div>
       
-      <div className="mt-8 text-center text-sm text-muted-foreground">
+      <div className="mt-4 text-center text-sm text-muted-foreground">
         <p>Stay in the flow state. Minimize distractions.</p>
-        <p className="mt-1">A break will begin automatically when the timer ends.</p>
       </div>
     </div>
   );
