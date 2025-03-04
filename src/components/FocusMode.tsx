@@ -3,8 +3,9 @@ import React from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
-import { Clock, Minus, Plus, Coffee } from "lucide-react";
+import { Clock, Minus, Plus, Coffee, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 interface FocusModeProps {
   timerState: TimerState;
@@ -38,18 +39,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
   const increaseFocusDuration = () => {
     if (focusDuration < 60) {
       onChangeFocusDuration(focusDuration + 5);
-    }
-  };
-  
-  const decreaseBreakDuration = () => {
-    if (breakDuration > 1) {
-      onChangeBreakDuration(breakDuration - 1);
-    }
-  };
-  
-  const increaseBreakDuration = () => {
-    if (breakDuration < 15) {
-      onChangeBreakDuration(breakDuration + 1);
     }
   };
   
@@ -89,33 +78,24 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </div>
       </div>
       
-      {/* Break Duration Control */}
-      <div className="mb-6 text-center">
-        <div className="flex items-center justify-center mb-2">
-          <Coffee className="text-break-green mr-2" size={24} />
-          <h3 className="text-xl font-semibold text-dark-text">Break Duration</h3>
-        </div>
-        <div className="text-2xl font-bold mb-2 text-break-green">{breakDuration} minutes</div>
-        <div className="flex justify-center gap-4 mb-4">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={decreaseBreakDuration}
-            disabled={breakDuration <= 1 || timerState.isRunning}
-            className="rounded-full bg-muted/30 hover:bg-muted/50"
-          >
-            <Minus size={20} />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={increaseBreakDuration}
-            disabled={breakDuration >= 15 || timerState.isRunning}
-            className="rounded-full bg-muted/30 hover:bg-muted/50"
-          >
-            <Plus size={20} />
-          </Button>
-        </div>
+      {/* Break Duration CTA */}
+      <div className="mb-6">
+        <Link 
+          to="/break-duration" 
+          className="block w-full p-4 bg-break-green bg-opacity-20 hover:bg-opacity-30 text-break-green rounded-lg transition-all duration-200 shadow-sm"
+          style={{ pointerEvents: timerState.isRunning ? "none" : "auto", opacity: timerState.isRunning ? 0.6 : 1 }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Coffee className="mr-2" size={20} />
+              <span className="font-medium">Break Duration</span>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-2">{breakDuration} minutes</span>
+              <ArrowRight size={18} />
+            </div>
+          </div>
+        </Link>
       </div>
       
       <Timer
