@@ -38,13 +38,15 @@ interface Coin {
 interface GameState {
   score: number;
   cameraOffsetX: number;
+  worldPosition: number;
 }
 
 const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [gameState, setGameState] = useState<GameState>({
     score: 0,
-    cameraOffsetX: 0
+    cameraOffsetX: 0,
+    worldPosition: 0
   });
   const [gameStarted, setGameStarted] = useState(false);
   
@@ -159,15 +161,16 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     coinsRef.current = coinsRef.current.map(coin => ({ ...coin, collected: false }));
     setGameState({
       score: 0,
-      cameraOffsetX: 0
+      cameraOffsetX: 0,
+      worldPosition: 0
     });
   };
   
   const updateGame = () => {
     const character = characterRef.current;
     const canvasWidth = canvasRef.current?.width || 700;
-    const characterCenterX = character.x + character.width / 2;
     
+    // Handle character movement
     if (keysRef.current.left) character.velocityX = -5;
     else if (keysRef.current.right) character.velocityX = 5;
     else character.velocityX = 0;
@@ -177,23 +180,33 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       character.isJumping = true;
     }
     
-    character.velocityY += 0.5;
+    character.velocityY += 0.5; // Gravity
     
-    character.x += character.velocityX;
-    character.y += character.velocityY;
-    
-    // Update camera offset for scrolling when character moves right
-    if (character.x > canvasWidth / 2 && character.velocityX > 0) {
+    // Update position and camera
+    if (character.velocityX > 0) {
+      // Moving right - advance world position
       setGameState(prev => ({
         ...prev,
+        worldPosition: prev.worldPosition + character.velocityX,
         cameraOffsetX: prev.cameraOffsetX + character.velocityX
       }));
-      character.x = canvasWidth / 2; // Keep character centered
+    } else if (character.velocityX < 0) {
+      // Moving left - retreat world position (but don't go below 0)
+      setGameState(prev => {
+        const newWorldPos = Math.max(0, prev.worldPosition + character.velocityX);
+        const newCameraOffset = Math.max(0, prev.cameraOffsetX + character.velocityX);
+        return {
+          ...prev,
+          worldPosition: newWorldPos,
+          cameraOffsetX: newCameraOffset
+        };
+      });
     }
     
-    // Left boundary
-    if (character.x < 0) character.x = 0;
+    // Apply vertical movement
+    character.y += character.velocityY;
     
+    // Check for platform collisions
     let onPlatform = false;
     platformsRef.current.forEach(platform => {
       if (
@@ -210,6 +223,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       }
     });
     
+    // Check if character fell off the bottom
     if (character.y > 400) {
       toast.error("Game over! Starting again...");
       resetGame();
@@ -286,7 +300,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       }
     });
     
-    // Draw character - always at the same position due to camera following
+    // Draw character
     const character = characterRef.current;
     ctx.fillStyle = '#FF6347';
     ctx.fillRect(character.x, character.y, character.width, character.height);
@@ -298,9 +312,9 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     ctx.fillStyle = '#FFA07A';
     ctx.fillRect(character.x + 5, character.y + 10, character.width - 10, 15);
     
-    // Draw score
+    // Draw score directly on canvas
     ctx.fillStyle = '#000';
-    ctx.font = '20px Arial';
+    ctx.font = 'bold 20px Arial';
     ctx.fillText(`Score: ${gameState.score}`, 10, 30);
     
     // Draw timer
@@ -357,6 +371,10 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
         
         <div className="absolute top-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
           {formatTime(timerState.timeRemaining)}
+        </div>
+        
+        <div className="absolute top-3 right-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
+          Score: {gameState.score}
         </div>
         
         <div className="flex justify-between mt-2 md:hidden">
