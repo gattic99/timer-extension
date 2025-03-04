@@ -76,28 +76,28 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
             The break will start automatically after the focus timer ends.
           </p>
           
-          <div className="text-center mb-5">
-            <div className="flex items-center justify-center">
-              <span className="text-6xl font-bold text-focus-purple">{tempDuration}</span>
-              <span className="text-xl ml-2 text-focus-purple">minutes</span>
+          {/* Horizontal layout for duration selection */}
+          <div className="flex items-center justify-center gap-4 mb-5">
+            <button
+              onClick={decreaseDuration}
+              disabled={tempDuration <= 1}
+              className="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors"
+            >
+              <Minus size={18} />
+            </button>
+            
+            <div className="flex items-baseline">
+              <span className="text-5xl font-bold text-focus-purple">{tempDuration}</span>
+              <span className="text-lg ml-2 text-focus-purple">minutes</span>
             </div>
             
-            <div className="flex justify-center gap-6 mt-4">
-              <button
-                onClick={decreaseDuration}
-                disabled={tempDuration <= 1}
-                className="h-12 w-12 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors"
-              >
-                <Minus size={20} />
-              </button>
-              <button
-                onClick={increaseDuration}
-                disabled={tempDuration >= 15}
-                className="h-12 w-12 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors"
-              >
-                <Plus size={20} />
-              </button>
-            </div>
+            <button
+              onClick={increaseDuration}
+              disabled={tempDuration >= 15}
+              className="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors"
+            >
+              <Plus size={18} />
+            </button>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
