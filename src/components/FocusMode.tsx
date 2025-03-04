@@ -5,7 +5,7 @@ import { TimerState } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
 import { Clock, Minus, Plus, Coffee, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
-import { Link } from "react-router-dom";
+import BreakDurationDialog from "./BreakDurationDialog";
 
 interface FocusModeProps {
   timerState: TimerState;
@@ -78,24 +78,13 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </div>
       </div>
       
-      {/* Break Duration CTA */}
+      {/* Break Duration Dialog */}
       <div className="mb-6">
-        <Link 
-          to="/break-duration" 
-          className="block w-full p-4 bg-break-green bg-opacity-20 hover:bg-opacity-30 text-break-green rounded-lg transition-all duration-200 shadow-sm"
-          style={{ pointerEvents: timerState.isRunning ? "none" : "auto", opacity: timerState.isRunning ? 0.6 : 1 }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Coffee className="mr-2" size={20} />
-              <span className="font-medium">Break Duration</span>
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2">{breakDuration} minutes</span>
-              <ArrowRight size={18} />
-            </div>
-          </div>
-        </Link>
+        <BreakDurationDialog 
+          breakDuration={breakDuration}
+          onChangeBreakDuration={onChangeBreakDuration}
+          disabled={timerState.isRunning}
+        />
       </div>
       
       <Timer

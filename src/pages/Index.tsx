@@ -18,8 +18,6 @@ import {
 import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
 import { toast } from "sonner";
-import { Route, Routes } from "react-router-dom";
-import BreakDurationSettings from "./BreakDurationSettings";
 
 const Index: React.FC = () => {
   const [settings, setSettings] = useState<TimerSettings>(defaultTimerSettings);
@@ -97,129 +95,117 @@ const Index: React.FC = () => {
     <div className="min-h-screen relative overflow-hidden">
       <FigmaBackground />
       
-      <Routes>
-        <Route path="/" element={
-          <>
-            <FloatingTimer 
-              isOpen={isOpen}
-              timerState={timerState}
-              togglePopup={togglePopup}
-            />
-            
-            {isOpen && (
-              <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
-                <Card className="glass-panel w-full max-w-md p-6 shadow-xl">
-                  <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-focus-purple">Focus Timer</h1>
+      <FloatingTimer 
+        isOpen={isOpen}
+        timerState={timerState}
+        togglePopup={togglePopup}
+      />
+      
+      {isOpen && (
+        <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
+          <Card className="glass-panel w-full max-w-md p-6 shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-2xl font-bold text-focus-purple">Focus Timer</h1>
+              
+              <div className="flex space-x-2">
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <button 
+                      className="p-2 rounded-full hover:bg-gray-100"
+                      aria-label="Timer Settings"
+                    >
+                      <Sliders size={18} />
+                    </button>
+                  </DialogTrigger>
+                  
+                  <DialogContent className="max-w-sm">
+                    <DialogHeader>
+                      <DialogTitle>Timer Settings</DialogTitle>
+                    </DialogHeader>
                     
-                    <div className="flex space-x-2">
-                      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild>
-                          <button 
-                            className="p-2 rounded-full hover:bg-gray-100"
-                            aria-label="Timer Settings"
-                          >
-                            <Sliders size={18} />
-                          </button>
-                        </DialogTrigger>
-                        
-                        <DialogContent className="max-w-sm">
-                          <DialogHeader>
-                            <DialogTitle>Timer Settings</DialogTitle>
-                          </DialogHeader>
-                          
-                          <div className="py-4 space-y-6">
-                            <div className="space-y-3">
-                              <div className="flex justify-between items-center">
-                                <label className="font-medium">Focus Duration</label>
-                                <span className="text-sm text-muted-foreground">{tempSettings.focusDuration} minutes</span>
-                              </div>
-                              <Slider 
-                                value={[tempSettings.focusDuration]} 
-                                min={5} 
-                                max={60} 
-                                step={5} 
-                                onValueChange={updateFocusDurationSetting}
-                              />
-                            </div>
-                            
-                            <div className="space-y-3">
-                              <div className="flex justify-between items-center">
-                                <label className="font-medium">Break Duration</label>
-                                <span className="text-sm text-muted-foreground">{tempSettings.breakDuration} minutes</span>
-                              </div>
-                              <Slider 
-                                value={[tempSettings.breakDuration]} 
-                                min={1} 
-                                max={15} 
-                                step={1} 
-                                onValueChange={updateBreakDurationSetting}
-                              />
-                            </div>
-                          </div>
-                          
-                          <DialogFooter>
-                            {isSettingsChanged && (
-                              <button
-                                onClick={saveSettings}
-                                className="flex items-center gap-2 px-4 py-2 bg-focus-purple text-white rounded-md hover:bg-focus-purple-dark transition-colors"
-                              >
-                                <Save size={16} />
-                                Save Changes
-                              </button>
-                            )}
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                    <div className="py-4 space-y-6">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <label className="font-medium">Focus Duration</label>
+                          <span className="text-sm text-muted-foreground">{tempSettings.focusDuration} minutes</span>
+                        </div>
+                        <Slider 
+                          value={[tempSettings.focusDuration]} 
+                          min={5} 
+                          max={60} 
+                          step={5} 
+                          onValueChange={updateFocusDurationSetting}
+                        />
+                      </div>
                       
-                      <button 
-                        onClick={togglePopup}
-                        className="p-2 rounded-full hover:bg-gray-100"
-                        aria-label="Close Timer"
-                      >
-                        <X size={18} />
-                      </button>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <label className="font-medium">Break Duration</label>
+                          <span className="text-sm text-muted-foreground">{tempSettings.breakDuration} minutes</span>
+                        </div>
+                        <Slider 
+                          value={[tempSettings.breakDuration]} 
+                          min={1} 
+                          max={15} 
+                          step={1} 
+                          onValueChange={updateBreakDurationSetting}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  
-                  {timerState.mode === 'focus' ? (
-                    <FocusMode
-                      timerState={timerState}
-                      onStart={startTimer}
-                      onPause={pauseTimer}
-                      onReset={() => resetTimer('focus')}
-                      focusDuration={settings.focusDuration}
-                      breakDuration={settings.breakDuration}
-                      onChangeFocusDuration={handleFocusDurationChange}
-                      onChangeBreakDuration={handleBreakDurationChange}
-                    />
-                  ) : (
-                    <BreakMode
-                      timerState={timerState}
-                      onStart={startTimer}
-                      onPause={pauseTimer}
-                      onReset={() => resetTimer('break')}
-                      onSelectActivity={selectBreakActivity}
-                      breakDuration={settings.breakDuration}
-                      onChangeBreakDuration={handleBreakDurationChange}
-                    />
-                  )}
-                  
-                  <p className="text-xs text-muted-foreground text-center mt-4">
-                    Focus deeply, then take mindful breaks to stay energized.
-                  </p>
-                </Card>
+                    
+                    <DialogFooter>
+                      {isSettingsChanged && (
+                        <button
+                          onClick={saveSettings}
+                          className="flex items-center gap-2 px-4 py-2 bg-focus-purple text-white rounded-md hover:bg-focus-purple-dark transition-colors"
+                        >
+                          <Save size={16} />
+                          Save Changes
+                        </button>
+                      )}
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                
+                <button 
+                  onClick={togglePopup}
+                  className="p-2 rounded-full hover:bg-gray-100"
+                  aria-label="Close Timer"
+                >
+                  <X size={18} />
+                </button>
               </div>
+            </div>
+            
+            {timerState.mode === 'focus' ? (
+              <FocusMode
+                timerState={timerState}
+                onStart={startTimer}
+                onPause={pauseTimer}
+                onReset={() => resetTimer('focus')}
+                focusDuration={settings.focusDuration}
+                breakDuration={settings.breakDuration}
+                onChangeFocusDuration={handleFocusDurationChange}
+                onChangeBreakDuration={handleBreakDurationChange}
+              />
+            ) : (
+              <BreakMode
+                timerState={timerState}
+                onStart={startTimer}
+                onPause={pauseTimer}
+                onReset={() => resetTimer('break')}
+                onSelectActivity={selectBreakActivity}
+                breakDuration={settings.breakDuration}
+                onChangeBreakDuration={handleBreakDurationChange}
+              />
             )}
-          </>
-        } />
-        <Route path="/break-duration" element={
-          <BreakDurationSettings 
-            breakDuration={settings.breakDuration}
-            onChangeBreakDuration={handleBreakDurationChange}
-          />
-        } />
-      </Routes>
+            
+            <p className="text-xs text-muted-foreground text-center mt-4">
+              Focus deeply, then take mindful breaks to stay energized.
+            </p>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
