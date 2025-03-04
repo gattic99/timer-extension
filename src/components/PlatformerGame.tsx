@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { formatTime } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
@@ -49,6 +48,7 @@ interface GameState {
   score: number;
   cameraOffsetX: number;
   worldPosition: number;
+  gameOver: boolean;
 }
 
 const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState }) => {
@@ -56,7 +56,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
   const [gameState, setGameState] = useState<GameState>({
     score: 0,
     cameraOffsetX: 0,
-    worldPosition: 0
+    worldPosition: 0,
+    gameOver: false
   });
   const [gameStarted, setGameStarted] = useState(false);
   
@@ -70,7 +71,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     isJumping: false
   });
   
-  // Office-themed platforms (desks, floors, shelves)
+  // Office-themed platforms (desks, floors, shelves) with more spacing
   const platformsRef = useRef<Platform[]>([
     // Main floor sections
     { x: 0, y: 350, width: 800, height: 20, type: 'floor' },
@@ -78,6 +79,9 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     { x: 1300, y: 350, width: 600, height: 20, type: 'floor' },
     { x: 2000, y: 350, width: 500, height: 20, type: 'floor' },
     { x: 2600, y: 350, width: 400, height: 20, type: 'floor' },
+    { x: 3050, y: 350, width: 500, height: 20, type: 'floor' },
+    { x: 3600, y: 350, width: 600, height: 20, type: 'floor' },
+    { x: 4250, y: 350, width: 500, height: 20, type: 'floor' },
     
     // Desks (platforms at various heights)
     { x: 250, y: 280, width: 200, height: 15, type: 'desk' },
@@ -88,6 +92,11 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     { x: 1700, y: 200, width: 150, height: 15, type: 'desk' },
     { x: 2050, y: 280, width: 180, height: 15, type: 'desk' },
     { x: 2300, y: 230, width: 200, height: 15, type: 'desk' },
+    { x: 2750, y: 250, width: 180, height: 15, type: 'desk' },
+    { x: 3200, y: 280, width: 200, height: 15, type: 'desk' },
+    { x: 3500, y: 230, width: 150, height: 15, type: 'desk' },
+    { x: 3800, y: 250, width: 180, height: 15, type: 'desk' },
+    { x: 4100, y: 280, width: 200, height: 15, type: 'desk' },
     
     // Shelves (higher platforms)
     { x: 400, y: 180, width: 100, height: 10, type: 'shelf' },
@@ -97,9 +106,13 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     { x: 1900, y: 130, width: 100, height: 10, type: 'shelf' },
     { x: 2200, y: 150, width: 80, height: 10, type: 'shelf' },
     { x: 2450, y: 170, width: 100, height: 10, type: 'shelf' },
+    { x: 2900, y: 150, width: 90, height: 10, type: 'shelf' },
+    { x: 3300, y: 180, width: 100, height: 10, type: 'shelf' },
+    { x: 3650, y: 140, width: 80, height: 10, type: 'shelf' },
+    { x: 4000, y: 160, width: 110, height: 10, type: 'shelf' },
   ]);
   
-  // Office obstacles (chairs, trash bins, printers, etc.)
+  // Office obstacles (chairs, trash bins, printers, etc.) with better spacing
   const obstaclesRef = useRef<Obstacle[]>([
     // Chairs
     { x: 300, y: 240, width: 40, height: 40, type: 'chair' },
@@ -107,23 +120,36 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     { x: 970, y: 240, width: 40, height: 40, type: 'chair' },
     { x: 1470, y: 210, width: 40, height: 40, type: 'chair' },
     { x: 2120, y: 240, width: 40, height: 40, type: 'chair' },
+    { x: 2650, y: 240, width: 40, height: 40, type: 'chair' },
+    { x: 3050, y: 240, width: 40, height: 40, type: 'chair' },
+    { x: 3620, y: 210, width: 40, height: 40, type: 'chair' },
+    { x: 4200, y: 240, width: 40, height: 40, type: 'chair' },
     
     // Trash bins
     { x: 500, y: 330, width: 30, height: 40, type: 'trash' },
     { x: 1100, y: 330, width: 30, height: 40, type: 'trash' },
     { x: 1600, y: 330, width: 30, height: 40, type: 'trash' },
     { x: 2200, y: 330, width: 30, height: 40, type: 'trash' },
+    { x: 2800, y: 330, width: 30, height: 40, type: 'trash' },
+    { x: 3300, y: 330, width: 30, height: 40, type: 'trash' },
+    { x: 3900, y: 330, width: 30, height: 40, type: 'trash' },
     
     // Printers
     { x: 350, y: 265, width: 50, height: 25, type: 'printer' },
     { x: 1200, y: 205, width: 50, height: 25, type: 'printer' },
     { x: 1800, y: 185, width: 50, height: 25, type: 'printer' },
+    { x: 2500, y: 265, width: 50, height: 25, type: 'printer' },
+    { x: 3100, y: 205, width: 50, height: 25, type: 'printer' },
+    { x: 3700, y: 185, width: 50, height: 25, type: 'printer' },
     
     // Computers
     { x: 280, y: 260, width: 35, height: 30, type: 'computer' },
     { x: 950, y: 260, width: 35, height: 30, type: 'computer' },
     { x: 1450, y: 230, width: 35, height: 30, type: 'computer' },
     { x: 2100, y: 260, width: 35, height: 30, type: 'computer' },
+    { x: 2700, y: 230, width: 35, height: 30, type: 'computer' },
+    { x: 3250, y: 260, width: 35, height: 30, type: 'computer' },
+    { x: 3850, y: 230, width: 35, height: 30, type: 'computer' },
     
     // Paperclips (smaller obstacles)
     { x: 450, y: 260, width: 15, height: 15, type: 'paperclip' },
@@ -134,9 +160,13 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     { x: 1850, y: 160, width: 15, height: 15, type: 'paperclip' },
     { x: 2150, y: 130, width: 15, height: 15, type: 'paperclip' },
     { x: 2400, y: 210, width: 15, height: 15, type: 'paperclip' },
+    { x: 2850, y: 260, width: 15, height: 15, type: 'paperclip' },
+    { x: 3350, y: 230, width: 15, height: 15, type: 'paperclip' },
+    { x: 3750, y: 200, width: 15, height: 15, type: 'paperclip' },
+    { x: 4050, y: 230, width: 15, height: 15, type: 'paperclip' },
   ]);
   
-  // Collectibles (coffee cups and documents)
+  // Collectibles (coffee cups and documents) with more throughout the level
   const coinsRef = useRef<Coin[]>([
     // Coffee cups
     { x: 200, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
@@ -147,6 +177,11 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     { x: 1650, y: 150, width: 20, height: 20, collected: false, type: 'coffee' },
     { x: 1950, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
     { x: 2250, y: 180, width: 20, height: 20, collected: false, type: 'coffee' },
+    { x: 2650, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
+    { x: 3000, y: 200, width: 20, height: 20, collected: false, type: 'coffee' },
+    { x: 3300, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
+    { x: 3650, y: 170, width: 20, height: 20, collected: false, type: 'coffee' },
+    { x: 4000, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
     
     // Documents (important papers)
     { x: 350, y: 150, width: 20, height: 20, collected: false, type: 'document' },
@@ -158,6 +193,11 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     { x: 2000, y: 100, width: 20, height: 20, collected: false, type: 'document' },
     { x: 2350, y: 200, width: 20, height: 20, collected: false, type: 'document' },
     { x: 2500, y: 140, width: 20, height: 20, collected: false, type: 'document' },
+    { x: 2850, y: 120, width: 20, height: 20, collected: false, type: 'document' },
+    { x: 3200, y: 140, width: 20, height: 20, collected: false, type: 'document' },
+    { x: 3500, y: 200, width: 20, height: 20, collected: false, type: 'document' },
+    { x: 3800, y: 120, width: 20, height: 20, collected: false, type: 'document' },
+    { x: 4100, y: 150, width: 20, height: 20, collected: false, type: 'document' },
   ]);
   
   const keysRef = useRef({
@@ -181,12 +221,14 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     if (!ctx) return;
     
     const gameLoop = setInterval(() => {
-      updateGame();
+      if (!gameState.gameOver) {
+        updateGame();
+      }
       renderGame(ctx);
     }, 16); // ~60 FPS
     
     return () => clearInterval(gameLoop);
-  }, [gameStarted]);
+  }, [gameStarted, gameState.gameOver]);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -225,7 +267,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     setGameState({
       score: 0,
       cameraOffsetX: 0,
-      worldPosition: 0
+      worldPosition: 0,
+      gameOver: false
     });
   };
 
@@ -245,40 +288,37 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     
     character.velocityY += 0.5; // Gravity
     
-    // Update world position based on character velocity
+    // Update character position based on velocity
+    // Moving horizontally - fixed to always make forward progress
     if (character.velocityX > 0) {
-      // Moving right - advance world position
-      character.x += character.velocityX / 2; // Move character slightly for visual feedback
+      // Character is trying to move right
+      setGameState(prev => {
+        // Always update worldPosition when moving right
+        const newWorldPosition = prev.worldPosition + character.velocityX;
+        const newCameraOffsetX = prev.cameraOffsetX + character.velocityX;
+        
+        return {
+          ...prev,
+          worldPosition: newWorldPosition,
+          cameraOffsetX: newCameraOffsetX
+        };
+      });
       
-      // If character is beyond center point, scroll world instead of moving character
-      if (character.x > canvasWidth / 2) {
-        character.x = canvasWidth / 2; // Keep character in center
+      // Keep character visually centered
+      character.x = Math.min(canvasWidth / 2, character.x);
+    } else if (character.velocityX < 0) {
+      // Moving left
+      if (gameState.worldPosition > 0) {
+        // Don't allow going back past the start
+        const moveAmount = Math.min(Math.abs(character.velocityX), gameState.worldPosition);
+        
         setGameState(prev => ({
           ...prev,
-          worldPosition: prev.worldPosition + character.velocityX,
-          cameraOffsetX: prev.cameraOffsetX + character.velocityX
+          worldPosition: prev.worldPosition - moveAmount,
+          cameraOffsetX: prev.cameraOffsetX - moveAmount
         }));
-      }
-    } else if (character.velocityX < 0) {
-      // Moving left - retreat world position (but don't go below 0)
-      if (gameState.worldPosition > 0) {
-        character.x -= Math.abs(character.velocityX) / 2; // Move character slightly for visual feedback
-        
-        // If character is left of center and we're not at world start
-        if (character.x < canvasWidth / 2 && gameState.worldPosition > 0) {
-          character.x = canvasWidth / 2; // Keep character in center
-          setGameState(prev => {
-            const newWorldPos = Math.max(0, prev.worldPosition + character.velocityX);
-            const newCameraOffset = Math.max(0, prev.cameraOffsetX + character.velocityX);
-            return {
-              ...prev,
-              worldPosition: newWorldPos,
-              cameraOffsetX: newCameraOffset
-            };
-          });
-        }
       } else {
-        // At beginning of world, allow character to move left until edge
+        // At the start of the level, allow movement left until edge
         character.x += character.velocityX;
         if (character.x < 0) character.x = 0;
       }
@@ -289,10 +329,16 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     
     // Check for platform collisions
     let onPlatform = false;
-    platformsRef.current.forEach(platform => {
+    for (const platform of platformsRef.current) {
+      // Only check platforms that are near the character horizontally
+      const platformLeftEdge = platform.x - gameState.cameraOffsetX;
+      const platformRightEdge = platformLeftEdge + platform.width;
+      const characterLeftEdge = character.x;
+      const characterRightEdge = character.x + character.width;
+      
       if (
-        character.x + character.width > platform.x - gameState.cameraOffsetX &&
-        character.x < platform.x - gameState.cameraOffsetX + platform.width &&
+        characterRightEdge > platformLeftEdge &&
+        characterLeftEdge < platformRightEdge &&
         character.y + character.height >= platform.y &&
         character.y + character.height <= platform.y + platform.height / 2 &&
         character.velocityY > 0
@@ -301,45 +347,60 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
         character.velocityY = 0;
         character.isJumping = false;
         onPlatform = true;
+        break;
       }
-    });
+    }
     
-    // Check for obstacle collisions
-    obstaclesRef.current.forEach(obstacle => {
+    // Check for obstacle collisions - now fatal
+    for (const obstacle of obstaclesRef.current) {
+      const obstacleLeftEdge = obstacle.x - gameState.cameraOffsetX;
+      const obstacleRightEdge = obstacleLeftEdge + obstacle.width;
+      const characterLeftEdge = character.x;
+      const characterRightEdge = character.x + character.width;
+      
       if (
-        character.x + character.width > obstacle.x - gameState.cameraOffsetX &&
-        character.x < obstacle.x - gameState.cameraOffsetX + obstacle.width &&
+        characterRightEdge > obstacleLeftEdge &&
+        characterLeftEdge < obstacleRightEdge &&
         character.y + character.height > obstacle.y &&
         character.y < obstacle.y + obstacle.height
       ) {
-        // Hit obstacle - reset position and lose points
-        toast.error("You hit an office obstacle!");
-        character.x = Math.max(0, character.x - 50);
-        character.y = 200;
-        character.velocityY = 0;
+        // Hit obstacle - game over
+        toast.error("You hit an office obstacle! Game Over!");
         setGameState(prev => ({
           ...prev,
-          score: Math.max(0, prev.score - 5)
+          gameOver: true
         }));
+        return;
       }
-    });
+    }
     
     // Check if character fell off the bottom
     if (character.y > 400) {
-      toast.error("Game over! Starting again...");
-      resetGame();
+      toast.error("You fell off the map! Game Over!");
+      setGameState(prev => ({
+        ...prev,
+        gameOver: true
+      }));
+      return;
     }
     
     // Check for coin collection
-    coinsRef.current.forEach((coin, index) => {
+    for (let i = 0; i < coinsRef.current.length; i++) {
+      const coin = coinsRef.current[i];
+      if (coin.collected) continue;
+      
+      const coinLeftEdge = coin.x - gameState.cameraOffsetX;
+      const coinRightEdge = coinLeftEdge + coin.width;
+      const characterLeftEdge = character.x;
+      const characterRightEdge = character.x + character.width;
+      
       if (
-        !coin.collected &&
-        character.x + character.width > coin.x - gameState.cameraOffsetX &&
-        character.x < coin.x - gameState.cameraOffsetX + coin.width &&
+        characterRightEdge > coinLeftEdge &&
+        characterLeftEdge < coinRightEdge &&
         character.y + character.height > coin.y &&
         character.y < coin.y + coin.height
       ) {
-        coinsRef.current[index].collected = true;
+        coinsRef.current[i].collected = true;
         const points = coin.type === 'coffee' ? 10 : 20; // Documents worth more
         setGameState(prev => ({
           ...prev,
@@ -347,7 +408,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
         }));
         toast.success(`+${points} points!`);
       }
-    });
+    }
   };
   
   const renderGame = (ctx: CanvasRenderingContext2D) => {
@@ -364,11 +425,14 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     ctx.strokeStyle = '#DEDEDE';
     ctx.lineWidth = 1;
     for (let i = 0; i < 700; i += 50) {
+      // Draw vertical lines with parallax effect
+      const offset = gameState.cameraOffsetX % 50;
       ctx.beginPath();
-      ctx.moveTo(i, 0);
-      ctx.lineTo(i, 400);
+      ctx.moveTo(i - offset, 0);
+      ctx.lineTo(i - offset, 400);
       ctx.stroke();
       
+      // Draw horizontal lines
       ctx.beginPath();
       ctx.moveTo(0, i);
       ctx.lineTo(700, i);
@@ -379,8 +443,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     platformsRef.current.forEach(platform => {
       const adjustedX = platform.x - gameState.cameraOffsetX;
       
-      // Only render platforms that are visible on screen
-      if (adjustedX < 700 && adjustedX + platform.width > 0) {
+      // Only render platforms that are visible on screen or near it
+      if (adjustedX < 700 && adjustedX + platform.width > -100) {
         if (platform.type === 'floor') {
           // Floor - dark gray carpet
           ctx.fillStyle = '#9E9E9E';
@@ -426,8 +490,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     obstaclesRef.current.forEach(obstacle => {
       const adjustedX = obstacle.x - gameState.cameraOffsetX;
       
-      // Only render obstacles that are visible on screen
-      if (adjustedX < 700 && adjustedX + obstacle.width > 0) {
+      // Only render obstacles that are visible on screen or near it
+      if (adjustedX < 700 && adjustedX + obstacle.width > -50) {
         if (obstacle.type === 'chair') {
           // Office chair
           ctx.fillStyle = '#2E2E2E';
@@ -500,8 +564,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       if (!coin.collected) {
         const adjustedX = coin.x - gameState.cameraOffsetX;
         
-        // Only render coins that are visible on screen
-        if (adjustedX < 700 && adjustedX + coin.width > 0) {
+        // Only render coins that are visible on screen or near it
+        if (adjustedX < 700 && adjustedX + coin.width > -20) {
           if (coin.type === 'coffee') {
             // Coffee cup
             ctx.fillStyle = '#795548';
@@ -556,21 +620,63 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     ctx.arc(character.x + character.width / 2, character.y - 10, 8, 0, Math.PI, true);
     ctx.fill();
     
-    // Draw score directly on canvas
-    ctx.fillStyle = '#000';
-    ctx.font = 'bold 20px Arial';
-    ctx.fillText(`Score: ${gameState.score}`, 10, 30);
+    // Draw score in a more visible box
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(10, 10, 120, 30);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 18px Arial';
+    ctx.fillText(`Score: ${gameState.score}`, 20, 30);
     
-    // Draw timer
-    ctx.fillStyle = '#000';
+    // Draw timer in a box
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(10, 50, 120, 30);
+    ctx.fillStyle = '#FFFFFF';
     ctx.font = '16px Arial';
-    ctx.fillText(formatTime(timerState.timeRemaining), 10, 60);
+    ctx.fillText(formatTime(timerState.timeRemaining), 20, 70);
     
-    // Draw instructions
-    ctx.fillStyle = '#000';
-    ctx.font = '12px Arial';
-    ctx.fillText('Arrow Keys/WASD to move, Up/Space to jump', 400, 20);
+    // Draw game over message if applicable
+    if (gameState.gameOver) {
+      // Semi-transparent overlay
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(0, 0, 700, 400);
+      
+      // Game over text
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 36px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('GAME OVER', 350, 180);
+      
+      // Final score
+      ctx.font = 'bold 24px Arial';
+      ctx.fillText(`Final Score: ${gameState.score}`, 350, 220);
+      
+      // Restart instructions
+      ctx.font = '18px Arial';
+      ctx.fillText('Press R to restart', 350, 260);
+      
+      // Reset text alignment for other text
+      ctx.textAlign = 'start';
+    } else {
+      // Draw instructions (only when game is active)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(400, 10, 290, 30);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '12px Arial';
+      ctx.fillText('Arrow Keys/WASD to move, Up/Space to jump', 410, 30);
+    }
   };
+  
+  // Handle restart on 'R' key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (gameState.gameOver && (e.key === 'r' || e.key === 'R')) {
+        resetGame();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [gameState.gameOver]);
   
   const handleLeftPress = () => {
     keysRef.current.left = true;
@@ -658,6 +764,14 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       </div>
       
       <div className="flex justify-center mt-4 mb-6">
+        {gameState.gameOver ? (
+          <button 
+            onClick={resetGame} 
+            className="bg-focus-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors mr-4"
+          >
+            Play Again
+          </button>
+        ) : null}
         <button 
           onClick={onReturn} 
           className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-full hover:bg-focus-purple hover:text-white transition-colors"
