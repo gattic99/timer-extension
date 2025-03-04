@@ -10,7 +10,6 @@ import { Timer as TimerIcon, X } from "lucide-react";
 import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index: React.FC = () => {
   const [settings, setSettings] = useState<TimerSettings>(defaultTimerSettings);
@@ -35,13 +34,6 @@ const Index: React.FC = () => {
     }));
     // Reset the timer when settings change
     resetTimer(timerState.mode);
-  };
-  
-  // Handle tab change
-  const handleTabChange = (value: string) => {
-    if (value === 'focus' || value === 'break') {
-      resetTimer(value as TimerMode);
-    }
   };
   
   return (
@@ -73,51 +65,36 @@ const Index: React.FC = () => {
               </div>
             </div>
             
-            <Tabs 
-              defaultValue={timerState.mode} 
-              className="w-full"
-              onValueChange={handleTabChange}
-            >
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger 
-                  value="focus"
-                  className="data-[state=active]:bg-dark-green data-[state=active]:text-white"
-                >
-                  Focus Timer
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="break"
-                  className="data-[state=active]:bg-dark-green data-[state=active]:text-white"
-                >
-                  Break Timer
-                </TabsTrigger>
-              </TabsList>
-              
-              <div className="p-4 bg-white rounded-xl shadow-sm h-[720px] overflow-auto">
-                <TabsContent value="focus" className="mt-0 h-full">
+            <div className="p-4 bg-white rounded-xl shadow-sm h-[720px] overflow-auto">
+              <div className="grid grid-cols-1 gap-6">
+                {/* Focus Timer Section */}
+                <div className="p-4 border border-gray-100 rounded-lg bg-gray-50">
+                  <h2 className="text-xl font-semibold text-focus-purple mb-4">Focus Session</h2>
                   <FocusMode
-                    timerState={timerState}
-                    onStart={startTimer}
+                    timerState={timerState.mode === 'focus' ? timerState : { ...timerState, mode: 'focus', timeRemaining: settings.focusDuration * 60 }}
+                    onStart={timerState.mode === 'focus' ? startTimer : () => resetTimer('focus')}
                     onPause={pauseTimer}
                     onReset={() => resetTimer('focus')}
                     focusDuration={settings.focusDuration}
                     onDurationChange={(value) => updateSettings({ focusDuration: value })}
                   />
-                </TabsContent>
+                </div>
                 
-                <TabsContent value="break" className="mt-0 h-full">
+                {/* Break Timer Section */}
+                <div className="p-4 border border-gray-100 rounded-lg bg-gray-50">
+                  <h2 className="text-xl font-semibold text-break-green mb-4">Break Time</h2>
                   <BreakMode
-                    timerState={timerState}
-                    onStart={startTimer}
+                    timerState={timerState.mode === 'break' ? timerState : { ...timerState, mode: 'break', timeRemaining: settings.breakDuration * 60 }}
+                    onStart={timerState.mode === 'break' ? startTimer : () => resetTimer('break')}
                     onPause={pauseTimer}
                     onReset={() => resetTimer('break')}
                     onSelectActivity={selectBreakActivity}
                     breakDuration={settings.breakDuration}
                     onDurationChange={(value) => updateSettings({ breakDuration: value })}
                   />
-                </TabsContent>
+                </div>
               </div>
-            </Tabs>
+            </div>
             
             <p className="text-xs text-muted-foreground text-center mt-4">
               Focus deeply, then take mindful breaks to stay energized.

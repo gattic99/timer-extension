@@ -1,4 +1,3 @@
-
 import React from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
@@ -50,13 +49,9 @@ const BreakMode: React.FC<BreakModeProps> = ({
   // Otherwise render break timer with activity options
   return (
     <div className="break-card w-full max-w-xl mx-auto animate-scale-in">
-      <div className="text-center mb-4">
-        <div className="flex items-center justify-center mb-2">
-          <AlarmClock className="text-break-green mr-2" size={24} />
-          <h2 className="text-xl font-semibold text-dark-text">Break Time</h2>
-        </div>
+      <div className="text-center mb-2">
         <p className="text-muted-foreground text-sm">
-          Take a moment to relax. Choose an activity below or just take a break.
+          Take a moment to relax.
         </p>
       </div>
       
@@ -102,30 +97,24 @@ const BreakMode: React.FC<BreakModeProps> = ({
         totalDuration={totalDuration}
       />
       
-      <div className="mt-6">
-        <h3 className="text-center text-lg font-semibold mb-4">Choose a break activity:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mt-4">
+        <h3 className="text-center text-sm font-semibold mb-2">Choose a break activity:</h3>
+        <div className="grid grid-cols-2 gap-2">
           <div 
-            className="option-card game-card flex flex-col items-center animate-slide-up" 
+            className="option-card game-card flex flex-col items-center p-2 h-[80px] animate-slide-up cursor-pointer rounded-lg hover:bg-gray-100 transition-colors" 
             onClick={() => onSelectActivity('game')}
           >
-            <Gamepad size={36} className="mb-4 text-game-orange" />
-            <h4 className="text-lg font-semibold mb-2">Play a Game</h4>
-            <p className="text-sm text-center text-muted-foreground">
-              Have fun with a platformer game to refresh your mind.
-            </p>
+            <Gamepad size={24} className="mb-1 text-game-orange" />
+            <h4 className="text-sm font-semibold">Play a Game</h4>
           </div>
           
           <div 
-            className="option-card break-card flex flex-col items-center animate-slide-up" 
+            className="option-card break-card flex flex-col items-center p-2 h-[80px] animate-slide-up cursor-pointer rounded-lg hover:bg-gray-100 transition-colors" 
             style={{ animationDelay: '0.1s' }}
             onClick={() => onSelectActivity('relax')}
           >
-            <Dumbbell size={36} className="mb-4 text-break-green" />
-            <h4 className="text-lg font-semibold mb-2">Relax & Stretch</h4>
-            <p className="text-sm text-center text-muted-foreground">
-              Follow guided stretching exercises to relieve tension.
-            </p>
+            <Dumbbell size={24} className="mb-1 text-break-green" />
+            <h4 className="text-sm font-semibold">Relax & Stretch</h4>
           </div>
         </div>
       </div>
