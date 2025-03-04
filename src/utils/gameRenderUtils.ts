@@ -1,4 +1,3 @@
-
 import { GameCharacter, Platform, Obstacle, Coin, GameState } from "@/types/gameTypes";
 import { formatTime } from "@/utils/timerUtils";
 
@@ -157,7 +156,7 @@ export const drawObstacles = (ctx: CanvasRenderingContext2D, obstacles: Obstacle
   });
 };
 
-// Draw collectibles (coffee cups and documents)
+// Draw collectibles (face in yellow circle)
 export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], cameraOffsetX: number) => {
   coins.forEach(coin => {
     if (!coin.collected) {
@@ -165,33 +164,45 @@ export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], c
       
       // Only render coins that are visible on screen or near it
       if (adjustedX < 700 && adjustedX + coin.width > -20) {
-        if (coin.type === 'coffee') {
-          // Coffee cup
-          ctx.fillStyle = '#795548';
-          ctx.fillRect(adjustedX, coin.y, coin.width, coin.height);
-          
-          // Coffee cup details
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(adjustedX + 2, coin.y + 2, coin.width - 4, coin.height / 2 - 2);
-          
-          // Coffee
-          ctx.fillStyle = '#5D4037';
-          ctx.fillRect(adjustedX + 2, coin.y + coin.height / 2, coin.width - 4, coin.height / 2 - 2);
-        } else {
-          // Document
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(adjustedX, coin.y, coin.width, coin.height);
-          
-          // Document lines
-          ctx.strokeStyle = '#9E9E9E';
-          ctx.lineWidth = 1;
-          for (let i = 0; i < 4; i++) {
-            ctx.beginPath();
-            ctx.moveTo(adjustedX + 2, coin.y + 4 + i * 4);
-            ctx.lineTo(adjustedX + coin.width - 2, coin.y + 4 + i * 4);
-            ctx.stroke();
-          }
-        }
+        // Circle background (yellow)
+        ctx.beginPath();
+        const centerX = adjustedX + coin.width / 2;
+        const centerY = coin.y + coin.height / 2;
+        const radius = coin.width / 2 + 3; // Slightly larger than the coin
+        
+        // Draw yellow circle background
+        ctx.fillStyle = '#FEC6A1'; // Soft orange/yellow color
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw the collectible image using the uploaded face image
+        const image = new Image();
+        image.src = 'public/lovable-uploads/f50ea79b-8e46-407d-8d22-ed3fcdfd80a4.png';
+        
+        // Use a circular clipping path for the image
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
+        ctx.clip();
+        
+        // Draw the face image within the clip region
+        ctx.drawImage(
+          image, 
+          adjustedX, 
+          coin.y, 
+          coin.width, 
+          coin.height
+        );
+        
+        // Restore canvas to remove clipping
+        ctx.restore();
+        
+        // Add a slight border for better visibility
+        ctx.strokeStyle = '#F97316'; // Bright orange
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.stroke();
       }
     }
   });

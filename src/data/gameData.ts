@@ -95,38 +95,38 @@ export const initialObstacles: Obstacle[] = [
   { x: 4050, y: 230, width: 15, height: 15, type: 'paperclip' },
 ];
 
-// Collectibles (coffee cups and documents)
+// Collectibles (face in yellow circle replacing coffee cups and documents)
 export const initialCoins: Coin[] = [
-  // Coffee cups
-  { x: 200, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 550, y: 200, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 850, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 1100, y: 170, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 1350, y: 200, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 1650, y: 150, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 1950, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 2250, y: 180, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 2650, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 3000, y: 200, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 3300, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 3650, y: 170, width: 20, height: 20, collected: false, type: 'coffee' },
-  { x: 4000, y: 300, width: 20, height: 20, collected: false, type: 'coffee' },
+  // First row of collectibles (former coffee cups)
+  { x: 200, y: 300, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 550, y: 200, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 850, y: 300, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 1100, y: 170, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 1350, y: 200, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 1650, y: 150, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 1950, y: 300, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 2250, y: 180, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 2650, y: 300, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 3000, y: 200, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 3300, y: 300, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 3650, y: 170, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 4000, y: 300, width: 25, height: 25, collected: false, type: 'point' },
   
-  // Documents (important papers)
-  { x: 350, y: 150, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 700, y: 120, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 950, y: 120, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 1200, y: 300, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 1450, y: 140, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 1750, y: 170, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 2000, y: 100, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 2350, y: 200, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 2500, y: 140, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 2850, y: 120, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 3200, y: 140, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 3500, y: 200, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 3800, y: 120, width: 20, height: 20, collected: false, type: 'document' },
-  { x: 4100, y: 150, width: 20, height: 20, collected: false, type: 'document' },
+  // Second row of collectibles (former documents)
+  { x: 350, y: 150, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 700, y: 120, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 950, y: 120, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 1200, y: 300, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 1450, y: 140, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 1750, y: 170, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 2000, y: 100, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 2350, y: 200, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 2500, y: 140, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 2850, y: 120, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 3200, y: 140, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 3500, y: 200, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 3800, y: 120, width: 25, height: 25, collected: false, type: 'point' },
+  { x: 4100, y: 150, width: 25, height: 25, collected: false, type: 'point' },
 ];
 
 export const initialCharacter: GameCharacter = {
