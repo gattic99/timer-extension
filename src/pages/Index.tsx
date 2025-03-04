@@ -86,23 +86,35 @@ const Index: React.FC = () => {
       
       {isOpen && (
         <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
-          <Card className="glass-panel w-full max-w-md p-6 shadow-xl">
+          <Card className="glass-panel w-full max-w-md p-6 shadow-xl rounded-2xl border border-gray-200/40 bg-white/90 backdrop-blur-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-2xl font-bold text-focus-purple">
+                {isSettingsOpen ? "Timer Settings" : "Focus Timer"}
+              </h1>
+              
+              <div className="flex space-x-2">
+                <button 
+                  onClick={toggleSettings}
+                  className="p-2 rounded-full hover:bg-gray-100"
+                  aria-label={isSettingsOpen ? "Close Settings" : "Timer Settings"}
+                >
+                  {isSettingsOpen ? <X size={18} /> : <Sliders size={18} />}
+                </button>
+                
+                {!isSettingsOpen && (
+                  <button 
+                    onClick={togglePopup}
+                    className="p-2 rounded-full hover:bg-gray-100"
+                    aria-label="Close Timer"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
+            </div>
+            
             {isSettingsOpen ? (
               <>
-                <div className="flex justify-between items-center mb-6">
-                  <h1 className="text-2xl font-bold text-focus-purple">Timer Settings</h1>
-                  
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={toggleSettings}
-                      className="p-2 rounded-full hover:bg-gray-100"
-                      aria-label="Close Settings"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-                </div>
-                
                 <div className="py-4 space-y-6">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
@@ -115,6 +127,7 @@ const Index: React.FC = () => {
                       max={60} 
                       step={5} 
                       onValueChange={updateFocusDuration}
+                      className="focus-purple-slider"
                     />
                   </div>
                   
@@ -147,46 +160,26 @@ const Index: React.FC = () => {
               </>
             ) : (
               <>
-                <div className="flex justify-between items-center mb-6">
-                  <h1 className="text-2xl font-bold text-focus-purple">Focus Timer</h1>
-                  
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={toggleSettings}
-                      className="p-2 rounded-full hover:bg-gray-100"
-                      aria-label="Timer Settings"
-                    >
-                      <Sliders size={18} />
-                    </button>
-                    
-                    <button 
-                      onClick={togglePopup}
-                      className="p-2 rounded-full hover:bg-gray-100"
-                      aria-label="Close Timer"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
+                <div className="p-4 bg-white rounded-xl shadow-sm">
+                  {timerState.mode === 'focus' ? (
+                    <FocusMode
+                      timerState={timerState}
+                      onStart={startTimer}
+                      onPause={pauseTimer}
+                      onReset={() => resetTimer('focus')}
+                      focusDuration={settings.focusDuration}
+                    />
+                  ) : (
+                    <BreakMode
+                      timerState={timerState}
+                      onStart={startTimer}
+                      onPause={pauseTimer}
+                      onReset={() => resetTimer('break')}
+                      onSelectActivity={selectBreakActivity}
+                      breakDuration={settings.breakDuration}
+                    />
+                  )}
                 </div>
-                
-                {timerState.mode === 'focus' ? (
-                  <FocusMode
-                    timerState={timerState}
-                    onStart={startTimer}
-                    onPause={pauseTimer}
-                    onReset={() => resetTimer('focus')}
-                    focusDuration={settings.focusDuration}
-                  />
-                ) : (
-                  <BreakMode
-                    timerState={timerState}
-                    onStart={startTimer}
-                    onPause={pauseTimer}
-                    onReset={() => resetTimer('break')}
-                    onSelectActivity={selectBreakActivity}
-                    breakDuration={settings.breakDuration}
-                  />
-                )}
                 
                 <p className="text-xs text-muted-foreground text-center mt-4">
                   Focus deeply, then take mindful breaks to stay energized.

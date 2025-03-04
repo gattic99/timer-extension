@@ -23,13 +23,13 @@ const FocusMode: React.FC<FocusModeProps> = ({
   const totalDuration = minutesToSeconds(focusDuration);
   
   return (
-    <div className="focus-card p-8 w-full max-w-xl mx-auto animate-scale-in">
-      <div className="text-center mb-8">
+    <div className="animate-scale-in">
+      <div className="text-center mb-4">
         <div className="flex items-center justify-center mb-2">
           <Clock className="text-focus-purple mr-2" size={24} />
-          <h2 className="text-2xl font-bold text-dark-text">Focus Time</h2>
+          <h2 className="text-2xl font-semibold text-dark-text">Focus Time</h2>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Stay focused and productive. Take a break when the timer ends.
         </p>
       </div>
@@ -42,7 +42,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
         totalDuration={totalDuration}
       />
       
-      <div className="mt-8 text-center text-sm text-muted-foreground">
+      <div className="mt-6 text-center text-sm text-muted-foreground">
         <p>Stay in the flow state. Minimize distractions.</p>
         <p className="mt-1">A break will begin automatically when the timer ends.</p>
       </div>
