@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
@@ -34,16 +33,15 @@ const FocusMode: React.FC<FocusModeProps> = ({
   
   const decreaseFocusDuration = () => {
     if (focusDuration > 1) {
-      const newDuration = focusDuration - 5;
-      const validDuration = newDuration < 1 ? 1 : newDuration;
-      onChangeFocusDuration(validDuration);
-      setInputValue(validDuration.toString());
+      const newDuration = focusDuration - 1;
+      onChangeFocusDuration(newDuration);
+      setInputValue(newDuration.toString());
     }
   };
   
   const increaseFocusDuration = () => {
     if (focusDuration < 60) {
-      const newDuration = focusDuration + 5;
+      const newDuration = focusDuration + 1;
       onChangeFocusDuration(newDuration);
       setInputValue(newDuration.toString());
     }

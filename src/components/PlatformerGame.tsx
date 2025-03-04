@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { formatTime } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
@@ -168,6 +169,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       resetGame();
     }
     
+    // Check for coin collection and update score
     coinsRef.current.forEach((coin, index) => {
       if (
         !coin.collected &&
@@ -177,6 +179,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
         character.y < coin.y + coin.height
       ) {
         coinsRef.current[index].collected = true;
+        // Important: Use a function to update score based on previous state
         setScore(prevScore => prevScore + 10);
       }
     });
@@ -185,9 +188,11 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
   const renderGame = (ctx: CanvasRenderingContext2D) => {
     ctx.clearRect(0, 0, 700, 400);
     
+    // Draw sky background
     ctx.fillStyle = '#87CEEB';
     ctx.fillRect(0, 0, 700, 400);
     
+    // Draw platforms
     ctx.fillStyle = '#8B4513';
     platformsRef.current.forEach(platform => {
       ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
@@ -209,6 +214,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       }
     });
     
+    // Draw coins
     coinsRef.current.forEach(coin => {
       if (!coin.collected) {
         ctx.fillStyle = '#FFD700';
@@ -221,6 +227,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       }
     });
     
+    // Draw character
     const character = characterRef.current;
     ctx.fillStyle = '#FF6347';
     ctx.fillRect(character.x, character.y, character.width, character.height);
@@ -232,10 +239,17 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     ctx.fillStyle = '#FFA07A';
     ctx.fillRect(character.x + 5, character.y + 10, character.width - 10, 15);
     
+    // Draw score
     ctx.fillStyle = '#000';
     ctx.font = '20px Arial';
     ctx.fillText(`Score: ${score}`, 10, 30);
     
+    // Draw timer
+    ctx.fillStyle = '#000';
+    ctx.font = '16px Arial';
+    ctx.fillText(formatTime(timerState.timeRemaining), 10, 60);
+    
+    // Draw instructions
     ctx.fillStyle = '#000';
     ctx.font = '12px Arial';
     ctx.fillText('Arrow Keys/WASD to move, Up/Space to jump', 400, 20);
@@ -266,7 +280,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto animate-scale-in flex flex-col items-center">
+    <div className="fixed bottom-0 left-0 right-0 w-full animate-scale-in flex flex-col items-center bg-blue-100 pb-4">
       <div className="text-center mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Platformer Adventure</h2>
         <p className="text-muted-foreground text-sm">
@@ -274,7 +288,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
         </p>
       </div>
       
-      <div className="relative w-full">
+      <div className="relative w-full max-w-4xl mx-auto">
         <canvas 
           ref={canvasRef} 
           width={700} 
@@ -282,7 +296,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
           className="bg-white border border-gray-200 rounded-lg shadow-md mx-auto"
         />
         
-        <div className="absolute bottom-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md">
+        <div className="absolute top-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
           {formatTime(timerState.timeRemaining)}
         </div>
         
@@ -325,7 +339,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       <div className="flex justify-center mt-4">
         <button 
           onClick={onReturn} 
-          className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-md hover:bg-focus-purple hover:text-white transition-colors"
+          className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-full hover:bg-focus-purple hover:text-white transition-colors"
         >
           Return to Timer
         </button>
