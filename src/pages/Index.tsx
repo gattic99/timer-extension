@@ -70,20 +70,20 @@ const Index: React.FC = () => {
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger 
                   value="focus"
-                  className="data-[state=active]:bg-focus-purple data-[state=active]:text-white"
+                  className="data-[state=active]:bg-dark-green data-[state=active]:text-white"
                 >
                   Focus Timer
                 </TabsTrigger>
                 <TabsTrigger 
                   value="break"
-                  className="data-[state=active]:bg-break-green data-[state=active]:text-white"
+                  className="data-[state=active]:bg-dark-green data-[state=active]:text-white"
                 >
                   Break Timer
                 </TabsTrigger>
               </TabsList>
               
-              <div className="p-4 bg-white rounded-xl shadow-sm">
-                <TabsContent value="focus" className="mt-0">
+              <div className="p-4 bg-white rounded-xl shadow-sm h-[420px] overflow-auto">
+                <TabsContent value="focus" className="mt-0 h-full">
                   <FocusMode
                     timerState={timerState}
                     onStart={startTimer}
@@ -94,7 +94,7 @@ const Index: React.FC = () => {
                   />
                 </TabsContent>
                 
-                <TabsContent value="break" className="mt-0">
+                <TabsContent value="break" className="mt-0 h-full">
                   <BreakMode
                     timerState={timerState}
                     onStart={startTimer}

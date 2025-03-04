@@ -191,6 +191,14 @@
     background-color: #f97316;
   }
   
+  .bg-dark-green {
+    background-color: #0f766e;
+  }
+  
+  .text-dark-green {
+    color: #0f766e;
+  }
+  
   .text-dark-text {
     color: #1f2937;
   }
