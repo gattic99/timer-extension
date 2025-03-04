@@ -176,33 +176,42 @@ export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], c
         ctx.fill();
         
         // Draw the collectible image using the uploaded face image
-        const image = new Image();
-        image.src = 'public/lovable-uploads/f50ea79b-8e46-407d-8d22-ed3fcdfd80a4.png';
-        
-        // Use a circular clipping path for the image
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
-        ctx.clip();
-        
-        // Draw the face image within the clip region
-        ctx.drawImage(
-          image, 
-          adjustedX, 
-          coin.y, 
-          coin.width, 
-          coin.height
-        );
-        
-        // Restore canvas to remove clipping
-        ctx.restore();
-        
-        // Add a slight border for better visibility
-        ctx.strokeStyle = '#F97316'; // Bright orange
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.stroke();
+        try {
+          const image = new Image();
+          image.src = '/lovable-uploads/f50ea79b-8e46-407d-8d22-ed3fcdfd80a4.png';
+          
+          // Use a circular clipping path for the image
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
+          ctx.clip();
+          
+          // Draw the face image within the clip region
+          ctx.drawImage(
+            image, 
+            adjustedX, 
+            coin.y, 
+            coin.width, 
+            coin.height
+          );
+          
+          // Restore canvas to remove clipping
+          ctx.restore();
+          
+          // Add a slight border for better visibility
+          ctx.strokeStyle = '#F97316'; // Bright orange
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.stroke();
+        } catch (error) {
+          console.error("Error loading collectible image:", error);
+          // Fallback if image fails to load
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
     }
   });

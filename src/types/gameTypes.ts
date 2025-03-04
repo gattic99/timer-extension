@@ -31,7 +31,7 @@ export interface Coin {
   width: number;
   height: number;
   collected: boolean;
-  type: 'coffee' | 'document';
+  type: 'coffee' | 'document' | 'point';
 }
 
 export interface GameState {

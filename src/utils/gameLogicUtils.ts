@@ -1,3 +1,4 @@
+
 import { GameCharacter, Platform, Obstacle, Coin, GameState } from "@/types/gameTypes";
 import { toast } from "sonner";
 
@@ -94,7 +95,16 @@ export const checkCoinCollection = (
       character.y < coin.y + coin.height
     ) {
       coins[i].collected = true;
-      const points = coin.type === 'coffee' ? 10 : 20; // Documents worth more
+      let points = 10; // Default points
+      
+      if (coin.type === 'coffee') {
+        points = 10;
+      } else if (coin.type === 'document') {
+        points = 20; // Documents worth more
+      } else if (coin.type === 'point') {
+        points = 15; // Points for new collectible
+      }
+      
       scoreIncrease += points;
       toast.success(`+${points} points!`);
     }
