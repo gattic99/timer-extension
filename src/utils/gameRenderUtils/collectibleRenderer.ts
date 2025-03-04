@@ -18,43 +18,34 @@ export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], c
         ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
         ctx.fill();
         
-        // Draw the collectible using the face image
-        try {
-          const image = new Image();
-          image.src = '/lovable-uploads/e2488b89-7645-4aed-bbd8-e09701affc1e.png';
-          
-          // Create circular clipping path
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2 - 1, 0, Math.PI * 2);
-          ctx.clip();
-          
-          // Draw the image within the clipping path
-          ctx.drawImage(
-            image, 
-            adjustedX, 
-            coin.y, 
-            coin.width, 
-            coin.height
-          );
-          
-          // Restore the context
-          ctx.restore();
-          
-          // Add a subtle border
-          ctx.strokeStyle = '#B8860B';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
-          ctx.stroke();
-        } catch (error) {
-          console.error("Error loading collectible image:", error);
-          // Fallback if image fails to load
-          ctx.fillStyle = '#FFD700';
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        // Draw the face image
+        const image = new Image();
+        image.src = '/lovable-uploads/341e1dd3-ee61-47c4-a708-bab1dadda575.png';
+        
+        // Create circular clipping path
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, coin.width / 2 - 1, 0, Math.PI * 2);
+        ctx.clip();
+        
+        // Draw the image within the clipping path
+        ctx.drawImage(
+          image, 
+          adjustedX, 
+          coin.y, 
+          coin.width, 
+          coin.height
+        );
+        
+        // Restore the context
+        ctx.restore();
+        
+        // Add a subtle border
+        ctx.strokeStyle = '#B8860B';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
+        ctx.stroke();
       }
     }
   });
