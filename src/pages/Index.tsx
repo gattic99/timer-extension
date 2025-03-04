@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -6,7 +5,7 @@ import { useTimer } from "@/hooks/useTimer";
 import FocusMode from "@/components/FocusMode";
 import BreakMode from "@/components/BreakMode";
 import { TimerSettings } from "@/types";
-import { Sliders, Timer as TimerIcon, X, Save } from "lucide-react";
+import { Sliders, X, Save } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { 
   Dialog, 
@@ -118,6 +117,7 @@ const Index: React.FC = () => {
                       <Sliders size={18} />
                     </button>
                   </DialogTrigger>
+                  
                   <DialogContent className="max-w-sm">
                     <DialogHeader>
                       <DialogTitle>Timer Settings</DialogTitle>
@@ -184,7 +184,9 @@ const Index: React.FC = () => {
                 onPause={pauseTimer}
                 onReset={() => resetTimer('focus')}
                 focusDuration={settings.focusDuration}
+                breakDuration={settings.breakDuration}
                 onChangeFocusDuration={handleFocusDurationChange}
+                onChangeBreakDuration={handleBreakDurationChange}
               />
             ) : (
               <BreakMode
