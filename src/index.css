@@ -3,6 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -14,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%;
+    --primary: 255 60% 75%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -31,39 +33,24 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* ... keep existing code (dark mode variables) */
   }
 }
 
@@ -71,145 +58,84 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', sans-serif;
   }
 }
 
-/* Glass effect */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Custom focus timer styles */
-.focus-purple-slider [data-orientation="horizontal"] {
-  height: 4px;
-}
-
-.focus-purple-slider [data-orientation="horizontal"] .bg-primary {
-  background-color: #9b87f5;
-}
-
-.focus-purple-slider button {
-  background-color: #9b87f5;
-  border-color: #9b87f5;
-  height: 18px;
-  width: 18px;
-}
-
-.focus-purple-slider button:hover {
-  background-color: #7E69AB;
-}
-
-/* Animations */
-@keyframes scale-in {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
+@layer components {
+  .glass-panel {
+    @apply bg-white bg-opacity-60 backdrop-blur-lg rounded-xl shadow-lg border border-white border-opacity-20;
   }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
 
-@keyframes slide-up {
-  from {
-    transform: translateY(10px);
-    opacity: 0;
+  .focus-card {
+    @apply bg-white bg-opacity-80 backdrop-blur-md rounded-xl border border-focus-purple border-opacity-20 shadow-md transition-all duration-300 hover:shadow-lg;
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
+  .break-card {
+    @apply bg-break-green bg-opacity-80 backdrop-blur-md rounded-xl border border-break-green border-opacity-40 shadow-md transition-all duration-300 hover:shadow-lg;
   }
-  to {
-    opacity: 1;
-  }
-}
 
-.animate-scale-in {
-  animation: scale-in 0.3s ease-out forwards;
-}
+  .game-card {
+    @apply bg-game-orange bg-opacity-80 backdrop-blur-md rounded-xl border border-game-orange border-opacity-40 shadow-md transition-all duration-300 hover:shadow-lg;
+  }
 
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out forwards;
-}
+  .timer-text {
+    @apply font-mono text-7xl font-bold tracking-tight;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
 
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out forwards;
-}
+  .timer-display {
+    @apply flex items-center justify-center p-6 rounded-full bg-white bg-opacity-50 border border-white border-opacity-30 shadow-inner;
+    width: 280px;
+    height: 280px;
+  }
 
-/* Timer duration control styles */
-.option-card {
-  @apply bg-white rounded-xl p-4 shadow-sm border border-gray-100 
-         hover:shadow-md transition-all cursor-pointer;
-}
-
-.game-card:hover {
-  @apply border-game-orange;
-}
-
-.break-card:hover {
-  @apply border-break-green;
-}
-
-.timer-text {
-  @apply text-5xl font-bold;
-}
-
-/* Custom colors */
-@layer utilities {
-  .text-focus-purple {
-    color: #9b87f5;
-  }
-  
-  .text-break-green {
-    color: #4ade80;
-  }
-  
-  .text-game-orange {
-    color: #f97316;
-  }
-  
-  .bg-focus-purple {
-    background-color: #9b87f5;
-  }
-  
-  .bg-break-green {
-    background-color: #4ade80;
-  }
-  
-  .bg-game-orange {
-    background-color: #f97316;
-  }
-  
-  .bg-dark-green {
-    background-color: #0f766e;
-  }
-  
-  .text-dark-green {
-    color: #0f766e;
-  }
-  
-  .text-dark-text {
-    color: #1f2937;
-  }
-  
   .btn-primary {
-    @apply bg-focus-purple text-white px-4 py-2 rounded-lg 
-           hover:bg-opacity-90 transition-colors;
+    @apply bg-focus-purple text-white px-6 py-3 rounded-lg font-medium shadow-md transition-all duration-200 hover:shadow-lg hover:bg-focus-purple-dark focus:ring-2 focus:ring-focus-purple focus:ring-opacity-50 focus:outline-none;
   }
-  
+
   .btn-secondary {
-    @apply bg-gray-100 text-gray-800 px-4 py-2 rounded-lg 
-           hover:bg-gray-200 transition-colors;
+    @apply bg-white bg-opacity-80 text-dark-text px-6 py-3 rounded-lg font-medium shadow-md border border-light-gray border-opacity-20 transition-all duration-200 hover:shadow-lg hover:bg-opacity-90 focus:ring-2 focus:ring-light-gray focus:ring-opacity-50 focus:outline-none;
   }
+
+  .btn-break {
+    @apply bg-break-green text-dark-text px-6 py-3 rounded-lg font-medium shadow-md border border-break-green border-opacity-30 transition-all duration-200 hover:shadow-lg hover:bg-opacity-90 focus:ring-2 focus:ring-break-green focus:ring-opacity-50 focus:outline-none;
+  }
+
+  .btn-game {
+    @apply bg-game-orange text-dark-text px-6 py-3 rounded-lg font-medium shadow-md border border-game-orange border-opacity-30 transition-all duration-200 hover:shadow-lg hover:bg-opacity-90 focus:ring-2 focus:ring-game-orange focus:ring-opacity-50 focus:outline-none;
+  }
+
+  .option-card {
+    @apply w-full max-w-sm p-8 rounded-2xl transition-all duration-300 cursor-pointer;
+  }
+}
+
+/* Add hover variants for button colors */
+.bg-focus-purple-dark {
+  background-color: rgb(124, 93, 250);
+}
+
+.bg-break-green-dark {
+  background-color: rgb(75, 185, 140);
+}
+
+/* Add animation for the floating timer */
+@keyframes pulse-subtle {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite ease-in-out;
 }

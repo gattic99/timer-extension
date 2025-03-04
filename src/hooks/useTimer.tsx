@@ -31,17 +31,6 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     };
   }, []);
 
-  // When settings change or mode changes, update the timer accordingly
-  useEffect(() => {
-    // Update timeRemaining based on the current mode and settings
-    setTimerState(prev => ({
-      ...prev,
-      timeRemaining: prev.mode === 'focus' 
-        ? minutesToSeconds(settings.focusDuration) 
-        : minutesToSeconds(settings.breakDuration)
-    }));
-  }, [settings.focusDuration, settings.breakDuration]);
-
   // Timer tick function
   const tick = useCallback(() => {
     setTimerState(prevState => {
