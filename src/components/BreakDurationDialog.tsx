@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Coffee, Minus, Plus, ArrowLeft, Save } from "lucide-react";
+import { Coffee, Minus, Plus, ArrowLeft, ArrowRightIcon, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -68,7 +68,7 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
           </div>
           <div className="flex items-center">
             <span className="mr-2">{breakDuration} minutes</span>
-            <ArrowRight size={18} />
+            <ArrowRightIcon size={18} />
           </div>
         </Button>
       </DialogTrigger>
