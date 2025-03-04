@@ -1,12 +1,12 @@
 
 import { Coin } from "@/types/gameTypes";
 
+// Create the face image outside the function to ensure it's only created once
+const faceImage = new Image();
+faceImage.src = '/lovable-uploads/5126de49-ffe0-494c-88af-14aab80c9d42.png';
+
 // Draw collectibles (face in yellow circle)
 export const drawCollectibles = (ctx: CanvasRenderingContext2D, coins: Coin[], cameraOffsetX: number) => {
-  // Create and load the face image once, outside the loop
-  const faceImage = new Image();
-  faceImage.src = '/lovable-uploads/341e1dd3-ee61-47c4-a708-bab1dadda575.png';
-  
   // Draw each coin
   coins.forEach(coin => {
     if (!coin.collected) {
