@@ -78,15 +78,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </div>
       </div>
       
-      {/* Break Duration Dialog */}
-      <div className="mb-6">
-        <BreakDurationDialog 
-          breakDuration={breakDuration}
-          onChangeBreakDuration={onChangeBreakDuration}
-          disabled={timerState.isRunning}
-        />
-      </div>
-      
       <Timer
         timerState={timerState}
         onStart={onStart}
@@ -94,6 +85,15 @@ const FocusMode: React.FC<FocusModeProps> = ({
         onReset={onReset}
         totalDuration={totalDuration}
       />
+      
+      {/* Break Duration Dialog - now positioned below the timer */}
+      <div className="mt-8">
+        <BreakDurationDialog 
+          breakDuration={breakDuration}
+          onChangeBreakDuration={onChangeBreakDuration}
+          disabled={timerState.isRunning}
+        />
+      </div>
       
       <div className="mt-8 text-center text-sm text-muted-foreground">
         <p>Stay in the flow state. Minimize distractions.</p>

@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Coffee, Minus, Plus, ArrowLeft, ArrowRightIcon, Save } from "lucide-react";
+import { Coffee, Minus, Plus, ArrowLeft, ChevronRight, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -59,16 +59,16 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="w-full p-4 flex items-center justify-between bg-break-green bg-opacity-20 hover:bg-opacity-30 text-break-green rounded-lg transition-all duration-200 shadow-sm"
+          className="w-full p-4 flex items-center justify-between bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded-lg transition-all duration-200 shadow-sm"
           disabled={disabled}
         >
           <div className="flex items-center">
-            <Coffee className="mr-2" size={20} />
+            <Coffee className="mr-2 text-focus-purple" size={20} />
             <span className="font-medium">Break duration</span>
           </div>
           <div className="flex items-center">
             <span className="mr-2">{breakDuration} minutes</span>
-            <ArrowRightIcon size={18} />
+            <ChevronRight className="text-focus-purple" size={18} />
           </div>
         </Button>
       </DialogTrigger>
@@ -84,7 +84,7 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
             >
               <ArrowLeft size={20} />
             </Button>
-            <DialogTitle className="text-2xl font-bold text-break-green">Break duration</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-focus-purple">Break duration</DialogTitle>
             <div className="w-10"></div> {/* Spacer for alignment */}
           </DialogHeader>
           
@@ -94,7 +94,7 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
             </p>
             
             <div className="text-center mb-8">
-              <div className="text-4xl font-bold text-break-green mb-6">
+              <div className="text-4xl font-bold text-focus-purple mb-6">
                 {tempDuration} <span className="text-2xl">minutes</span>
               </div>
               
@@ -130,7 +130,7 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
               Cancel
             </Button>
             <Button
-              className="flex-1 bg-break-green text-white hover:bg-break-green-dark"
+              className="flex-1 bg-focus-purple text-white hover:bg-focus-purple-dark"
               onClick={handleSave}
               disabled={tempDuration === breakDuration}
             >
