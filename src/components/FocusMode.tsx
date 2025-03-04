@@ -33,10 +33,11 @@ const FocusMode: React.FC<FocusModeProps> = ({
   const [inputValue, setInputValue] = useState(focusDuration.toString());
   
   const decreaseFocusDuration = () => {
-    if (focusDuration > 5) {
+    if (focusDuration > 1) {
       const newDuration = focusDuration - 5;
-      onChangeFocusDuration(newDuration);
-      setInputValue(newDuration.toString());
+      const validDuration = newDuration < 1 ? 1 : newDuration;
+      onChangeFocusDuration(validDuration);
+      setInputValue(validDuration.toString());
     }
   };
   
@@ -54,7 +55,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
   
   const handleInputBlur = () => {
     const newValue = parseInt(inputValue);
-    if (!isNaN(newValue) && newValue >= 5 && newValue <= 60) {
+    if (!isNaN(newValue) && newValue >= 1 && newValue <= 60) {
       onChangeFocusDuration(newValue);
     } else {
       setInputValue(focusDuration.toString());
@@ -94,7 +95,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
               variant="outline" 
               size="icon" 
               onClick={decreaseFocusDuration}
-              disabled={focusDuration <= 5 || timerState.isRunning}
+              disabled={focusDuration <= 1 || timerState.isRunning}
               className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7"
             >
               <Minus size={14} />
