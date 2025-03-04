@@ -280,8 +280,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
   };
 
   return (
-    <div className="fixed inset-x-0 bottom-0 w-full animate-scale-in flex flex-col items-center bg-blue-100 pb-4">
-      <div className="text-center mb-2">
+    <div className="fixed inset-0 top-auto bottom-0 w-full h-screen bg-blue-100 z-50 flex flex-col items-center">
+      <div className="text-center mt-4 mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Platformer Adventure</h2>
         <p className="text-muted-foreground text-sm">
           Collect coins and jump between platforms!
@@ -336,7 +336,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
         </div>
       </div>
       
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-4 mb-6">
         <button 
           onClick={onReturn} 
           className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-full hover:bg-focus-purple hover:text-white transition-colors"

@@ -9,6 +9,7 @@ import { TimerSettings } from "@/types";
 import { X } from "lucide-react";
 import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
+import PlatformerGame from "@/components/PlatformerGame";
 import { toast } from "sonner";
 
 const Index: React.FC = () => {
@@ -40,6 +41,21 @@ const Index: React.FC = () => {
   const togglePopup = () => {
     setIsOpen(!isOpen);
   };
+
+  // Handler to return from game to timer
+  const handleReturnFromGame = () => {
+    selectBreakActivity(null);
+  };
+  
+  // If we're in break mode and game is selected, show the full-screen game
+  if (timerState.mode === 'break' && timerState.breakActivity === 'game') {
+    return (
+      <PlatformerGame 
+        onReturn={handleReturnFromGame}
+        timerState={timerState}
+      />
+    );
+  }
   
   return (
     <div className="min-h-screen relative overflow-hidden">
