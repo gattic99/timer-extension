@@ -110,7 +110,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
         <div className="text-center mb-2">
           <div className="flex items-center justify-left">
             <Clock className="text-focus-purple mr-2" size={18} />
-            <h2 className="text-lg text-dark-text font-semibold">Focus Mode</h2>
+            <h2 className="text-lg text-dark-text font-semibold">Focus Timer</h2>
           </div>
           <p className="text-xs text-muted-foreground text-left">Work for a set time before your break begins.</p>
         </div>
