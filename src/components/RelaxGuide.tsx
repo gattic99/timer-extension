@@ -4,6 +4,7 @@ import { getRelaxationSteps } from "@/utils/timerUtils";
 import { ChevronLeft, ChevronRight, Dumbbell } from "lucide-react";
 import { TimerState } from "@/types";
 import { formatTime } from "@/utils/timerUtils";
+import { Button } from "./ui/button";
 
 interface RelaxGuideProps {
   onReturn: () => void;
@@ -75,12 +76,12 @@ const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn, timerState }) => {
       </div>
       
       <div className="flex justify-center">
-        <button 
+        <Button 
           onClick={onReturn} 
           className="btn-secondary text-sm py-2 px-4"
         >
-          Return to Timer
-        </button>
+          Return to Timer <ChevronRight size={16} className="ml-1" />
+        </Button>
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
-
 import React, { useEffect } from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
 import { formatTime } from "@/utils/timerUtils";
 import PlatformerGame from "./PlatformerGame";
 import RelaxGuide from "./RelaxGuide";
-import { AlarmClock, Gamepad, Dumbbell } from "lucide-react";
+import { AlarmClock, Gamepad, Dumbbell, ChevronRight } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface BreakModeProps {
   timerState: TimerState;
@@ -28,7 +28,6 @@ const BreakMode: React.FC<BreakModeProps> = ({
 }) => {
   const { breakActivity, timeRemaining } = timerState;
   
-  // Start the timer automatically when component mounts
   useEffect(() => {
     if (!timerState.isRunning) {
       onStart();
@@ -63,7 +62,7 @@ const BreakMode: React.FC<BreakModeProps> = ({
             onClick={() => onSelectActivity('game')}
           >
             <Gamepad size={22} className="mb-2 text-focus-purple" />
-            <h4 className="text-sm font-medium">Play Game</h4>
+            <h4 className="text-sm font-medium">Play Game <ChevronRight size={14} className="inline-block ml-1" /></h4>
           </div>
           
           <div 
@@ -72,7 +71,7 @@ const BreakMode: React.FC<BreakModeProps> = ({
             onClick={() => onSelectActivity('relax')}
           >
             <Dumbbell size={22} className="mb-2 text-focus-purple" />
-            <h4 className="text-sm font-medium">Relax & Stretch</h4>
+            <h4 className="text-sm font-medium">Relax & Stretch <ChevronRight size={14} className="inline-block ml-1" /></h4>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Coffee, Minus, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Coffee, Minus, Plus, ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "./ui/input";
@@ -118,10 +118,10 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
           
           <div className="grid grid-cols-2 gap-3">
             <Button variant="outline" className="py-1.5 px-3 text-gray-700 border-gray-200 bg-gray-50 hover:bg-gray-200 rounded-full text-xs" onClick={handleCancel}>
-              Cancel
+              Cancel <ChevronRight size={14} className="ml-1" />
             </Button>
             <Button className="py-1.5 px-3 bg-focus-purple text-white hover:bg-focus-purple-dark rounded-full text-xs" onClick={handleSave} disabled={tempDuration === breakDuration}>
-              Save
+              Save <ChevronRight size={14} className="ml-1" />
             </Button>
           </div>
         </div>

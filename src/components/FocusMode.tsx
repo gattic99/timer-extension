@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
-import { Clock, Minus, Plus } from "lucide-react";
+import { Clock, Minus, Plus, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import BreakDurationDialog from "./BreakDurationDialog";
 import { Input } from "./ui/input";
@@ -108,11 +109,11 @@ const FocusMode: React.FC<FocusModeProps> = ({
       
       <div className="flex justify-center gap-4 mt-2 mb-2">
         <Button variant="outline" onClick={onReset} className="border-gray-300 text-gray-700 font-semibold px-6 py-1.5 rounded-full text-sm h-9">
-          Reset
+          Reset <ChevronRight size={16} className="ml-1" />
         </Button>
         
         <Button onClick={timerState.isRunning ? onPause : onStart} className="bg-focus-purple hover:bg-focus-purple-dark text-white font-semibold px-6 py-1.5 rounded-full text-sm h-9">
-          {timerState.isRunning ? "Pause" : "Start"}
+          {timerState.isRunning ? "Pause" : "Start"} <ChevronRight size={16} className="ml-1" />
         </Button>
       </div>
       

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUp, ChevronRight } from 'lucide-react';
 
 interface GameControlsProps {
   onLeftPress: () => void;
