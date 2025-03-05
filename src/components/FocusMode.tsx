@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
@@ -147,7 +146,12 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </div>
         
         <div className="flex justify-center gap-4 mt-2 mb-2">
-          <Button variant="outline" onClick={onReset} className="border-gray-300 text-gray-700 font-semibold px-6 py-1.5 rounded-full text-sm h-9">
+          <Button 
+            variant="outline" 
+            onClick={onReset} 
+            disabled={!timerState.isRunning} 
+            className="border-gray-300 text-gray-700 font-semibold px-6 py-1.5 rounded-full text-sm h-9"
+          >
             Reset <ChevronRight size={16} className="ml-1" />
           </Button>
           
@@ -171,7 +175,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
           </CollapsibleTrigger>
           
           <CollapsibleContent className="pt-2 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <p className="text-xs text-muted-foreground mb-4">Break starts automatically after focus time.</p>
+            <p className="text-xs text-muted-foreground mb-4">Your break will start automatically when the focus timer ends.</p>
             
             <div className="mt-2 text-center">
               <div className="flex items-center justify-center gap-2">
