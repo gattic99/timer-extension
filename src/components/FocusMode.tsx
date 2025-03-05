@@ -202,10 +202,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
                 </Button>
               </div>
             </div>
-
-            <div className="mt-3 text-center text-xs text-muted-foreground">
-              <p>Take mindful breaks to recharge</p>
-            </div>
           </CollapsibleContent>
         </Collapsible>
       </div>
