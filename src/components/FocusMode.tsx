@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
@@ -170,7 +171,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
           </CollapsibleTrigger>
           
           <CollapsibleContent className="pt-2 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <p className="text-xs text-muted-foreground mb-4">Set your break timer below. This will start after your focus session ends.</p>
+            <p className="text-xs text-muted-foreground mb-4">Your break will start automatically when the focus timer ends.</p>
             
             <div className="mt-2 text-center">
               <div className="flex items-center justify-center gap-2">
