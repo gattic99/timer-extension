@@ -2,7 +2,6 @@
 import React from "react";
 import { formatTime, getTimePercentage } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
-import { Progress } from "@/components/ui/progress";
 
 interface TimerProps {
   timerState: TimerState;
@@ -17,11 +16,6 @@ const Timer: React.FC<TimerProps> = ({
   totalDuration
 }) => {
   const { timeRemaining, mode } = timerState;
-  const timePercentage = getTimePercentage(timeRemaining, totalDuration);
-  
-  const progressColor = mode === 'focus' 
-    ? 'bg-focus-purple' 
-    : 'bg-break-green';
   
   const timerTextColor = mode === 'focus'
     ? 'text-focus-purple'
@@ -33,13 +27,6 @@ const Timer: React.FC<TimerProps> = ({
         <div className={`timer-text ${timerTextColor} text-3xl font-bold`}>
           {formatTime(timeRemaining)}
         </div>
-      </div>
-      
-      <div className="w-full max-w-sm">
-        <Progress 
-          value={timePercentage} 
-          className={`h-1.5 ${progressColor} transition-all duration-500`}
-        />
       </div>
     </div>
   );

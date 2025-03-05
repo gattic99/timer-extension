@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
@@ -6,6 +7,7 @@ import { Clock, Minus, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 import BreakDurationDialog from "./BreakDurationDialog";
 import { Input } from "./ui/input";
+
 interface FocusModeProps {
   timerState: TimerState;
   onStart: () => void;
@@ -16,6 +18,7 @@ interface FocusModeProps {
   onChangeFocusDuration: (duration: number) => void;
   onChangeBreakDuration: (duration: number) => void;
 }
+
 const FocusMode: React.FC<FocusModeProps> = ({
   timerState,
   onStart,
@@ -28,6 +31,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
 }) => {
   const totalDuration = minutesToSeconds(focusDuration);
   const [inputValue, setInputValue] = useState(focusDuration.toString());
+  
   const decreaseFocusDuration = () => {
     if (focusDuration > 1) {
       const newDuration = focusDuration - 1;
@@ -35,6 +39,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setInputValue(newDuration.toString());
     }
   };
+  
   const increaseFocusDuration = () => {
     if (focusDuration < 60) {
       const newDuration = focusDuration + 1;
@@ -42,9 +47,11 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setInputValue(newDuration.toString());
     }
   };
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
+  
   const handleInputBlur = () => {
     const newValue = parseInt(inputValue);
     if (!isNaN(newValue) && newValue >= 1 && newValue <= 60) {
@@ -53,11 +60,13 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setInputValue(focusDuration.toString());
     }
   };
+  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
   };
+  
   return <div className="focus-card p-4 w-full max-w-sm mx-auto animate-scale-in">
       <div className="text-center mb-2">
         <div className="flex items-center justify-left">
@@ -78,7 +87,15 @@ const FocusMode: React.FC<FocusModeProps> = ({
             
             <div className="flex items-baseline">
               <div className="relative w-12 text-center">
-                <Input type="text" value={inputValue} onChange={handleInputChange} onBlur={handleInputBlur} onKeyDown={handleKeyDown} disabled={timerState.isRunning} className="w-full text-center font-bold text-focus-purple text-base px-0 py-0.5 border-none focus:ring-0 focus:outline-none h-7" />
+                <Input 
+                  type="text" 
+                  value={inputValue} 
+                  onChange={handleInputChange} 
+                  onBlur={handleInputBlur} 
+                  onKeyDown={handleKeyDown} 
+                  disabled={timerState.isRunning} 
+                  className="w-full text-center font-bold text-focus-purple text-base px-0 py-0.5 border-none focus:ring-0 focus:outline-none h-7" 
+                />
                 <span className="text-xs ml-0.5 text-focus-purple">min</span>
               </div>
             </div>
@@ -109,4 +126,5 @@ const FocusMode: React.FC<FocusModeProps> = ({
       </div>
     </div>;
 };
+
 export default FocusMode;

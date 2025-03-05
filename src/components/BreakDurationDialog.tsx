@@ -1,43 +1,79 @@
+
 import React, { useState } from "react";
 import { Coffee, Minus, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Input } from "./ui/input";
+
 interface BreakDurationDialogProps {
   breakDuration: number;
   onChangeBreakDuration: (newDuration: number) => void;
   disabled?: boolean;
 }
+
 const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
   breakDuration,
   onChangeBreakDuration,
   disabled = false
 }) => {
   const [tempDuration, setTempDuration] = useState<number>(breakDuration);
+  const [inputValue, setInputValue] = useState<string>(breakDuration.toString());
   const [isOpen, setIsOpen] = useState(false);
+  
   const decreaseDuration = () => {
     if (tempDuration > 1) {
-      setTempDuration(tempDuration - 1);
+      const newValue = tempDuration - 1;
+      setTempDuration(newValue);
+      setInputValue(newValue.toString());
     }
   };
+  
   const increaseDuration = () => {
     if (tempDuration < 15) {
-      setTempDuration(tempDuration + 1);
+      const newValue = tempDuration + 1;
+      setTempDuration(newValue);
+      setInputValue(newValue.toString());
     }
   };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+  
+  const handleInputBlur = () => {
+    const newValue = parseInt(inputValue);
+    if (!isNaN(newValue) && newValue >= 1 && newValue <= 15) {
+      setTempDuration(newValue);
+    } else {
+      setInputValue(tempDuration.toString());
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+  
   const handleSave = () => {
     onChangeBreakDuration(tempDuration);
     setIsOpen(false);
   };
+  
   const handleCancel = () => {
     setTempDuration(breakDuration);
+    setInputValue(breakDuration.toString());
     setIsOpen(false);
   };
+  
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (open) {
       setTempDuration(breakDuration);
+      setInputValue(breakDuration.toString());
     }
   };
+
   return <Collapsible open={isOpen} onOpenChange={handleOpenChange} className="w-full rounded-xl overflow-hidden">
       <CollapsibleTrigger asChild>
         <Button variant="outline" disabled={disabled} className="w-full px-3 py-2 flex items-center justify-between bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 transition-all duration-200 text-xs rounded-none">
@@ -64,7 +100,14 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
             </button>
             
             <div className="flex items-baseline">
-              <span className="text-4xl font-bold text-focus-purple">{tempDuration}</span>
+              <Input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                onKeyDown={handleKeyDown}
+                className="w-12 h-12 p-0 text-4xl text-center font-bold text-focus-purple border-none bg-transparent focus:ring-0"
+              />
               <span className="text-sm ml-1 text-focus-purple">min</span>
             </div>
             
@@ -85,4 +128,5 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
       </CollapsibleContent>
     </Collapsible>;
 };
+
 export default BreakDurationDialog;
