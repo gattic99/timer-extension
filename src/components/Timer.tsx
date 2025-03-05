@@ -23,7 +23,7 @@ const Timer: React.FC<TimerProps> = ({
 
   return (
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
-      <div className="timer-display mb-1" style={{width: "180px", height: "180px"}}>
+      <div className="timer-display mb-0" style={{width: "180px", height: "180px"}}>
         <div className={`timer-text ${timerTextColor} text-3xl font-bold`}>
           {formatTime(timeRemaining)}
         </div>
