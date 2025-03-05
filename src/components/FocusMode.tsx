@@ -5,7 +5,6 @@ import { TimerState } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
 import { Clock, Minus, Plus, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
-import BreakDurationDialog from "./BreakDurationDialog";
 import { Input } from "./ui/input";
 
 interface FocusModeProps {
@@ -69,7 +68,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
   
   return (
     <>
-      <div className="focus-card p-4 w-full max-w-sm mx-auto animate-scale-in">
+      <div className="focus-card p-4 w-full max-w-sm mx-auto animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl border border-focus-purple border-opacity-20 shadow-md transition-all duration-300 hover:shadow-lg">
         <div className="text-center mb-2">
           <div className="flex items-center justify-left">
             <Clock className="text-focus-purple mr-2" size={18} />
@@ -122,10 +121,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
         <div className="mt-2 text-center text-xs text-muted-foreground">
           <p>Minimize distractions</p>
         </div>
-      </div>
-      
-      <div className="max-w-sm mx-auto mt-4">
-        <BreakDurationDialog breakDuration={breakDuration} onChangeBreakDuration={onChangeBreakDuration} disabled={timerState.isRunning} />
       </div>
     </>
   );

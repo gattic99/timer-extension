@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Coffee, Minus, Plus, ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -73,59 +74,63 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
     }
   };
 
-  return <Collapsible open={isOpen} onOpenChange={handleOpenChange} className="w-full rounded-xl overflow-hidden mt-6">
-      <CollapsibleTrigger asChild>
-        <Button variant="outline" disabled={disabled} className="w-full px-3 py-2 flex items-center justify-between bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 transition-all duration-200 text-xs rounded-none">
-          <div className="flex items-center">
-            <Coffee className="mr-1 text-focus-purple" size={15} />
-            <span className="font-medium">Break duration</span>
-          </div>
-          <div className="flex items-center">
-            <span className="mr-1">{breakDuration} min</span>
-            {isOpen ? <ChevronUp className="text-focus-purple" size={14} /> : <ChevronDown className="text-focus-purple" size={14} />}
-          </div>
-        </Button>
-      </CollapsibleTrigger>
-      
-      <CollapsibleContent className="bg-gray-100 border border-t-0 border-gray-200 rounded-b-xl">
-        <div className="p-3">
-          <p className="text-muted-foreground text-center text-xs mb-3">
-            The break will start automatically after the focus timer ends.
-          </p>
-          
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <button onClick={decreaseDuration} disabled={tempDuration <= 1} className="h-8 w-8 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors">
-              <Minus size={16} />
-            </button>
+  return (
+    <div className="focus-card p-4 w-full max-w-sm mx-auto mt-6 bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl border border-focus-purple border-opacity-20 shadow-md transition-all duration-300 hover:shadow-lg">
+      <Collapsible open={isOpen} onOpenChange={handleOpenChange} className="w-full rounded-xl overflow-hidden">
+        <CollapsibleTrigger asChild>
+          <Button variant="outline" disabled={disabled} className="w-full px-3 py-2 flex items-center justify-between bg-transparent hover:bg-gray-200 text-gray-700 border-0 transition-all duration-200 text-xs rounded-none">
+            <div className="flex items-center">
+              <Coffee className="mr-1 text-focus-purple" size={15} />
+              <span className="font-medium">Break duration</span>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-1">{breakDuration} min</span>
+              {isOpen ? <ChevronUp className="text-focus-purple" size={14} /> : <ChevronDown className="text-focus-purple" size={14} />}
+            </div>
+          </Button>
+        </CollapsibleTrigger>
+        
+        <CollapsibleContent className="bg-transparent border-0 rounded-b-xl">
+          <div className="p-3">
+            <p className="text-muted-foreground text-center text-xs mb-3">
+              The break will start automatically after the focus timer ends.
+            </p>
             
-            <div className="flex items-baseline">
-              <Input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-                onKeyDown={handleKeyDown}
-                className="w-12 h-12 p-0 text-4xl text-center font-bold text-focus-purple border-none bg-transparent focus:ring-0"
-              />
-              <span className="text-sm ml-1 text-focus-purple">min</span>
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <button onClick={decreaseDuration} disabled={tempDuration <= 1} className="h-8 w-8 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors">
+                <Minus size={16} />
+              </button>
+              
+              <div className="flex items-baseline">
+                <Input
+                  type="text"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onBlur={handleInputBlur}
+                  onKeyDown={handleKeyDown}
+                  className="w-12 h-12 p-0 text-4xl text-center font-bold text-focus-purple border-none bg-transparent focus:ring-0"
+                />
+                <span className="text-sm ml-1 text-focus-purple">min</span>
+              </div>
+              
+              <button onClick={increaseDuration} disabled={tempDuration >= 15} className="h-8 w-8 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors">
+                <Plus size={16} />
+              </button>
             </div>
             
-            <button onClick={increaseDuration} disabled={tempDuration >= 15} className="h-8 w-8 rounded-full flex items-center justify-center bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition-colors">
-              <Plus size={16} />
-            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="outline" className="py-1.5 px-3 text-gray-700 border-gray-200 bg-gray-50 hover:bg-gray-200 rounded-full text-xs" onClick={handleCancel}>
+                Cancel <ChevronRight size={14} className="ml-1" />
+              </Button>
+              <Button className="py-1.5 px-3 bg-focus-purple text-white hover:bg-focus-purple-dark rounded-full text-xs" onClick={handleSave} disabled={tempDuration === breakDuration}>
+                Save <ChevronRight size={14} className="ml-1" />
+              </Button>
+            </div>
           </div>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <Button variant="outline" className="py-1.5 px-3 text-gray-700 border-gray-200 bg-gray-50 hover:bg-gray-200 rounded-full text-xs" onClick={handleCancel}>
-              Cancel <ChevronRight size={14} className="ml-1" />
-            </Button>
-            <Button className="py-1.5 px-3 bg-focus-purple text-white hover:bg-focus-purple-dark rounded-full text-xs" onClick={handleSave} disabled={tempDuration === breakDuration}>
-              Save <ChevronRight size={14} className="ml-1" />
-            </Button>
-          </div>
-        </div>
-      </CollapsibleContent>
-    </Collapsible>;
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  );
 };
 
 export default BreakDurationDialog;
