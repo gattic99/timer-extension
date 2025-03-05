@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
@@ -79,7 +78,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
       <div className="relative">
         <Timer timerState={timerState} onStart={onStart} onPause={onPause} onReset={onReset} totalDuration={totalDuration} />
         
-        <div className="mt-2 text-center">
+        <div className="mt-0 text-center">
           <div className="flex items-center justify-center gap-2">
             <Button variant="outline" size="icon" onClick={decreaseFocusDuration} disabled={focusDuration <= 1 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7">
               <Minus size={14} />
@@ -107,13 +106,13 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </div>
       </div>
       
-      <div className="flex justify-center gap-4 mt-4 mb-3">
-        <Button onClick={timerState.isRunning ? onPause : onStart} className="bg-focus-purple hover:bg-focus-purple-dark text-white font-semibold px-6 py-1.5 rounded-full text-sm h-9">
-          {timerState.isRunning ? "Pause" : "Start"}
-        </Button>
-        
+      <div className="flex justify-center gap-4 mt-2 mb-2">
         <Button variant="outline" onClick={onReset} className="border-gray-300 text-gray-700 font-semibold px-6 py-1.5 rounded-full text-sm h-9">
           Reset
+        </Button>
+        
+        <Button onClick={timerState.isRunning ? onPause : onStart} className="bg-focus-purple hover:bg-focus-purple-dark text-white font-semibold px-6 py-1.5 rounded-full text-sm h-9">
+          {timerState.isRunning ? "Pause" : "Start"}
         </Button>
       </div>
       
