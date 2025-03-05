@@ -110,9 +110,9 @@ const FocusMode: React.FC<FocusModeProps> = ({
         <div className="text-center mb-2">
           <div className="flex items-center justify-left">
             <Clock className="text-focus-purple mr-2" size={18} />
-            <h2 className="text-lg text-dark-text font-semibold">Deep Work Mode</h2>
+            <h2 className="text-lg text-dark-text font-semibold">Focus Mode</h2>
           </div>
-          <p className="text-xs text-muted-foreground text-left">Set your focus timer below. When it ends, your break timer will start automatically.</p>
+          <p className="text-xs text-muted-foreground text-left">Work for a set time before your break begins.</p>
         </div>
         
         <div className="relative">
@@ -171,7 +171,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
           </CollapsibleTrigger>
           
           <CollapsibleContent className="pt-2 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <p className="text-xs text-muted-foreground mb-4">Your break will start automatically when the focus timer ends.</p>
+            <p className="text-xs text-muted-foreground mb-4">Break starts automatically after focus time.</p>
             
             <div className="mt-2 text-center">
               <div className="flex items-center justify-center gap-2">
