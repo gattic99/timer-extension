@@ -1,11 +1,11 @@
-
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
 import { minutesToSeconds } from "@/utils/timerUtils";
-import { Clock, Minus, Plus, ChevronRight } from "lucide-react";
+import { Clock, Minus, Plus, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 
 interface FocusModeProps {
   timerState: TimerState;
@@ -31,6 +31,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
   const totalDuration = minutesToSeconds(focusDuration);
   const [inputValue, setInputValue] = useState(focusDuration.toString());
   const [breakInputValue, setBreakInputValue] = useState(breakDuration.toString());
+  const [isBreakOpen, setIsBreakOpen] = useState(false);
   
   const decreaseFocusDuration = () => {
     if (focusDuration > 1) {
@@ -67,7 +68,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
     }
   };
 
-  // Break duration handlers
   const decreaseBreakDuration = () => {
     if (breakDuration > 1) {
       const newDuration = breakDuration - 1;
@@ -160,46 +160,54 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </div>
       </div>
 
-      {/* Break Duration Box */}
       <div className="focus-card p-4 w-full max-w-sm mx-auto mt-6 animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl border border-focus-purple border-opacity-20 shadow-md transition-all duration-300 hover:shadow-lg">
-        <div className="text-center mb-2">
-          <div className="flex items-center justify-left">
-            <Clock className="text-focus-purple mr-2" size={18} />
-            <h2 className="text-lg text-dark-text font-semibold">Break Duration</h2>
-          </div>
-          <p className="text-xs text-muted-foreground text-left">Set your break timer below. This will start after your focus session ends.</p>
-        </div>
-
-        <div className="mt-2 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <Button variant="outline" size="icon" onClick={decreaseBreakDuration} disabled={breakDuration <= 1 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7">
-              <Minus size={14} />
-            </Button>
+        <Collapsible open={isBreakOpen} onOpenChange={setIsBreakOpen} className="w-full">
+          <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
+            <div className="flex items-center">
+              <Clock className="text-focus-purple mr-2" size={18} />
+              <h2 className="text-lg text-dark-text font-semibold">Break Duration</h2>
+            </div>
+            <div className="flex items-center">
+              <span className="text-sm mr-2 text-dark-text">{breakDuration} min</span>
+              {isBreakOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </div>
+          </CollapsibleTrigger>
+          
+          <CollapsibleContent className="pt-2 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            <p className="text-xs text-muted-foreground mb-4">Set your break timer below. This will start after your focus session ends.</p>
             
-            <div className="flex items-baseline">
-              <div className="relative w-12 text-center">
-                <Input 
-                  type="text" 
-                  value={breakInputValue} 
-                  onChange={handleBreakInputChange} 
-                  onBlur={handleBreakInputBlur} 
-                  onKeyDown={handleBreakKeyDown} 
-                  disabled={timerState.isRunning} 
-                  className="w-full text-center font-bold text-focus-purple text-base px-0 py-0.5 border-none focus:ring-0 focus:outline-none h-7" 
-                />
-                <span className="text-xs ml-0.5 text-focus-purple">min</span>
+            <div className="mt-2 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <Button variant="outline" size="icon" onClick={decreaseBreakDuration} disabled={breakDuration <= 1 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7">
+                  <Minus size={14} />
+                </Button>
+                
+                <div className="flex items-baseline">
+                  <div className="relative w-12 text-center">
+                    <Input 
+                      type="text" 
+                      value={breakInputValue} 
+                      onChange={handleBreakInputChange} 
+                      onBlur={handleBreakInputBlur} 
+                      onKeyDown={handleBreakKeyDown} 
+                      disabled={timerState.isRunning} 
+                      className="w-full text-center font-bold text-focus-purple text-base px-0 py-0.5 border-none focus:ring-0 focus:outline-none h-7" 
+                    />
+                    <span className="text-xs ml-0.5 text-focus-purple">min</span>
+                  </div>
+                </div>
+                
+                <Button variant="outline" size="icon" onClick={increaseBreakDuration} disabled={breakDuration >= 15 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7">
+                  <Plus size={14} />
+                </Button>
               </div>
             </div>
-            
-            <Button variant="outline" size="icon" onClick={increaseBreakDuration} disabled={breakDuration >= 15 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7">
-              <Plus size={14} />
-            </Button>
-          </div>
-        </div>
 
-        <div className="mt-3 text-center text-xs text-muted-foreground">
-          <p>Take mindful breaks to recharge</p>
-        </div>
+            <div className="mt-3 text-center text-xs text-muted-foreground">
+              <p>Take mindful breaks to recharge</p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </>
   );
