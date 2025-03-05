@@ -73,7 +73,7 @@ const BreakDurationDialog: React.FC<BreakDurationDialogProps> = ({
     }
   };
 
-  return <Collapsible open={isOpen} onOpenChange={handleOpenChange} className="w-full rounded-xl overflow-hidden mt-3">
+  return <Collapsible open={isOpen} onOpenChange={handleOpenChange} className="w-full rounded-xl overflow-hidden mt-6">
       <CollapsibleTrigger asChild>
         <Button variant="outline" disabled={disabled} className="w-full px-3 py-2 flex items-center justify-between bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 transition-all duration-200 text-xs rounded-none">
           <div className="flex items-center">
