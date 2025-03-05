@@ -19,14 +19,21 @@ export const useTimer = ({ settings }: UseTimerProps) => {
 
   const intervalRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const breakAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Initialize audio
   useEffect(() => {
     audioRef.current = new Audio('/notification.mp3');
+    breakAudioRef.current = new Audio('/time-for-break.mp3');
+    
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
+      }
+      if (breakAudioRef.current) {
+        breakAudioRef.current.pause();
+        breakAudioRef.current = null;
       }
     };
   }, []);
@@ -41,13 +48,13 @@ export const useTimer = ({ settings }: UseTimerProps) => {
           intervalRef.current = null;
         }
         
-        // Play notification sound
-        if (audioRef.current) {
-          audioRef.current.play().catch(e => console.error("Error playing sound:", e));
-        }
-        
-        // Show toast notification
+        // Play notification sound based on which timer completed
         if (prevState.mode === 'focus') {
+          // Play "Time for a break" sound for focus timer completion
+          if (breakAudioRef.current) {
+            breakAudioRef.current.play().catch(e => console.error("Error playing break sound:", e));
+          }
+          
           toast("Focus time complete! Time for a break.", {
             position: "top-center"
           });
@@ -61,6 +68,11 @@ export const useTimer = ({ settings }: UseTimerProps) => {
             completed: true
           };
         } else {
+          // Play regular notification for break timer completion
+          if (audioRef.current) {
+            audioRef.current.play().catch(e => console.error("Error playing sound:", e));
+          }
+          
           toast("Break time complete! Ready to focus again?", {
             position: "top-center"
           });
