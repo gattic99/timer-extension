@@ -154,10 +154,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
             {timerState.isRunning ? "Pause" : "Start"} <ChevronRight size={16} className="ml-1" />
           </Button>
         </div>
-        
-        <div className="mt-2 text-center text-xs text-muted-foreground">
-          <p>Minimize distractions</p>
-        </div>
       </div>
 
       <div className="focus-card p-4 w-full max-w-sm mx-auto mt-6 animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl border border-focus-purple border-opacity-20 shadow-md transition-all duration-300 hover:shadow-lg">
