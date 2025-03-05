@@ -30,6 +30,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
 }) => {
   const totalDuration = minutesToSeconds(focusDuration);
   const [inputValue, setInputValue] = useState(focusDuration.toString());
+  const [breakInputValue, setBreakInputValue] = useState(breakDuration.toString());
   
   const decreaseFocusDuration = () => {
     if (focusDuration > 1) {
@@ -61,6 +62,42 @@ const FocusMode: React.FC<FocusModeProps> = ({
   };
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+
+  // Break duration handlers
+  const decreaseBreakDuration = () => {
+    if (breakDuration > 1) {
+      const newDuration = breakDuration - 1;
+      onChangeBreakDuration(newDuration);
+      setBreakInputValue(newDuration.toString());
+    }
+  };
+  
+  const increaseBreakDuration = () => {
+    if (breakDuration < 15) {
+      const newDuration = breakDuration + 1;
+      onChangeBreakDuration(newDuration);
+      setBreakInputValue(newDuration.toString());
+    }
+  };
+  
+  const handleBreakInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBreakInputValue(e.target.value);
+  };
+  
+  const handleBreakInputBlur = () => {
+    const newValue = parseInt(breakInputValue);
+    if (!isNaN(newValue) && newValue >= 1 && newValue <= 15) {
+      onChangeBreakDuration(newValue);
+    } else {
+      setBreakInputValue(breakDuration.toString());
+    }
+  };
+  
+  const handleBreakKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
@@ -120,6 +157,48 @@ const FocusMode: React.FC<FocusModeProps> = ({
         
         <div className="mt-2 text-center text-xs text-muted-foreground">
           <p>Minimize distractions</p>
+        </div>
+      </div>
+
+      {/* Break Duration Box */}
+      <div className="focus-card p-4 w-full max-w-sm mx-auto mt-6 animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl border border-focus-purple border-opacity-20 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="text-center mb-2">
+          <div className="flex items-center justify-left">
+            <Clock className="text-focus-purple mr-2" size={18} />
+            <h2 className="text-lg text-dark-text font-semibold">Break Duration</h2>
+          </div>
+          <p className="text-xs text-muted-foreground text-left">Set your break timer below. This will start after your focus session ends.</p>
+        </div>
+
+        <div className="mt-2 text-center">
+          <div className="flex items-center justify-center gap-2">
+            <Button variant="outline" size="icon" onClick={decreaseBreakDuration} disabled={breakDuration <= 1 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7">
+              <Minus size={14} />
+            </Button>
+            
+            <div className="flex items-baseline">
+              <div className="relative w-12 text-center">
+                <Input 
+                  type="text" 
+                  value={breakInputValue} 
+                  onChange={handleBreakInputChange} 
+                  onBlur={handleBreakInputBlur} 
+                  onKeyDown={handleBreakKeyDown} 
+                  disabled={timerState.isRunning} 
+                  className="w-full text-center font-bold text-focus-purple text-base px-0 py-0.5 border-none focus:ring-0 focus:outline-none h-7" 
+                />
+                <span className="text-xs ml-0.5 text-focus-purple">min</span>
+              </div>
+            </div>
+            
+            <Button variant="outline" size="icon" onClick={increaseBreakDuration} disabled={breakDuration >= 15 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7">
+              <Plus size={14} />
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-3 text-center text-xs text-muted-foreground">
+          <p>Take mindful breaks to recharge</p>
         </div>
       </div>
     </>
