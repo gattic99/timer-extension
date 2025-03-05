@@ -71,6 +71,53 @@ export const drawObstacles = (ctx: CanvasRenderingContext2D, obstacles: Obstacle
         ctx.beginPath();
         ctx.arc(adjustedX + obstacle.width / 2, obstacle.y + obstacle.height / 2, obstacle.width / 4, 0, Math.PI * 2);
         ctx.fill();
+      } else if (obstacle.type === 'stapler') {
+        // Stapler
+        ctx.fillStyle = '#D32F2F';
+        ctx.fillRect(adjustedX, obstacle.y + 5, obstacle.width, obstacle.height - 5);
+        
+        // Stapler top
+        ctx.fillStyle = '#B71C1C';
+        ctx.fillRect(adjustedX, obstacle.y, obstacle.width * 0.7, 5);
+        
+        // Stapler details
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(adjustedX + obstacle.width - 5, obstacle.y + 7, 3, 3);
+      } else if (obstacle.type === 'coffee') {
+        // Coffee mug
+        ctx.fillStyle = '#795548';
+        ctx.fillRect(adjustedX, obstacle.y + 5, obstacle.width, obstacle.height - 5);
+        
+        // Handle
+        ctx.beginPath();
+        ctx.arc(adjustedX + obstacle.width, obstacle.y + obstacle.height/2, 5, Math.PI * 1.5, Math.PI * 0.5, false);
+        ctx.strokeStyle = '#5D4037';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Coffee
+        ctx.fillStyle = '#3E2723';
+        ctx.fillRect(adjustedX + 2, obstacle.y + 7, obstacle.width - 4, 4);
+      } else if (obstacle.type === 'plant') {
+        // Office plant pot
+        ctx.fillStyle = '#795548';
+        ctx.fillRect(adjustedX, obstacle.y + obstacle.height/2, obstacle.width, obstacle.height/2);
+        
+        // Plant leaves
+        ctx.fillStyle = '#4CAF50';
+        ctx.beginPath();
+        ctx.arc(adjustedX + obstacle.width/2, obstacle.y + obstacle.height/3, obstacle.width/2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = '#388E3C';
+        ctx.beginPath();
+        ctx.arc(adjustedX + obstacle.width/2 - 5, obstacle.y + obstacle.height/4, obstacle.width/3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = '#2E7D32';
+        ctx.beginPath();
+        ctx.arc(adjustedX + obstacle.width/2 + 5, obstacle.y + obstacle.height/5, obstacle.width/4, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
   });
