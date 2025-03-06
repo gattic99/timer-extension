@@ -86,8 +86,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     // Draw character
     drawCharacter(ctx, characterRef.current);
     
-    // Draw UI elements
-    drawUI(ctx, gameState, timerState.timeRemaining);
+    // Draw UI elements with mode for proper icon
+    drawUI(ctx, gameState, timerState.timeRemaining, timerState.mode);
     
     // Draw game over screen if applicable
     if (gameState.gameOver) {
@@ -112,9 +112,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
           className="bg-white border border-gray-200 rounded-lg shadow-md mx-auto"
         />
         
-        <div className="absolute top-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
-          {formatTime(timerState.timeRemaining)}
-        </div>
+        {/* Removed the timer display from here since we're styling it in the canvas */}
         
         <div className="absolute top-3 right-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
           Score: {gameState.score}
