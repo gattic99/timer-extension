@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
@@ -28,11 +29,7 @@ const BreakMode: React.FC<BreakModeProps> = ({
 }) => {
   const { breakActivity, timeRemaining } = timerState;
   
-  useEffect(() => {
-    if (!timerState.isRunning) {
-      onStart();
-    }
-  }, []);
+  // In break mode, we don't auto-start the timer until a break activity is selected
   
   if (breakActivity === 'game') {
     return <PlatformerGame onReturn={() => onSelectActivity(null)} timerState={timerState} />;

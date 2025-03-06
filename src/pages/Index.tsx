@@ -27,6 +27,12 @@ const Index: React.FC = () => {
     settings
   });
   
+  useEffect(() => {
+    if (timerState.mode === 'break' && timerState.completed) {
+      setIsOpen(true);
+    }
+  }, [timerState.mode, timerState.completed]);
+  
   const handleFocusDurationChange = (newDuration: number) => {
     const newSettings = {
       ...settings,
@@ -51,7 +57,9 @@ const Index: React.FC = () => {
 
   const handleStartTimer = () => {
     startTimer();
-    setIsOpen(false);
+    if (timerState.mode === 'focus') {
+      setIsOpen(false);
+    }
   };
 
   const handleReturnFromGame = () => {
