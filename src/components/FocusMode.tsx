@@ -150,8 +150,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
           </CollapsibleTrigger>
           
           <CollapsibleContent className="pt-2 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <p className="text-xs text-muted-foreground mb-4">Break will start automatically when focus time ends. 
-Maximum break is 15 min.</p>
+            <p className="text-xs text-muted-foreground mb-4">The maximum break is 15 minutes, starting automatically when focus time ends.</p>
             
             <div className="mt-2 text-center">
               <div className="flex items-center justify-center gap-2">
