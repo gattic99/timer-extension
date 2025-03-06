@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
@@ -91,7 +92,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
     }
   };
   return <>
-      <div className="focus-card p-4 w-full max-w-sm mx-auto animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
+      <div className="focus-card p-4 w-full animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
         <div className="text-center mb-2">
           <div className="flex items-center justify-left">
             <Clock className="text-focus-purple mr-2" size={18} />
@@ -134,7 +135,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
         </div>
       </div>
 
-      <div className="focus-card p-4 w-full max-w-sm mx-auto mt-6 animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
+      <div className="focus-card p-4 w-full mt-6 animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
         <Collapsible open={isBreakOpen} onOpenChange={setIsBreakOpen} className="w-full">
           <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
             <div className="flex items-center">
