@@ -43,10 +43,18 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     
     setTimerState(prev => ({ ...prev, isRunning: true }));
     
+    // Clear any existing interval before setting a new one
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
     intervalRef.current = window.setInterval(() => {
       setTimerState(prev => {
         if (prev.timeRemaining <= 1) {
-          clearInterval(intervalRef.current!);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           
           // Play notification sound when timer completes
           if (prev.mode === 'focus') {
@@ -93,12 +101,19 @@ export const useTimer = ({ settings }: UseTimerProps) => {
   const pauseTimer = useCallback(() => {
     if (!timerState.isRunning) return;
     
-    clearInterval(intervalRef.current!);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
     setTimerState(prev => ({ ...prev, isRunning: false }));
   }, [timerState.isRunning]);
 
   const resetTimer = useCallback((mode: TimerMode) => {
-    clearInterval(intervalRef.current!);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     
     setTimerState({
       mode,
@@ -113,7 +128,11 @@ export const useTimer = ({ settings }: UseTimerProps) => {
 
   const selectBreakActivity = useCallback((activity: BreakActivity) => {
     setTimerState(prev => ({ ...prev, breakActivity: activity }));
-  }, []);
+    // Auto-start the timer when an activity is selected
+    if (activity && !timerState.isRunning) {
+      setTimeout(() => startTimer(), 100); // Small timeout to ensure state updates first
+    }
+  }, [timerState.isRunning, startTimer]);
 
   const updateFocusDuration = useCallback((minutes: number) => {
     if (!timerState.isRunning && timerState.mode === 'focus') {

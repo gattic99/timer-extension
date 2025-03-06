@@ -27,12 +27,12 @@ const BreakMode: React.FC<BreakModeProps> = ({
   breakDuration,
   onChangeBreakDuration
 }) => {
-  const { breakActivity, timeRemaining } = timerState;
+  const { breakActivity, timeRemaining, isRunning } = timerState;
   
   // In break mode, we don't auto-start the timer until a break activity is selected
   
   if (breakActivity === 'game') {
-    return <PlatformerGame onReturn={() => onSelectActivity(null)} timerState={timerState} />;
+    return <PlatformerGame onReturn={() => onSelectActivity(null)} timerState={timerState} onStart={onStart} onPause={onPause} />;
   }
   
   if (breakActivity === 'relax') {

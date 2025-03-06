@@ -5,10 +5,10 @@ import { TimerState } from "@/types";
 
 interface TimerProps {
   timerState: TimerState;
-  onStart: () => void;
-  onPause: () => void;
-  onReset: () => void;
-  totalDuration: number;
+  onStart?: () => void;
+  onPause?: () => void;
+  onReset?: () => void;
+  totalDuration?: number;
 }
 
 const Timer: React.FC<TimerProps> = ({

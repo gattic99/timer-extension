@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -67,7 +68,12 @@ const Index: React.FC = () => {
   };
 
   if (timerState.mode === 'break' && timerState.breakActivity === 'game') {
-    return <PlatformerGame onReturn={handleReturnFromGame} timerState={timerState} />;
+    return <PlatformerGame 
+      onReturn={handleReturnFromGame} 
+      timerState={timerState}
+      onStart={startTimer}
+      onPause={pauseTimer}
+    />;
   }
   
   return <div className="min-h-screen relative overflow-hidden">

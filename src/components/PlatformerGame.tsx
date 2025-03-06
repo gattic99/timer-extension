@@ -23,9 +23,16 @@ import {
 interface PlatformerGameProps {
   onReturn: () => void;
   timerState: TimerState;
+  onStart?: () => void;
+  onPause?: () => void;
 }
 
-const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState }) => {
+const PlatformerGame: React.FC<PlatformerGameProps> = ({ 
+  onReturn, 
+  timerState,
+  onStart,
+  onPause 
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   
   const {
@@ -46,9 +53,14 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
     initialCoins
   });
   
+  // Start timer when game is started if it's not already running
   useEffect(() => {
     setGameStarted(true);
     resetGame();
+    
+    if (onStart && !timerState.isRunning) {
+      onStart();
+    }
   }, []);
   
   useEffect(() => {
@@ -67,8 +79,14 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
       renderGame(ctx);
     }, 16); // ~60 FPS
     
-    return () => clearInterval(gameLoop);
-  }, [gameStarted, gameState.gameOver, updateGame]);
+    return () => {
+      clearInterval(gameLoop);
+      // Pause timer when leaving game
+      if (onPause && timerState.isRunning) {
+        onPause();
+      }
+    };
+  }, [gameStarted, gameState.gameOver, updateGame, timerState.isRunning]);
   
   const renderGame = (ctx: CanvasRenderingContext2D) => {
     // Draw background
@@ -112,7 +130,9 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({ onReturn, timerState })
           className="bg-white border border-gray-200 rounded-lg shadow-md mx-auto"
         />
         
-        {/* Removed the timer display from here since we're styling it in the canvas */}
+        <div className="absolute top-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
+          Break: {formatTime(timerState.timeRemaining)}
+        </div>
         
         <div className="absolute top-3 right-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
           Score: {gameState.score}
