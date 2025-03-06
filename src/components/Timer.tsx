@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { formatTime, getTimePercentage } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
 
@@ -13,9 +13,12 @@ interface TimerProps {
 
 const Timer: React.FC<TimerProps> = ({
   timerState,
+  onStart,
+  onPause,
+  onReset,
   totalDuration
 }) => {
-  const { timeRemaining, mode } = timerState;
+  const { timeRemaining, mode, isRunning } = timerState;
   
   const timerTextColor = mode === 'focus'
     ? 'text-focus-purple'
@@ -28,6 +31,35 @@ const Timer: React.FC<TimerProps> = ({
           {formatTime(timeRemaining)}
         </div>
       </div>
+      
+      {onStart && onPause && (
+        <div className="flex space-x-2 mt-2">
+          {!isRunning ? (
+            <button 
+              onClick={onStart}
+              className="bg-focus-purple text-white px-3 py-1 rounded-md text-sm"
+            >
+              Start
+            </button>
+          ) : (
+            <button 
+              onClick={onPause}
+              className="bg-gray-500 text-white px-3 py-1 rounded-md text-sm"
+            >
+              Pause
+            </button>
+          )}
+          
+          {onReset && (
+            <button 
+              onClick={onReset}
+              className="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

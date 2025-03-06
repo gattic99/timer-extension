@@ -29,10 +29,25 @@ const BreakMode: React.FC<BreakModeProps> = ({
 }) => {
   const { breakActivity, timeRemaining, isRunning } = timerState;
   
-  // In break mode, we don't auto-start the timer until a break activity is selected
+  // Display the timer at the top of the break mode
+  const displayTimer = () => (
+    <div className="mb-4">
+      <Timer 
+        timerState={timerState} 
+        onStart={onStart} 
+        onPause={onPause} 
+        onReset={onReset}
+      />
+    </div>
+  );
   
   if (breakActivity === 'game') {
-    return <PlatformerGame onReturn={() => onSelectActivity(null)} timerState={timerState} onStart={onStart} onPause={onPause} />;
+    return <PlatformerGame 
+      onReturn={() => onSelectActivity(null)} 
+      timerState={timerState} 
+      onStart={onStart} 
+      onPause={onPause} 
+    />;
   }
   
   if (breakActivity === 'relax') {
@@ -50,6 +65,9 @@ const BreakMode: React.FC<BreakModeProps> = ({
         <p className="text-sm text-muted-foreground">
           Take a moment to relax. Choose an activity below.
         </p>
+        
+        {/* Display the timer in break mode */}
+        {displayTimer()}
       </div>
       
       <div className="mt-4">
