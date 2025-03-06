@@ -10,9 +10,11 @@ import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
 import PlatformerGame from "@/components/PlatformerGame";
 import { toast } from "sonner";
+
 const Index: React.FC = () => {
   const [settings, setSettings] = useState<TimerSettings>(defaultTimerSettings);
   const [isOpen, setIsOpen] = useState(false);
+
   const {
     timerState,
     startTimer,
@@ -24,11 +26,13 @@ const Index: React.FC = () => {
   } = useTimer({
     settings
   });
+
   useEffect(() => {
     if (timerState.mode === 'break' && timerState.completed) {
       setIsOpen(true);
     }
   }, [timerState.mode, timerState.completed]);
+
   const handleFocusDurationChange = (newDuration: number) => {
     const newSettings = {
       ...settings,
@@ -37,6 +41,7 @@ const Index: React.FC = () => {
     setSettings(newSettings);
     updateFocusDuration(newDuration);
   };
+
   const handleBreakDurationChange = (newDuration: number) => {
     const newSettings = {
       ...settings,
@@ -45,28 +50,33 @@ const Index: React.FC = () => {
     setSettings(newSettings);
     updateBreakDuration(newDuration);
   };
+
   const togglePopup = () => {
     setIsOpen(!isOpen);
   };
+
   const handleStartTimer = () => {
     startTimer();
     if (timerState.mode === 'focus') {
       setIsOpen(false);
     }
   };
+
   const handleReturnFromGame = () => {
     selectBreakActivity(null);
   };
+
   if (timerState.mode === 'break' && timerState.breakActivity === 'game') {
     return <PlatformerGame onReturn={handleReturnFromGame} timerState={timerState} onStart={startTimer} onPause={pauseTimer} />;
   }
+
   return <div className="min-h-screen relative overflow-hidden">
       <FigmaBackground />
       
       <FloatingTimer isOpen={isOpen} timerState={timerState} togglePopup={togglePopup} />
       
       {isOpen && <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
-          <Card className="glass-panel w-full max-w-[calc(448px+40px)] p-8 shadow-xl px-[24px] py-[24px]">
+          <Card className="glass-panel w-full max-w-[calc(448px+40px+24px)] p-8 shadow-xl px-[24px] py-[24px]">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h1 className="text-2xl font-bold text-focus-purple">FocusFlow</h1>
@@ -87,4 +97,5 @@ const Index: React.FC = () => {
         </div>}
     </div>;
 };
+
 export default Index;
