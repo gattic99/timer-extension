@@ -16,13 +16,15 @@ const FloatingTimer: React.FC<FloatingTimerProps> = ({
   timerState,
   togglePopup
 }) => {
-  const { timeRemaining, isRunning, mode } = timerState;
+  const { timeRemaining, isRunning, mode, completed } = timerState;
   
   const isTimerActive = isRunning && !isOpen;
   
-  const timerColor = mode === 'focus' 
-    ? 'bg-focus-purple hover:bg-focus-purple-dark' 
-    : 'bg-break-green hover:bg-break-green-dark';
+  // Always use purple for focus mode, even when completed
+  // Only use green when actually in break mode
+  const timerColor = mode === 'break' 
+    ? 'bg-break-green hover:bg-break-green-dark' 
+    : 'bg-focus-purple hover:bg-focus-purple-dark';
   
   return (
     <button 
