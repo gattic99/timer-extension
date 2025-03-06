@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from "react";
 import { formatTime } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
@@ -5,12 +6,14 @@ import GameControls from "./GameControls";
 import useGameEngine from "@/hooks/useGameEngine";
 import { drawBackground, drawPlatforms, drawObstacles, drawCollectibles, drawCharacter, drawUI, drawGameOver } from "@/utils/gameRenderUtils";
 import { initialCharacter, initialPlatforms, initialObstacles, initialCoins } from "@/data/gameData";
+
 interface PlatformerGameProps {
   onReturn: () => void;
   timerState: TimerState;
   onStart?: () => void;
   onPause?: () => void;
 }
+
 const PlatformerGame: React.FC<PlatformerGameProps> = ({
   onReturn,
   timerState,
@@ -18,6 +21,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
   onPause
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
   const {
     gameState,
     gameStarted,
@@ -36,6 +41,24 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
     initialCoins
   });
 
+  // Start background audio when component mounts
+  useEffect(() => {
+    audioRef.current = new Audio('/office-ambience.mp3');
+    audioRef.current.volume = 0.3; // Set to 30% volume
+    audioRef.current.loop = true;
+    audioRef.current.play().catch(error => {
+      console.log("Audio playback prevented: ", error);
+    });
+
+    return () => {
+      // Stop and cleanup audio when component unmounts
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
   // Start timer when game is started if it's not already running
   useEffect(() => {
     setGameStarted(true);
@@ -52,6 +75,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       }
     };
   }, []);
+
   useEffect(() => {
     if (!gameStarted) return;
     const canvas = canvasRef.current;
@@ -69,6 +93,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       clearInterval(gameLoop);
     };
   }, [gameStarted, gameState.gameOver, updateGame]);
+
   const renderGame = (ctx: CanvasRenderingContext2D) => {
     // Draw background
     drawBackground(ctx, gameState.cameraOffsetX);
@@ -93,6 +118,17 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       drawGameOver(ctx, gameState.score);
     }
   };
+
+  // Handle return button with audio cleanup
+  const handleReturn = () => {
+    // Make sure to stop audio when returning to timer
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    onReturn();
+  };
+
   return <div className="fixed inset-0 top-auto bottom-0 w-full h-screen bg-blue-100 z-50 flex flex-col items-center">
       <div className="text-center mt-4 mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Office Escape 🏃🏼‍♂️‍➡️🏃🏼‍♀️‍➡️</h2>
@@ -110,10 +146,11 @@ The coins are your colleagues, Sina and Cristina—catch all of them if you can!
         {gameState.gameOver ? <button onClick={resetGame} className="bg-focus-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors mr-4">
             Play Again
           </button> : null}
-        <button onClick={onReturn} className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-full hover:bg-focus-purple hover:text-white transition-colors">
+        <button onClick={handleReturn} className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-full hover:bg-focus-purple hover:text-white transition-colors">
           Return to Timer
         </button>
       </div>
     </div>;
 };
+
 export default PlatformerGame;
