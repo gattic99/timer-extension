@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Dumbbell } from "lucide-react";
 import { TimerState } from "@/types";
 import { formatTime } from "@/utils/timerUtils";
 import { Button } from "./ui/button";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 interface RelaxGuideProps {
   onReturn: () => void;
@@ -64,9 +65,22 @@ const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn, timerState }) => {
           </div>
         </div>
         
-        <div className="min-h-[150px]">
+        <div className="min-h-[220px]">
           <h3 className="text-lg font-semibold mb-2">{relaxSteps[currentStep].title}</h3>
-          <p className="text-dark-text text-sm leading-relaxed">{relaxSteps[currentStep].description}</p>
+          
+          {/* GIF image in aspect ratio container */}
+          <div className="mb-2">
+            <AspectRatio ratio={16/9} className="bg-muted rounded-md overflow-hidden">
+              <img 
+                src={relaxSteps[currentStep].image || "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=400"} 
+                alt={relaxSteps[currentStep].title}
+                className="object-cover w-full h-full"
+              />
+            </AspectRatio>
+          </div>
+          
+          {/* Shorter text description */}
+          <p className="text-dark-text text-sm">{relaxSteps[currentStep].shortDescription}</p>
         </div>
         
         {/* Timer in bottom left */}

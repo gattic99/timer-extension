@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
@@ -43,7 +42,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
   };
 
   const increaseFocusDuration = () => {
-    if (focusDuration < 120) { // Changed from 60 to 120
+    if (focusDuration < 60) {
       const newDuration = focusDuration + 1;
       onChangeFocusDuration(newDuration);
       setInputValue(newDuration.toString());
@@ -56,7 +55,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
 
   const handleInputBlur = () => {
     const newValue = parseInt(inputValue);
-    if (!isNaN(newValue) && newValue >= 1 && newValue <= 120) { // Changed from 60 to 120
+    if (!isNaN(newValue) && newValue >= 1 && newValue <= 60) {
       onChangeFocusDuration(newValue);
     } else {
       setInputValue(focusDuration.toString());
@@ -130,7 +129,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
                 </div>
               </div>
               
-              <Button variant="outline" size="icon" onClick={increaseFocusDuration} disabled={focusDuration >= 120 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7"> {/* Changed from 60 to 120 */}
+              <Button variant="outline" size="icon" onClick={increaseFocusDuration} disabled={focusDuration >= 60 || timerState.isRunning} className="rounded-full bg-muted/30 hover:bg-muted/50 h-7 w-7">
                 <Plus size={14} />
               </Button>
             </div>
