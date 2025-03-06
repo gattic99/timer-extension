@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -50,18 +49,15 @@ const Index: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
-  // Modified start timer function to also close popup
   const handleStartTimer = () => {
     startTimer();
-    setIsOpen(false); // Close the popup when starting the timer
+    setIsOpen(false);
   };
 
-  // Handler to return from game to timer
   const handleReturnFromGame = () => {
     selectBreakActivity(null);
   };
 
-  // If we're in break mode and game is selected, show the full-screen game
   if (timerState.mode === 'break' && timerState.breakActivity === 'game') {
     return <PlatformerGame onReturn={handleReturnFromGame} timerState={timerState} />;
   }
@@ -104,7 +100,7 @@ const Index: React.FC = () => {
                 onReset={() => resetTimer('break')} 
                 onSelectActivity={selectBreakActivity} 
                 breakDuration={settings.breakDuration} 
-                onChangeBreakDuration={handleBreakDuration} 
+                onChangeBreakDuration={handleBreakDurationChange} 
               />
             }
             
