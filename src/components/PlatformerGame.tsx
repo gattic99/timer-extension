@@ -122,7 +122,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       <div className="text-center mt-4 mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Office Escape</h2>
         <p className="text-muted-foreground text-sm">
-          Collect coffee cups and documents while avoiding office obstacles!
+          Collect as many coins as you can while dodging office obstacles! The coins are your colleagues, Sina and Cristina—catch them if you can!
         </p>
       </div>
       
