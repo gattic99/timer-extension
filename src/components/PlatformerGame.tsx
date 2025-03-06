@@ -61,6 +61,14 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
     if (onStart && !timerState.isRunning) {
       onStart();
     }
+    
+    // Ensure the timer continues to run during gameplay
+    return () => {
+      // Only pause timer when leaving game if we explicitly want to
+      if (onPause && timerState.isRunning) {
+        onPause();
+      }
+    };
   }, []);
   
   useEffect(() => {
@@ -81,12 +89,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
     
     return () => {
       clearInterval(gameLoop);
-      // Pause timer when leaving game
-      if (onPause && timerState.isRunning) {
-        onPause();
-      }
     };
-  }, [gameStarted, gameState.gameOver, updateGame, timerState.isRunning]);
+  }, [gameStarted, gameState.gameOver, updateGame]);
   
   const renderGame = (ctx: CanvasRenderingContext2D) => {
     // Draw background
@@ -129,14 +133,6 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
           height={400} 
           className="bg-white border border-gray-200 rounded-lg shadow-md mx-auto"
         />
-        
-        <div className="absolute top-3 left-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
-          Break: {formatTime(timerState.timeRemaining)}
-        </div>
-        
-        <div className="absolute top-3 right-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-md z-10">
-          Score: {gameState.score}
-        </div>
         
         <GameControls
           onLeftPress={controlHandlers.handleLeftPress}
