@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -64,7 +63,7 @@ const Index: React.FC = () => {
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h1 className="text-2xl font-bold text-focus-purple">FocusFlow</h1>
-                <p className="text-sm text-gray-500 mt-1">Enhance your workflow with structured focus and rest</p>
+                <p className="text-sm text-gray-500 mt-1">Stay focused, take mindful breaks, and boost productivity.</p>
               </div>
               
               <div className="flex space-x-2">
