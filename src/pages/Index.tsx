@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -10,9 +11,11 @@ import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
 import PlatformerGame from "@/components/PlatformerGame";
 import { toast } from "sonner";
+
 const Index: React.FC = () => {
   const [settings, setSettings] = useState<TimerSettings>(defaultTimerSettings);
   const [isOpen, setIsOpen] = useState(false);
+  
   const {
     timerState,
     startTimer,
@@ -24,6 +27,7 @@ const Index: React.FC = () => {
   } = useTimer({
     settings
   });
+  
   const handleFocusDurationChange = (newDuration: number) => {
     const newSettings = {
       ...settings,
@@ -32,6 +36,7 @@ const Index: React.FC = () => {
     setSettings(newSettings);
     updateFocusDuration(newDuration);
   };
+  
   const handleBreakDurationChange = (newDuration: number) => {
     const newSettings = {
       ...settings,
@@ -40,8 +45,15 @@ const Index: React.FC = () => {
     setSettings(newSettings);
     updateBreakDuration(newDuration);
   };
+  
   const togglePopup = () => {
     setIsOpen(!isOpen);
+  };
+
+  // Modified start timer function to also close popup
+  const handleStartTimer = () => {
+    startTimer();
+    setIsOpen(false); // Close the popup when starting the timer
   };
 
   // Handler to return from game to timer
@@ -53,6 +65,7 @@ const Index: React.FC = () => {
   if (timerState.mode === 'break' && timerState.breakActivity === 'game') {
     return <PlatformerGame onReturn={handleReturnFromGame} timerState={timerState} />;
   }
+  
   return <div className="min-h-screen relative overflow-hidden">
       <FigmaBackground />
       
@@ -73,7 +86,27 @@ const Index: React.FC = () => {
               </div>
             </div>
             
-            {timerState.mode === 'focus' ? <FocusMode timerState={timerState} onStart={startTimer} onPause={pauseTimer} onReset={() => resetTimer('focus')} focusDuration={settings.focusDuration} breakDuration={settings.breakDuration} onChangeFocusDuration={handleFocusDurationChange} onChangeBreakDuration={handleBreakDurationChange} /> : <BreakMode timerState={timerState} onStart={startTimer} onPause={pauseTimer} onReset={() => resetTimer('break')} onSelectActivity={selectBreakActivity} breakDuration={settings.breakDuration} onChangeBreakDuration={handleBreakDurationChange} />}
+            {timerState.mode === 'focus' ? 
+              <FocusMode 
+                timerState={timerState} 
+                onStart={handleStartTimer} 
+                onPause={pauseTimer} 
+                onReset={() => resetTimer('focus')} 
+                focusDuration={settings.focusDuration} 
+                breakDuration={settings.breakDuration} 
+                onChangeFocusDuration={handleFocusDurationChange} 
+                onChangeBreakDuration={handleBreakDurationChange} 
+              /> : 
+              <BreakMode 
+                timerState={timerState} 
+                onStart={handleStartTimer} 
+                onPause={pauseTimer} 
+                onReset={() => resetTimer('break')} 
+                onSelectActivity={selectBreakActivity} 
+                breakDuration={settings.breakDuration} 
+                onChangeBreakDuration={handleBreakDuration} 
+              />
+            }
             
             <p className="text-xs text-muted-foreground text-center mt-4">
               Focus deeply, then take mindful breaks to stay energized.
@@ -82,4 +115,5 @@ const Index: React.FC = () => {
         </div>}
     </div>;
 };
+
 export default Index;
