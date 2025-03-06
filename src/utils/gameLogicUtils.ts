@@ -62,9 +62,11 @@ export const checkObstacleCollisions = (
   return false;
 };
 
-// Check if character fell off the bottom
+// Check if character fell off the bottom of the screen
 export const checkFallOffScreen = (character: GameCharacter): boolean => {
-  if (character.y > 400) {
+  // Only check if the character has fallen off the bottom of the screen
+  // The canvas height is 400, so we'll set the death threshold a bit beyond that
+  if (character.y > 450) {
     toast.error("You fell off the map! Game Over!");
     return true;
   }
@@ -131,7 +133,14 @@ export const updateCharacterMovement = (
     character.isJumping = true;
   }
   
-  character.velocityY += 0.5; // Gravity
+  // Apply gravity - no need to adjust this as it's fine
+  character.velocityY += 0.5;
+  
+  // Cap the maximum falling speed to prevent the "falling too fast and dying" issue
+  // This ensures the character doesn't fall too quickly and "clip through" platforms
+  if (character.velocityY > 12) {
+    character.velocityY = 12;
+  }
   
   // Update character position based on velocity
   // Moving horizontally - fixed to always make forward progress
@@ -172,3 +181,4 @@ export const updateCharacterMovement = (
   // Apply vertical movement
   character.y += character.velocityY;
 };
+
