@@ -27,6 +27,5 @@ export interface RelaxStep {
   id: number;
   title: string;
   description: string;
-  shortDescription?: string;
   image?: string;
 }
