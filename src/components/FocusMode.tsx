@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Timer from "./Timer";
 import { TimerState } from "@/types";
@@ -7,7 +6,6 @@ import { Clock, Minus, Plus, ChevronRight, ChevronDown, ChevronUp } from "lucide
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
-
 interface FocusModeProps {
   timerState: TimerState;
   onStart: () => void;
@@ -18,7 +16,6 @@ interface FocusModeProps {
   onChangeFocusDuration: (duration: number) => void;
   onChangeBreakDuration: (duration: number) => void;
 }
-
 const FocusMode: React.FC<FocusModeProps> = ({
   timerState,
   onStart,
@@ -33,7 +30,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
   const [inputValue, setInputValue] = useState(focusDuration.toString());
   const [breakInputValue, setBreakInputValue] = useState(breakDuration.toString());
   const [isBreakOpen, setIsBreakOpen] = useState(false);
-
   const decreaseFocusDuration = () => {
     if (focusDuration > 1) {
       const newDuration = focusDuration - 1;
@@ -41,34 +37,31 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setInputValue(newDuration.toString());
     }
   };
-
   const increaseFocusDuration = () => {
-    if (focusDuration < 120) {  // Changed from 60 to 120
+    if (focusDuration < 120) {
+      // Changed from 60 to 120
       const newDuration = focusDuration + 1;
       onChangeFocusDuration(newDuration);
       setInputValue(newDuration.toString());
     }
   };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
-
   const handleInputBlur = () => {
     const newValue = parseInt(inputValue);
-    if (!isNaN(newValue) && newValue >= 1 && newValue <= 120) { // Changed from 60 to 120
+    if (!isNaN(newValue) && newValue >= 1 && newValue <= 120) {
+      // Changed from 60 to 120
       onChangeFocusDuration(newValue);
     } else {
       setInputValue(focusDuration.toString());
     }
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
   };
-
   const decreaseBreakDuration = () => {
     if (breakDuration > 1) {
       const newDuration = breakDuration - 1;
@@ -76,7 +69,6 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setBreakInputValue(newDuration.toString());
     }
   };
-
   const increaseBreakDuration = () => {
     if (breakDuration < 15) {
       const newDuration = breakDuration + 1;
@@ -84,11 +76,9 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setBreakInputValue(newDuration.toString());
     }
   };
-
   const handleBreakInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBreakInputValue(e.target.value);
   };
-
   const handleBreakInputBlur = () => {
     const newValue = parseInt(breakInputValue);
     if (!isNaN(newValue) && newValue >= 1 && newValue <= 15) {
@@ -97,13 +87,11 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setBreakInputValue(breakDuration.toString());
     }
   };
-
   const handleBreakKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
   };
-
   return <>
       <div className="focus-card p-4 w-full animate-scale-in bg-gray-100 bg-opacity-80 backdrop-blur-md rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
         <div className="text-center mb-2">
@@ -162,7 +150,8 @@ const FocusMode: React.FC<FocusModeProps> = ({
           </CollapsibleTrigger>
           
           <CollapsibleContent className="pt-2 transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <p className="text-xs text-muted-foreground mb-4">Break will start automatically when focus time ends.</p>
+            <p className="text-xs text-muted-foreground mb-4">Break will start automatically when focus time ends. 
+Maximum break is 15 min.</p>
             
             <div className="mt-2 text-center">
               <div className="flex items-center justify-center gap-2">
@@ -187,5 +176,4 @@ const FocusMode: React.FC<FocusModeProps> = ({
       </div>
     </>;
 };
-
 export default FocusMode;
