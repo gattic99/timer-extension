@@ -6,6 +6,7 @@ import GameControls from "./GameControls";
 import useGameEngine from "@/hooks/useGameEngine";
 import { drawBackground, drawPlatforms, drawObstacles, drawCollectibles, drawCharacter, drawUI, drawGameOver } from "@/utils/gameRenderUtils";
 import { initialCharacter, initialPlatforms, initialObstacles, initialCoins } from "@/data/gameData";
+import { toast } from "sonner";
 
 interface PlatformerGameProps {
   onReturn: () => void;
@@ -43,18 +44,40 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
 
   // Start background audio when component mounts
   useEffect(() => {
-    audioRef.current = new Audio('/office-ambience.mp3');
-    audioRef.current.volume = 0.3; // Set to 30% volume
-    audioRef.current.loop = true;
-    audioRef.current.play().catch(error => {
-      console.log("Audio playback prevented: ", error);
-    });
+    try {
+      // Create audio element
+      audioRef.current = new Audio('/office-ambience.mp3');
+      audioRef.current.volume = 0.3; // Set to 30% volume
+      audioRef.current.loop = true;
+      
+      // Play audio and handle any errors
+      audioRef.current.play().catch(error => {
+        console.error("Audio playback error:", error);
+        toast.error("Background audio couldn't be played. Try interacting with the page first.");
+      });
+
+      // Log successful audio load
+      console.log("Background audio loaded successfully");
+      
+      // Add event listeners to debug audio issues
+      audioRef.current.addEventListener('canplay', () => {
+        console.log("Audio can play now");
+      });
+      
+      audioRef.current.addEventListener('error', (e) => {
+        console.error("Audio error:", e);
+      });
+    } catch (error) {
+      console.error("Audio initialization error:", error);
+    }
 
     return () => {
       // Stop and cleanup audio when component unmounts
       if (audioRef.current) {
+        console.log("Cleaning up audio");
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
+        audioRef.current = null;
       }
     };
   }, []);
@@ -129,28 +152,64 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
     onReturn();
   };
 
-  return <div className="fixed inset-0 top-auto bottom-0 w-full h-screen bg-blue-100 z-50 flex flex-col items-center">
+  // Handle user interaction to enable audio
+  const handleUserInteraction = () => {
+    if (audioRef.current && audioRef.current.paused) {
+      audioRef.current.play().catch(err => {
+        console.error("Failed to play audio after interaction:", err);
+      });
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 top-auto bottom-0 w-full h-screen bg-blue-100 z-50 flex flex-col items-center"
+      onClick={handleUserInteraction}
+    >
       <div className="text-center mt-4 mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Office Escape 🏃🏼‍♂️‍➡️🏃🏼‍♀️‍➡️</h2>
-        <p className="text-muted-foreground text-sm font-semibold py-[8px]">Collect as many coins as you can while dodging office obstacles!
-The coins are your colleagues, Sina and Cristina—catch all of them if you can!</p>
+        <p className="text-muted-foreground text-sm font-semibold py-[8px]">
+          Collect as many coins as you can while dodging office obstacles!
+          The coins are your colleagues, Sina and Cristina—catch all of them if you can!
+        </p>
       </div>
       
       <div className="relative w-full max-w-4xl mx-auto">
-        <canvas ref={canvasRef} width={700} height={400} className="bg-white border border-gray-200 rounded-lg shadow-md mx-auto" />
+        <canvas 
+          ref={canvasRef} 
+          width={700} 
+          height={400} 
+          className="bg-white border border-gray-200 rounded-lg shadow-md mx-auto" 
+        />
         
-        <GameControls onLeftPress={controlHandlers.handleLeftPress} onLeftRelease={controlHandlers.handleLeftRelease} onRightPress={controlHandlers.handleRightPress} onRightRelease={controlHandlers.handleRightRelease} onJumpPress={controlHandlers.handleJumpPress} onJumpRelease={controlHandlers.handleJumpRelease} />
+        <GameControls 
+          onLeftPress={controlHandlers.handleLeftPress} 
+          onLeftRelease={controlHandlers.handleLeftRelease} 
+          onRightPress={controlHandlers.handleRightPress} 
+          onRightRelease={controlHandlers.handleRightRelease} 
+          onJumpPress={controlHandlers.handleJumpPress} 
+          onJumpRelease={controlHandlers.handleJumpRelease} 
+        />
       </div>
       
       <div className="flex justify-center mt-4 mb-6">
-        {gameState.gameOver ? <button onClick={resetGame} className="bg-focus-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors mr-4">
+        {gameState.gameOver ? (
+          <button 
+            onClick={resetGame} 
+            className="bg-focus-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors mr-4"
+          >
             Play Again
-          </button> : null}
-        <button onClick={handleReturn} className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-full hover:bg-focus-purple hover:text-white transition-colors">
+          </button>
+        ) : null}
+        <button 
+          onClick={handleReturn} 
+          className="bg-white text-focus-purple border border-focus-purple px-6 py-2 rounded-full hover:bg-focus-purple hover:text-white transition-colors"
+        >
           Return to Timer
         </button>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default PlatformerGame;
