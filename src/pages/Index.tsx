@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -59,7 +60,7 @@ const Index: React.FC = () => {
       <FloatingTimer isOpen={isOpen} timerState={timerState} togglePopup={togglePopup} />
       
       {isOpen && <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
-          <Card className="glass-panel w-full max-w-md p-8 shadow-xl">
+          <Card className="glass-panel w-full max-w-[calc(448px)] p-8 shadow-xl">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold text-focus-purple">FocusFlow</h1>
               
