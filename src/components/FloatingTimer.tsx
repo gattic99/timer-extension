@@ -35,7 +35,11 @@ const FloatingTimer: React.FC<FloatingTimerProps> = ({
       aria-label={isOpen ? "Close Focus Timer" : "Open Focus Timer"}
     >
       {isTimerActive ? (
-        <div className="font-mono font-bold text-white text-xl tracking-wider">
+        <div className="font-mono font-bold text-white text-xl tracking-wider flex items-center">
+          {mode === 'break' ? 
+            <Coffee size={20} className="text-white mr-2" /> : 
+            <TimerIcon size={20} className="text-white mr-2" />
+          }
           {formatTime(timeRemaining)}
         </div>
       ) : (
