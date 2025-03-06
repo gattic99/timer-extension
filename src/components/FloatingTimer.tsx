@@ -2,7 +2,7 @@
 import React from "react";
 import { formatTime } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
-import { Timer as TimerIcon } from "lucide-react";
+import { Timer as TimerIcon, Coffee } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FloatingTimerProps {
@@ -20,11 +20,8 @@ const FloatingTimer: React.FC<FloatingTimerProps> = ({
   
   const isTimerActive = isRunning && !isOpen;
   
-  // Always use purple for focus mode, even when completed
-  // Only use green when actually in break mode
-  const timerColor = mode === 'break' 
-    ? 'bg-break-green hover:bg-break-green-dark' 
-    : 'bg-focus-purple hover:bg-focus-purple-dark';
+  // Always use purple for all modes
+  const timerColor = 'bg-focus-purple hover:bg-focus-purple-dark';
   
   return (
     <button 
@@ -42,7 +39,9 @@ const FloatingTimer: React.FC<FloatingTimerProps> = ({
           {formatTime(timeRemaining)}
         </div>
       ) : (
-        <TimerIcon size={24} className="text-white" />
+        mode === 'break' ? 
+          <Coffee size={24} className="text-white" /> :
+          <TimerIcon size={24} className="text-white" />
       )}
     </button>
   );
