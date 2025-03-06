@@ -1,7 +1,9 @@
+
 import React, { useEffect } from "react";
 import { formatTime, getTimePercentage } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
 import { Pause, Play, RotateCcw, ChevronRight } from "lucide-react";
+
 interface TimerProps {
   timerState: TimerState;
   onStart?: () => void;
@@ -9,6 +11,7 @@ interface TimerProps {
   onReset?: () => void;
   totalDuration?: number;
 }
+
 const Timer: React.FC<TimerProps> = ({
   timerState,
   onStart,
@@ -21,7 +24,10 @@ const Timer: React.FC<TimerProps> = ({
     mode,
     isRunning
   } = timerState;
-  const timerTextColor = mode === 'focus' ? 'text-focus-purple' : 'text-break-green';
+  
+  // Always use purple regardless of mode
+  const timerTextColor = 'text-focus-purple';
+  
   return <div className="flex flex-col items-center space-y-2 animate-fade-in">
       <div className="timer-display mb-0" style={{
       width: "140px",
@@ -35,4 +41,5 @@ const Timer: React.FC<TimerProps> = ({
       {onStart && onPause && onReset}
     </div>;
 };
+
 export default Timer;
