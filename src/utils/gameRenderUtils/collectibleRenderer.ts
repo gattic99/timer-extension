@@ -25,8 +25,12 @@ export const drawCollectibles = (
 
       // Only render coins that are visible on screen or near it
       if (adjustedX < 700 && adjustedX + coin.width > -20) {
+        // Increase the rendering size by 50%
+        const scaleFactor = 1.5;
         const centerX = adjustedX + coin.width / 2;
         const centerY = coin.y + coin.height / 2;
+        const renderWidth = coin.width * scaleFactor;
+        const renderHeight = coin.height * scaleFactor;
         
         // Create visual variants based on position
         const variant = Math.floor(coin.x % 4);
@@ -36,17 +40,23 @@ export const drawCollectibles = (
           // Draw yellow circle background
           ctx.fillStyle = "#FFF01B";
           ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, renderWidth / 2, 0, Math.PI * 2);
           ctx.fill();
 
           // Create circular clipping path
           ctx.save();
           ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2 - 1, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, renderWidth / 2 - 1, 0, Math.PI * 2);
           ctx.clip();
 
           // Draw the image within the clipping path
-          ctx.drawImage(faceImage, adjustedX, coin.y, coin.width, coin.height);
+          ctx.drawImage(
+            faceImage, 
+            centerX - renderWidth / 2, 
+            centerY - renderHeight / 2, 
+            renderWidth, 
+            renderHeight
+          );
 
           // Restore the context
           ctx.restore();
@@ -55,7 +65,7 @@ export const drawCollectibles = (
           ctx.strokeStyle = "#FFF01B";
           ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, renderWidth / 2, 0, Math.PI * 2);
           ctx.stroke();
         } 
         else if (variant === 1) {
@@ -63,21 +73,21 @@ export const drawCollectibles = (
           // Mug body
           ctx.fillStyle = "#D32F2F";
           ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, renderWidth / 2, 0, Math.PI * 2);
           ctx.fill();
           
           // Mug details
           ctx.fillStyle = "#FFFFFF";
           ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 3, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, renderWidth / 3, 0, Math.PI * 2);
           ctx.fill();
           
           // Steam
           ctx.strokeStyle = "#FFFFFF";
           ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.moveTo(centerX - 5, centerY - coin.height / 3);
-          ctx.quadraticCurveTo(centerX, centerY - coin.height / 2 - 3, centerX + 5, centerY - coin.height / 3);
+          ctx.moveTo(centerX - 7, centerY - renderHeight / 3);
+          ctx.quadraticCurveTo(centerX, centerY - renderHeight / 2 - 5, centerX + 7, centerY - renderHeight / 3);
           ctx.stroke();
         }
         else if (variant === 2) {
@@ -85,20 +95,20 @@ export const drawCollectibles = (
           // Folder background
           ctx.fillStyle = "#4FC3F7";
           ctx.beginPath();
-          ctx.moveTo(adjustedX, coin.y + 3);
-          ctx.lineTo(adjustedX + coin.width, coin.y + 3);
-          ctx.lineTo(adjustedX + coin.width, coin.y + coin.height);
-          ctx.lineTo(adjustedX, coin.y + coin.height);
+          ctx.moveTo(centerX - renderWidth / 2, centerY - renderHeight / 2 + 5);
+          ctx.lineTo(centerX + renderWidth / 2, centerY - renderHeight / 2 + 5);
+          ctx.lineTo(centerX + renderWidth / 2, centerY + renderHeight / 2);
+          ctx.lineTo(centerX - renderWidth / 2, centerY + renderHeight / 2);
           ctx.closePath();
           ctx.fill();
           
           // Folder tab
           ctx.fillStyle = "#29B6F6";
           ctx.beginPath();
-          ctx.moveTo(adjustedX + coin.width / 3, coin.y);
-          ctx.lineTo(adjustedX + coin.width * 2/3, coin.y);
-          ctx.lineTo(adjustedX + coin.width * 2/3, coin.y + 5);
-          ctx.lineTo(adjustedX + coin.width / 3, coin.y + 5);
+          ctx.moveTo(centerX - renderWidth / 6, centerY - renderHeight / 2);
+          ctx.lineTo(centerX + renderWidth / 6, centerY - renderHeight / 2);
+          ctx.lineTo(centerX + renderWidth / 6, centerY - renderHeight / 2 + 7);
+          ctx.lineTo(centerX - renderWidth / 6, centerY - renderHeight / 2 + 7);
           ctx.closePath();
           ctx.fill();
           
@@ -107,8 +117,8 @@ export const drawCollectibles = (
           ctx.lineWidth = 1;
           for (let i = 0; i < 3; i++) {
             ctx.beginPath();
-            ctx.moveTo(adjustedX + 5, coin.y + 10 + i * 4);
-            ctx.lineTo(adjustedX + coin.width - 5, coin.y + 10 + i * 4);
+            ctx.moveTo(centerX - renderWidth / 2 + 7, centerY - renderHeight / 4 + i * 6);
+            ctx.lineTo(centerX + renderWidth / 2 - 7, centerY - renderHeight / 4 + i * 6);
             ctx.stroke();
           }
         }
@@ -117,40 +127,40 @@ export const drawCollectibles = (
           // Draw sparkling circle
           ctx.fillStyle = "#9C27B0";
           ctx.beginPath();
-          ctx.arc(centerX, centerY, coin.width / 2, 0, Math.PI * 2);
+          ctx.arc(centerX, centerY, renderWidth / 2, 0, Math.PI * 2);
           ctx.fill();
           
           // Star effect
           ctx.fillStyle = "#E1BEE7";
           // Top point
           ctx.beginPath();
-          ctx.moveTo(centerX, centerY - coin.height / 3);
-          ctx.lineTo(centerX + 3, centerY - 2);
-          ctx.lineTo(centerX - 3, centerY - 2);
+          ctx.moveTo(centerX, centerY - renderHeight / 3);
+          ctx.lineTo(centerX + 5, centerY - 3);
+          ctx.lineTo(centerX - 5, centerY - 3);
           ctx.closePath();
           ctx.fill();
           
           // Right point
           ctx.beginPath();
-          ctx.moveTo(centerX + coin.width / 3, centerY);
-          ctx.lineTo(centerX + 2, centerY + 3);
-          ctx.lineTo(centerX + 2, centerY - 3);
+          ctx.moveTo(centerX + renderWidth / 3, centerY);
+          ctx.lineTo(centerX + 3, centerY + 5);
+          ctx.lineTo(centerX + 3, centerY - 5);
           ctx.closePath();
           ctx.fill();
           
           // Bottom point
           ctx.beginPath();
-          ctx.moveTo(centerX, centerY + coin.height / 3);
-          ctx.lineTo(centerX + 3, centerY + 2);
-          ctx.lineTo(centerX - 3, centerY + 2);
+          ctx.moveTo(centerX, centerY + renderHeight / 3);
+          ctx.lineTo(centerX + 5, centerY + 3);
+          ctx.lineTo(centerX - 5, centerY + 3);
           ctx.closePath();
           ctx.fill();
           
           // Left point
           ctx.beginPath();
-          ctx.moveTo(centerX - coin.width / 3, centerY);
-          ctx.lineTo(centerX - 2, centerY + 3);
-          ctx.lineTo(centerX - 2, centerY - 3);
+          ctx.moveTo(centerX - renderWidth / 3, centerY);
+          ctx.lineTo(centerX - 3, centerY + 5);
+          ctx.lineTo(centerX - 3, centerY - 5);
           ctx.closePath();
           ctx.fill();
         }
