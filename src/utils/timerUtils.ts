@@ -47,27 +47,48 @@ export const generateCards = (pairs: number): { id: number, value: number }[] =>
 };
 
 // Get stretching and relaxation steps
-export const getRelaxationSteps = (): Array<{ title: string; description: string }> => {
+export const getRelaxationSteps = (): Array<{ 
+  id: number;
+  title: string; 
+  description: string;
+  shortDescription: string;
+  image: string;
+}> => {
   return [
     {
+      id: 1,
       title: "Deep Breathing",
-      description: "Sit comfortably with your back straight. Breathe in deeply through your nose for 4 seconds, hold for 2 seconds, then exhale slowly through your mouth for 6 seconds. Repeat 5 times."
+      description: "Sit comfortably with your back straight. Breathe in deeply through your nose for 4 seconds, hold for 2 seconds, then exhale slowly through your mouth for 6 seconds. Repeat 5 times.",
+      shortDescription: "Breathe in for 4 seconds, hold for 2, exhale for 6. Repeat 5 times.",
+      image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=500"
     },
     {
+      id: 2,
       title: "Neck Stretch",
-      description: "Gently tilt your head toward your right shoulder until you feel a stretch. Hold for 15-30 seconds, then repeat on the left side."
+      description: "Gently tilt your head toward your right shoulder until you feel a stretch. Hold for 15-30 seconds, then repeat on the left side.",
+      shortDescription: "Tilt head to each shoulder, hold for 15-30 seconds per side.",
+      image: "https://images.unsplash.com/photo-1616699002805-0741e1e4a9c5?auto=format&fit=crop&w=500"
     },
     {
+      id: 3,
       title: "Shoulder Rolls",
-      description: "Roll your shoulders forward in a circular motion 5 times, then backward 5 times to release tension in your shoulders and upper back."
+      description: "Roll your shoulders forward in a circular motion 5 times, then backward 5 times to release tension in your shoulders and upper back.",
+      shortDescription: "Roll shoulders forward 5 times, then backward 5 times.",
+      image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=500"
     },
     {
+      id: 4,
       title: "Wrist and Finger Stretch",
-      description: "Extend your arm with palm facing down, then gently pull fingers back with your other hand. Hold for 15-30 seconds, then switch hands."
+      description: "Extend your arm with palm facing down, then gently pull fingers back with your other hand. Hold for 15-30 seconds, then switch hands.",
+      shortDescription: "Pull fingers back gently, hold 15-30 seconds per hand.",
+      image: "https://images.unsplash.com/photo-1506739751600-3fcea85b48e2?auto=format&fit=crop&w=500"
     },
     {
+      id: 5,
       title: "Eye Rest",
-      description: "Look away from your screen, focus on an object at least 20 feet away for 20 seconds. This helps reduce eye strain from digital screens."
+      description: "Look away from your screen, focus on an object at least 20 feet away for 20 seconds. This helps reduce eye strain from digital screens.",
+      shortDescription: "Focus on distant object for 20 seconds to reduce eye strain.",
+      image: "https://images.unsplash.com/photo-1494869042583-f6c911f04b4c?auto=format&fit=crop&w=500"
     }
   ];
 };
