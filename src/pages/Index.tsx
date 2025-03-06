@@ -60,9 +60,12 @@ const Index: React.FC = () => {
       <FloatingTimer isOpen={isOpen} timerState={timerState} togglePopup={togglePopup} />
       
       {isOpen && <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
-          <Card className="glass-panel w-full max-w-[calc(448px)] p-8 shadow-xl">
+          <Card className="glass-panel w-full max-w-[calc(448px+40px)] p-8 shadow-xl">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold text-focus-purple">FocusFlow</h1>
+              <div>
+                <h1 className="text-2xl font-bold text-focus-purple">FocusFlow</h1>
+                <p className="text-sm text-gray-500 mt-1">Enhance your workflow with structured focus and rest</p>
+              </div>
               
               <div className="flex space-x-2">
                 <button onClick={togglePopup} className="p-2 rounded-full hover:bg-gray-100" aria-label="Close Timer">
