@@ -1,8 +1,9 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ChatInterface from "./ChatInterface";
+import { getApiKey } from "@/utils/openaiUtils";
 
 interface ChatBubbleProps {
   className?: string;
@@ -10,9 +11,19 @@ interface ChatBubbleProps {
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(true);
+
+  useEffect(() => {
+    // Check if API key exists
+    setHasApiKey(!!getApiKey());
+  }, []);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
+    // After opening chat, check API key again
+    if (!isOpen) {
+      setHasApiKey(!!getApiKey());
+    }
   };
 
   return (
@@ -26,9 +37,19 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
         aria-label={isOpen ? "Close chat" : "Open chat"}
       >
         <MessageCircle size={24} className="text-white" />
+        {!hasApiKey && (
+          <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full" />
+        )}
       </button>
       
-      <ChatInterface isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <ChatInterface 
+        isOpen={isOpen} 
+        onClose={() => {
+          setIsOpen(false);
+          // Check API key after closing chat
+          setHasApiKey(!!getApiKey());
+        }} 
+      />
     </>
   );
 };
