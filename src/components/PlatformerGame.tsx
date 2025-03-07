@@ -6,14 +6,12 @@ import useGameEngine from "@/hooks/useGameEngine";
 import { drawBackground, drawPlatforms, drawObstacles, drawCollectibles, drawCharacter, drawUI, drawGameOver } from "@/utils/gameRenderUtils";
 import { initialCharacter, initialPlatforms, initialObstacles, initialCoins } from "@/data/gameData";
 import { toast } from "sonner";
-
 interface PlatformerGameProps {
   onReturn: () => void;
   timerState: TimerState;
   onStart?: () => void;
   onPause?: () => void;
 }
-
 const PlatformerGame: React.FC<PlatformerGameProps> = ({
   onReturn,
   timerState,
@@ -22,7 +20,6 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
   const {
     gameState,
     gameStarted,
@@ -40,20 +37,16 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
     initialObstacles,
     initialCoins
   });
-
   useEffect(() => {
     try {
       audioRef.current = new Audio('/office-ambience.mp3');
       audioRef.current.volume = 0.3;
       audioRef.current.loop = true;
-
       audioRef.current.play().catch(error => {
         console.error("Audio playback error:", error);
         toast.error("Background audio couldn't be played. Try interacting with the page first.");
       });
-
       console.log("Background audio loaded successfully");
-
       audioRef.current.addEventListener('canplay', () => {
         console.log("Audio can play now");
       });
@@ -72,21 +65,18 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       }
     };
   }, []);
-
   useEffect(() => {
     setGameStarted(true);
     resetGame();
     if (onStart && !timerState.isRunning) {
       onStart();
     }
-
     return () => {
       if (onPause && timerState.isRunning) {
         onPause();
       }
     };
   }, []);
-
   useEffect(() => {
     if (!gameStarted) return;
     const canvas = canvasRef.current;
@@ -99,12 +89,10 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       }
       renderGame(ctx);
     }, 16);
-
     return () => {
       clearInterval(gameLoop);
     };
   }, [gameStarted, gameState.gameOver, updateGame]);
-
   const renderGame = (ctx: CanvasRenderingContext2D) => {
     drawBackground(ctx, gameState.cameraOffsetX);
     drawPlatforms(ctx, platformsRef.current, gameState.cameraOffsetX);
@@ -116,7 +104,6 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       drawGameOver(ctx, gameState.score);
     }
   };
-
   const handleReturn = () => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -124,7 +111,6 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
     }
     onReturn();
   };
-
   const handleUserInteraction = () => {
     if (audioRef.current && audioRef.current.paused) {
       audioRef.current.play().catch(err => {
@@ -132,11 +118,10 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       });
     }
   };
-
   return <div className="fixed inset-0 top-auto bottom-0 w-full h-screen bg-blue-100 z-50 flex flex-col items-center" onClick={handleUserInteraction}>
       <div className="text-center mt-4 mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Office Escape 🏃🏼‍♂️‍➡️🏃🏼‍♀️‍➡️</h2>
-        <p className="text-muted-foreground text-sm font-semibold py-[8px] text-center max-w-4xl w-full mx-auto px-4">Dodge obstacles and collect coins—they're your colleagues, Sina and Cristina! Everything except coins and trees will take you out! You can also jump on the shelves—they are not obstacles! Watch out for the office furniture and other hazards as you make your escape. The longer you survive, the higher your score. Can you beat your personal best and make it out of the office?</p>
+        <p className="text-muted-foreground text-sm font-semibold py-[8px] text-center max-w-4xl w-full mx-auto px-4">Dodge obstacles and collect coins—they're your colleagues, Sina and Cristina! Everything except coins and trees will take you out! You can also jump on the shelves—they are not obstacles! The more coins you collect, the higher your score!</p>
       </div>
       
       <div className="relative w-full max-w-4xl mx-auto">
@@ -155,5 +140,4 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       </div>
     </div>;
 };
-
 export default PlatformerGame;
