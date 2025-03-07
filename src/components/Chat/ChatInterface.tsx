@@ -2,14 +2,22 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Bot, X, PlusCircle } from "lucide-react";
+import { Send, Bot, X, PlusCircle, Settings } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ChatMessage, { ChatMessageProps } from "./ChatMessage";
 import { cn } from "@/lib/utils";
-import { getAIResponse } from "@/utils/openaiUtils";
+import { getAIResponse, getApiKey, setApiKey, validateApiKey } from "@/utils/openaiUtils";
 import { toast } from "sonner";
 import ChatHistory, { ChatConversation } from "./ChatHistory";
 import { v4 as uuidv4 } from 'uuid';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface ChatInterfaceProps {
   isOpen: boolean;
@@ -44,14 +52,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
+  // Define activeConversation before it's used in useEffect
+  const activeConversation = conversations.find(c => c.id === activeConversationId);
+  const messages = activeConversation?.messages || [];
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-
-  // Define activeConversation before it's used in the useEffect below
-  const activeConversation = conversations.find(c => c.id === activeConversationId);
-  const messages = activeConversation?.messages || [];
 
   useEffect(() => {
     const storedConversations = localStorage.getItem(STORAGE_KEY);
@@ -82,6 +92,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
     }
   }, [conversations]);
+
+  // Check if API key is available
+  useEffect(() => {
+    const apiKey = getApiKey();
+    if (!apiKey && conversations.length === 0) {
+      // Create a new conversation with a special welcome message
+      const newId = uuidv4();
+      const welcomeMessage: ChatMessageProps = {
+        role: "assistant",
+        content: "Welcome! To use the AI chat feature, you'll need to provide your OpenAI API key. Click the ⚙️ (Settings) icon in the top right to enter your key. You can get an API key from https://platform.openai.com/account/api-keys",
+        timestamp: new Date(),
+      };
+      
+      const newConversation: ChatConversation = {
+        id: newId,
+        title: "Welcome",
+        messages: [welcomeMessage],
+        createdAt: new Date()
+      };
+      
+      setConversations([newConversation]);
+      setActiveConversationId(newId);
+    }
+  }, [conversations.length]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -212,6 +246,35 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
+  const handleSaveApiKey = async () => {
+    if (!apiKeyInput.trim()) {
+      toast.error("Please enter an API key");
+      return;
+    }
+
+    try {
+      setApiKey(apiKeyInput.trim());
+      
+      // Validate the API key
+      const isValid = await validateApiKey();
+      
+      if (isValid) {
+        toast.success("API key saved successfully");
+        setIsSettingsOpen(false);
+        setApiKeyInput("");
+        
+        // Create a new conversation if none exists
+        if (conversations.length === 0) {
+          createNewConversation();
+        }
+      } else {
+        toast.error("Invalid API key. Please check and try again.");
+      }
+    } catch (error) {
+      toast.error("Error saving API key. Please check the format and try again.");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -234,15 +297,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               <Bot className="text-focus-purple mr-2" size={20} />
               <h2 className="font-semibold">AI Assistant</h2>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-8 w-8"
-              aria-label="Close chat"
-            >
-              <X size={18} />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSettingsOpen(true)}
+                className="h-8 w-8"
+                aria-label="Settings"
+              >
+                <Settings size={18} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="h-8 w-8"
+                aria-label="Close chat"
+              >
+                <X size={18} />
+              </Button>
+            </div>
           </div>
           
           {activeConversationId ? (
@@ -305,6 +379,39 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           )}
         </div>
       </Card>
+
+      {/* API Key Settings Dialog */}
+      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>AI Assistant Settings</DialogTitle>
+            <DialogDescription>
+              Enter your OpenAI API key to enable AI chat functionality. You can get an API key from the OpenAI platform.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="apiKey" className="text-right">
+                API Key
+              </label>
+              <Input
+                id="apiKey"
+                type="password"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                placeholder="sk-..."
+                className="col-span-3"
+              />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Your API key is stored only in your browser's local storage and is never sent to our servers.
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit" onClick={handleSaveApiKey}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

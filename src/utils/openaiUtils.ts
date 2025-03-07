@@ -3,7 +3,6 @@ import { toast } from "sonner";
 
 // Add a flag to localStorage to track if API key has been validated
 export const getApiKey = (): string | null => {
-  // We're not using process.env as it's causing errors in the browser
   return localStorage.getItem("openai_api_key");
 };
 
@@ -15,6 +14,8 @@ export const setApiKey = (key: string): void => {
   }
   
   localStorage.setItem("openai_api_key", key);
+  // Set as validated when a user enters a key
+  setApiKeyValidated(true);
 };
 
 export const clearApiKey = (): void => {
@@ -29,13 +30,29 @@ export const setApiKeyValidated = (isValid: boolean): void => {
 
 // Check if API key has been validated before
 export const isApiKeyValidated = (): boolean => {
-  // For purchased version, always return true to skip validation
-  return true;
+  return localStorage.getItem("openai_api_key_validated") === "true";
 };
 
 export const validateApiKey = async (): Promise<boolean> => {
-  // For purchased version, bypass validation
-  return true;
+  const apiKey = getApiKey();
+  if (!apiKey) return false;
+  
+  try {
+    const response = await fetch("https://api.openai.com/v1/models", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`
+      }
+    });
+    
+    const isValid = response.ok;
+    setApiKeyValidated(isValid);
+    return isValid;
+  } catch (error) {
+    console.error("Error validating API key:", error);
+    setApiKeyValidated(false);
+    return false;
+  }
 };
 
 // Fallback responses for when the API is unavailable
@@ -57,8 +74,8 @@ export const getAIResponse = async (message: string): Promise<string> => {
     const apiKey = getApiKey();
     
     if (!apiKey) {
-      // If no API key, return a fallback response
-      return getFallbackResponse(message);
+      // If no API key, explain how to set one up
+      return "To use the AI chat feature, you'll need to provide your OpenAI API key. Click the settings icon in the chat and enter your key. You can get an API key from https://platform.openai.com/account/api-keys";
     }
 
     // Try to use the OpenAI API if we have a key
@@ -81,20 +98,27 @@ export const getAIResponse = async (message: string): Promise<string> => {
       });
 
       if (!response.ok) {
-        console.warn("OpenAI API error:", await response.text());
-        return getFallbackResponse(message);
+        const errorData = await response.text();
+        console.warn("OpenAI API error:", errorData);
+        
+        if (response.status === 401) {
+          // Invalid API key
+          clearApiKey(); // Clear the invalid key
+          return "Your OpenAI API key appears to be invalid. Please check your key and try again.";
+        }
+        
+        return "Sorry, there was an error connecting to the AI service. Please try again later.";
       }
 
       const data = await response.json();
       return data.choices[0].message.content;
     } catch (apiError) {
       console.error("Error in OpenAI API call:", apiError);
-      return getFallbackResponse(message);
+      return "Sorry, there was an error connecting to the AI service. Please check your internet connection and try again.";
     }
   } catch (error) {
     console.error("Error fetching AI response:", error);
-    // Return a fallback response instead of throwing an error
-    return getFallbackResponse(message);
+    return "Sorry, there was an error processing your request. Please try again later.";
   }
 };
 
