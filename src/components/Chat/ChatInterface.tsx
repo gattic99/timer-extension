@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Bot, X, Key, KeyRound } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import ChatMessage, { ChatMessageProps } from "./ChatMessage";
 import { cn } from "@/lib/utils";
 import { getAIResponse, getApiKey, setApiKey, clearApiKey } from "@/utils/openaiUtils";
@@ -125,13 +126,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
-      <div 
-        className="bg-background rounded-lg shadow-lg w-full max-w-md h-[70vh] flex flex-col mx-4 animate-scale-in"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
+    <div className="fixed bottom-24 left-6 z-50 animate-scale-in">
+      <Card className="glass-panel w-[420px] shadow-xl px-[24px] py-[24px]">
+        <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
             <Bot className="text-focus-purple mr-2" size={20} />
             <h2 className="font-semibold">AI Assistant</h2>
@@ -160,53 +157,51 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         </div>
         
         {showApiKeyInput ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-4">
-            <div className="w-full max-w-sm space-y-4">
-              <div className="text-center mb-4">
-                <KeyRound size={32} className="mx-auto mb-2 text-focus-purple" />
-                <h3 className="text-lg font-medium">Enter your OpenAI API Key</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  You need an OpenAI API key to use this feature. The key is stored in your browser only.
+          <div className="space-y-4">
+            <div className="text-center mb-4">
+              <KeyRound size={32} className="mx-auto mb-2 text-focus-purple" />
+              <h3 className="text-lg font-medium">Enter your OpenAI API Key</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                You need an OpenAI API key to use this feature.
+              </p>
+            </div>
+            
+            <form onSubmit={handleApiKeySubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Input
+                  ref={apiKeyInputRef}
+                  type="password"
+                  placeholder="sk-..."
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Get your API key from{" "}
+                  <a
+                    href="https://platform.openai.com/api-keys"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-focus-purple hover:underline"
+                  >
+                    OpenAI's platform
+                  </a>
                 </p>
               </div>
               
-              <form onSubmit={handleApiKeySubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    ref={apiKeyInputRef}
-                    type="password"
-                    placeholder="sk-..."
-                    value={apiKeyInput}
-                    onChange={(e) => setApiKeyInput(e.target.value)}
-                    className="w-full"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Get your API key from{" "}
-                    <a
-                      href="https://platform.openai.com/api-keys"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-focus-purple hover:underline"
-                    >
-                      OpenAI's platform
-                    </a>
-                  </p>
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full bg-focus-purple hover:bg-focus-purple-dark"
-                  disabled={!apiKeyInput.trim()}
-                >
-                  Save API Key
-                </Button>
-              </form>
-            </div>
+              <Button 
+                type="submit" 
+                className="w-full bg-focus-purple hover:bg-focus-purple-dark"
+                disabled={!apiKeyInput.trim()}
+              >
+                Save API Key
+              </Button>
+            </form>
           </div>
         ) : (
           <>
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="h-[300px] overflow-y-auto p-2 space-y-4 mb-4 bg-white bg-opacity-50 rounded-xl">
               {messages.map((msg, index) => (
                 <ChatMessage key={index} {...msg} />
               ))}
@@ -225,7 +220,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
             </div>
             
             {/* Input */}
-            <form onSubmit={handleSubmit} className="p-4 border-t">
+            <form onSubmit={handleSubmit} className="border-t pt-4">
               <div className="flex gap-2">
                 <Input
                   ref={inputRef}
@@ -247,7 +242,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
             </form>
           </>
         )}
-      </div>
+      </Card>
     </div>
   );
 };
