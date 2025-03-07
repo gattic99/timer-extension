@@ -6,7 +6,7 @@ import { Send, Bot, X, Key, KeyRound } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ChatMessage, { ChatMessageProps } from "./ChatMessage";
 import { cn } from "@/lib/utils";
-import { getAIResponse, getApiKey, setApiKey, clearApiKey } from "@/utils/openaiUtils";
+import { getAIResponse, getApiKey, setApiKey, clearApiKey, validateApiKey } from "@/utils/openaiUtils";
 import { toast } from "sonner";
 
 interface ChatInterfaceProps {
@@ -18,6 +18,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
   const [input, setInput] = useState("");
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [apiKeyValidated, setApiKeyValidated] = useState(false);
   const [messages, setMessages] = useState<ChatMessageProps[]>([
     {
       role: "assistant",
@@ -26,16 +27,53 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [validatingApiKey, setValidatingApiKey] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const apiKeyInputRef = useRef<HTMLInputElement>(null);
 
+  // Check API key on load
   useEffect(() => {
-    // Check if API key exists on component load
-    const hasApiKey = !!getApiKey();
-    setShowApiKeyInput(!hasApiKey);
-  }, []);
+    const checkApiKey = async () => {
+      const hasApiKey = !!getApiKey();
+      
+      if (hasApiKey) {
+        setValidatingApiKey(true);
+        try {
+          const isValid = await validateApiKey();
+          if (isValid) {
+            setApiKeyValidated(true);
+            setShowApiKeyInput(false);
+          } else {
+            clearApiKey();
+            setApiKeyValidated(false);
+            setShowApiKeyInput(true);
+            setMessages([
+              {
+                role: "assistant",
+                content: "Your API key seems to be invalid. Please enter a valid OpenAI API key to continue.",
+                timestamp: new Date(),
+              },
+            ]);
+          }
+        } catch (error) {
+          console.error("Error validating API key:", error);
+          setApiKeyValidated(false);
+          setShowApiKeyInput(true);
+        } finally {
+          setValidatingApiKey(false);
+        }
+      } else {
+        setApiKeyValidated(false);
+        setShowApiKeyInput(true);
+      }
+    };
+    
+    if (isOpen) {
+      checkApiKey();
+    }
+  }, [isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,18 +92,42 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     scrollToBottom();
   }, [isOpen, messages, showApiKeyInput]);
 
-  const handleApiKeySubmit = (e: React.FormEvent) => {
+  const handleApiKeySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiKeyInput.trim()) return;
     
+    setValidatingApiKey(true);
+    
     try {
       setApiKey(apiKeyInput.trim());
-      setShowApiKeyInput(false);
-      setApiKeyInput("");
-      toast.success("API key saved successfully");
+      
+      // Validate the API key with OpenAI
+      const isValid = await validateApiKey();
+      
+      if (isValid) {
+        setApiKeyValidated(true);
+        setShowApiKeyInput(false);
+        setApiKeyInput("");
+        toast.success("API key validated successfully");
+        
+        // Update welcome message
+        setMessages([
+          {
+            role: "assistant",
+            content: "Hi there! I'm your AI assistant. How can I help you today?",
+            timestamp: new Date(),
+          },
+        ]);
+      } else {
+        clearApiKey();
+        setApiKeyValidated(false);
+        toast.error("Invalid API key. Please check and try again.");
+      }
     } catch (error) {
       console.error("Error saving API key:", error);
-      toast.error("Failed to save API key");
+      toast.error("Failed to save API key. Please ensure it's in the correct format.");
+    } finally {
+      setValidatingApiKey(false);
     }
   };
 
@@ -98,14 +160,31 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       ]);
     } catch (error) {
       console.error("Error fetching AI response:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Sorry, I encountered an error. Please check your API key and try again.",
-          timestamp: new Date(),
-        },
-      ]);
+      
+      // Check if API key is still valid
+      const isValid = await validateApiKey();
+      if (!isValid) {
+        clearApiKey();
+        setApiKeyValidated(false);
+        setShowApiKeyInput(true);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "Your API key appears to be invalid. Please enter a valid OpenAI API key to continue.",
+            timestamp: new Date(),
+          },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "Sorry, I encountered an error. Please try again.",
+            timestamp: new Date(),
+          },
+        ]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -113,6 +192,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
 
   const handleChangeApiKey = () => {
     clearApiKey();
+    setApiKeyValidated(false);
     setShowApiKeyInput(true);
     setMessages([
       {
@@ -175,6 +255,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
                   value={apiKeyInput}
                   onChange={(e) => setApiKeyInput(e.target.value)}
                   className="w-full"
+                  disabled={validatingApiKey}
                 />
                 <p className="text-xs text-muted-foreground">
                   Get your API key from{" "}
@@ -192,9 +273,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
               <Button 
                 type="submit" 
                 className="w-full bg-focus-purple hover:bg-focus-purple-dark"
-                disabled={!apiKeyInput.trim()}
+                disabled={!apiKeyInput.trim() || validatingApiKey}
               >
-                Save API Key
+                {validatingApiKey ? "Validating..." : "Save API Key"}
               </Button>
             </form>
           </div>

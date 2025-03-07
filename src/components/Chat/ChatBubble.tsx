@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ChatInterface from "./ChatInterface";
-import { getApiKey } from "@/utils/openaiUtils";
+import { getApiKey, validateApiKey } from "@/utils/openaiUtils";
 
 interface ChatBubbleProps {
   className?: string;
@@ -11,19 +11,48 @@ interface ChatBubbleProps {
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [hasApiKey, setHasApiKey] = useState(true);
+  const [hasValidApiKey, setHasValidApiKey] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    // Check if API key exists
-    setHasApiKey(!!getApiKey());
-  }, []);
+    // Check if API key exists and is valid
+    const checkApiKey = async () => {
+      setIsChecking(true);
+      const apiKey = getApiKey();
+      
+      if (apiKey) {
+        try {
+          const isValid = await validateApiKey();
+          setHasValidApiKey(isValid);
+        } catch (error) {
+          console.error("Error validating API key:", error);
+          setHasValidApiKey(false);
+        }
+      } else {
+        setHasValidApiKey(false);
+      }
+      
+      setIsChecking(false);
+    };
+    
+    checkApiKey();
+    
+    // Re-check API key status when window gains focus
+    const handleFocus = () => {
+      if (!isOpen) {
+        checkApiKey();
+      }
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [isOpen]);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
-    // After opening chat, check API key again
-    if (!isOpen) {
-      setHasApiKey(!!getApiKey());
-    }
   };
 
   return (
@@ -37,7 +66,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
         aria-label={isOpen ? "Close chat" : "Open chat"}
       >
         <MessageCircle size={24} className="text-white" />
-        {!hasApiKey && (
+        {!isChecking && !hasValidApiKey && (
           <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full" />
         )}
       </button>
@@ -46,8 +75,6 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
         isOpen={isOpen} 
         onClose={() => {
           setIsOpen(false);
-          // Check API key after closing chat
-          setHasApiKey(!!getApiKey());
         }} 
       />
     </>

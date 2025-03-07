@@ -8,11 +8,40 @@ export const getApiKey = (): string | null => {
 };
 
 export const setApiKey = (key: string): void => {
+  // Basic validation for OpenAI API key format (starts with "sk-")
+  if (!key.startsWith("sk-")) {
+    toast.error("Invalid API key format. OpenAI API keys typically start with 'sk-'");
+    throw new Error("Invalid API key format");
+  }
+  
   localStorage.setItem("openai_api_key", key);
 };
 
 export const clearApiKey = (): void => {
   localStorage.removeItem("openai_api_key");
+};
+
+export const validateApiKey = async (): Promise<boolean> => {
+  const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    return false;
+  }
+
+  try {
+    // Make a lightweight request to validate the API key
+    const response = await fetch("https://api.openai.com/v1/models", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`
+      }
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error("Error validating API key:", error);
+    return false;
+  }
 };
 
 export const getAIResponse = async (message: string): Promise<string> => {
