@@ -29,6 +29,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorCount, setErrorCount] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -73,8 +74,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           timestamp: new Date(),
         }
       ]);
+      
+      // Reset error count on successful response
+      if (errorCount > 0) {
+        setErrorCount(0);
+      }
     } catch (error) {
-      console.error("Error fetching AI response:", error);
+      console.error("Error in chat interface:", error);
+      
+      // Increment error count
+      setErrorCount(prev => prev + 1);
       
       setMessages((prev) => [
         ...prev,
@@ -84,6 +93,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           timestamp: new Date(),
         },
       ]);
+      
+      // If multiple consecutive errors, show toast notification
+      if (errorCount >= 2) {
+        toast.error("There appears to be an issue with the AI service. You can continue using other features while this is resolved.");
+      }
     } finally {
       setIsLoading(false);
     }
