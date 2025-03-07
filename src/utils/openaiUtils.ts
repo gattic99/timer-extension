@@ -70,12 +70,17 @@ const fallbackResponses = [
 ];
 
 export const getAIResponse = async (message: string): Promise<string> => {
+  // First, check if we're offline
+  if (!navigator.onLine) {
+    return getFallbackResponse(message);
+  }
+
   try {
     const apiKey = getApiKey();
     
+    // No API key, use fallback responses
     if (!apiKey) {
-      // If no API key, explain how to set one up
-      return "To use the AI chat feature, you'll need to provide your OpenAI API key. Click the settings icon in the chat and enter your key. You can get an API key from https://platform.openai.com/account/api-keys";
+      return getFallbackResponse(message);
     }
 
     // Try to use the OpenAI API if we have a key
@@ -107,18 +112,18 @@ export const getAIResponse = async (message: string): Promise<string> => {
           return "Your OpenAI API key appears to be invalid. Please check your key and try again.";
         }
         
-        return "Sorry, there was an error connecting to the AI service. Please try again later.";
+        return getFallbackResponse(message);
       }
 
       const data = await response.json();
       return data.choices[0].message.content;
     } catch (apiError) {
       console.error("Error in OpenAI API call:", apiError);
-      return "Sorry, there was an error connecting to the AI service. Please check your internet connection and try again.";
+      return getFallbackResponse(message);
     }
   } catch (error) {
     console.error("Error fetching AI response:", error);
-    return "Sorry, there was an error processing your request. Please try again later.";
+    return getFallbackResponse(message);
   }
 };
 
