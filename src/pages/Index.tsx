@@ -7,7 +7,6 @@ import FocusMode from "@/components/FocusMode";
 import BreakMode from "@/components/BreakMode";
 import { TimerSettings } from "@/types";
 import { X } from "lucide-react";
-import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
 import PlatformerGame from "@/components/PlatformerGame";
 import ChatBubble from "@/components/Chat/ChatBubble";
@@ -89,7 +88,7 @@ const Index: React.FC = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      <FigmaBackground />
+      {/* Removed the FigmaBackground component */}
       
       <ChatBubble 
         isOpen={isChatOpen}
