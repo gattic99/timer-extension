@@ -1,24 +1,26 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ChatInterface from "./ChatInterface";
 
 interface ChatBubbleProps {
   className?: string;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
 }
 
-const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-  };
-
+const ChatBubble: React.FC<ChatBubbleProps> = ({ 
+  className, 
+  isOpen, 
+  onOpen, 
+  onClose 
+}) => {
   return (
     <>
       <button
-        onClick={toggleChat}
+        onClick={onOpen}
         className={cn(
           "fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-focus-purple hover:bg-focus-purple-dark shadow-lg flex items-center justify-center transition-all duration-300",
           className
@@ -30,9 +32,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
       
       <ChatInterface 
         isOpen={isOpen} 
-        onClose={() => {
-          setIsOpen(false);
-        }}
+        onClose={onClose}
         hasValidApiKey={true}
       />
     </>
