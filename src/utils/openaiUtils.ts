@@ -3,8 +3,8 @@ import { toast } from "sonner";
 
 // Add a flag to localStorage to track if API key has been validated
 export const getApiKey = (): string | null => {
-  // Check for a predefined key in the application
-  return process.env.REACT_APP_OPENAI_API_KEY || localStorage.getItem("openai_api_key");
+  // We're not using process.env as it's causing errors in the browser
+  return localStorage.getItem("openai_api_key");
 };
 
 export const setApiKey = (key: string): void => {
@@ -61,30 +61,36 @@ export const getAIResponse = async (message: string): Promise<string> => {
       return getFallbackResponse(message);
     }
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini", // Using OpenAI's latest model for best performance/cost ratio
-        messages: [
-          { role: "system", content: "You are a helpful assistant focused on productivity and well-being. Keep your responses concise and practical." },
-          { role: "user", content: message }
-        ],
-        max_tokens: 500,
-        temperature: 0.7
-      })
-    });
+    // Try to use the OpenAI API if we have a key
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini", // Using OpenAI's latest model for best performance/cost ratio
+          messages: [
+            { role: "system", content: "You are a helpful assistant focused on productivity and well-being. Keep your responses concise and practical." },
+            { role: "user", content: message }
+          ],
+          max_tokens: 500,
+          temperature: 0.7
+        })
+      });
 
-    if (!response.ok) {
-      console.warn("OpenAI API error:", await response.text());
+      if (!response.ok) {
+        console.warn("OpenAI API error:", await response.text());
+        return getFallbackResponse(message);
+      }
+
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (apiError) {
+      console.error("Error in OpenAI API call:", apiError);
       return getFallbackResponse(message);
     }
-
-    const data = await response.json();
-    return data.choices[0].message.content;
   } catch (error) {
     console.error("Error fetching AI response:", error);
     // Return a fallback response instead of throwing an error
