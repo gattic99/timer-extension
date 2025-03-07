@@ -3,7 +3,8 @@ import { toast } from "sonner";
 
 // Add a flag to localStorage to track if API key has been validated
 export const getApiKey = (): string | null => {
-  return localStorage.getItem("openai_api_key");
+  // Check for a predefined key in the application
+  return process.env.REACT_APP_OPENAI_API_KEY || localStorage.getItem("openai_api_key");
 };
 
 export const setApiKey = (key: string): void => {
@@ -28,36 +29,13 @@ export const setApiKeyValidated = (isValid: boolean): void => {
 
 // Check if API key has been validated before
 export const isApiKeyValidated = (): boolean => {
-  return localStorage.getItem("openai_api_key_validated") === "true";
+  // For purchased version, always return true to skip validation
+  return true;
 };
 
 export const validateApiKey = async (): Promise<boolean> => {
-  const apiKey = getApiKey();
-  
-  if (!apiKey) {
-    return false;
-  }
-
-  try {
-    // Make a lightweight request to validate the API key
-    const response = await fetch("https://api.openai.com/v1/models", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`
-      }
-    });
-
-    const isValid = response.ok;
-    
-    // Store validation result
-    setApiKeyValidated(isValid);
-    
-    return isValid;
-  } catch (error) {
-    console.error("Error validating API key:", error);
-    setApiKeyValidated(false);
-    return false;
-  }
+  // For purchased version, bypass validation
+  return true;
 };
 
 export const getAIResponse = async (message: string): Promise<string> => {
