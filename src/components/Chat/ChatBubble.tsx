@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ChatInterface from "./ChatInterface";
-import { getApiKey, validateApiKey } from "@/utils/openaiUtils";
+import { getApiKey, validateApiKey, isApiKeyValidated } from "@/utils/openaiUtils";
 
 interface ChatBubbleProps {
   className?: string;
@@ -21,6 +21,14 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
       const apiKey = getApiKey();
       
       if (apiKey) {
+        // First check if the API key was previously validated
+        if (isApiKeyValidated()) {
+          setHasValidApiKey(true);
+          setIsChecking(false);
+          return;
+        }
+        
+        // If not previously validated or validation expired, validate with API
         try {
           const isValid = await validateApiKey();
           setHasValidApiKey(isValid);
@@ -75,7 +83,8 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ className }) => {
         isOpen={isOpen} 
         onClose={() => {
           setIsOpen(false);
-        }} 
+        }}
+        hasValidApiKey={hasValidApiKey}
       />
     </>
   );

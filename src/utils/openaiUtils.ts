@@ -1,8 +1,7 @@
 
 import { toast } from "sonner";
 
-// Store API key in localStorage for demo purposes
-// In production, you should use a backend to handle API calls
+// Add a flag to localStorage to track if API key has been validated
 export const getApiKey = (): string | null => {
   return localStorage.getItem("openai_api_key");
 };
@@ -19,6 +18,17 @@ export const setApiKey = (key: string): void => {
 
 export const clearApiKey = (): void => {
   localStorage.removeItem("openai_api_key");
+  localStorage.removeItem("openai_api_key_validated");
+};
+
+// Set a flag when API key is validated
+export const setApiKeyValidated = (isValid: boolean): void => {
+  localStorage.setItem("openai_api_key_validated", isValid ? "true" : "false");
+};
+
+// Check if API key has been validated before
+export const isApiKeyValidated = (): boolean => {
+  return localStorage.getItem("openai_api_key_validated") === "true";
 };
 
 export const validateApiKey = async (): Promise<boolean> => {
@@ -37,9 +47,15 @@ export const validateApiKey = async (): Promise<boolean> => {
       }
     });
 
-    return response.ok;
+    const isValid = response.ok;
+    
+    // Store validation result
+    setApiKeyValidated(isValid);
+    
+    return isValid;
   } catch (error) {
     console.error("Error validating API key:", error);
+    setApiKeyValidated(false);
     return false;
   }
 };

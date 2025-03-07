@@ -6,19 +6,32 @@ import { Send, Bot, X, Key, KeyRound } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ChatMessage, { ChatMessageProps } from "./ChatMessage";
 import { cn } from "@/lib/utils";
-import { getAIResponse, getApiKey, setApiKey, clearApiKey, validateApiKey } from "@/utils/openaiUtils";
+import { 
+  getAIResponse, 
+  getApiKey, 
+  setApiKey, 
+  clearApiKey, 
+  validateApiKey, 
+  setApiKeyValidated,
+  isApiKeyValidated
+} from "@/utils/openaiUtils";
 import { toast } from "sonner";
 
 interface ChatInterfaceProps {
   isOpen: boolean;
   onClose: () => void;
+  hasValidApiKey?: boolean;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ 
+  isOpen, 
+  onClose,
+  hasValidApiKey: propHasValidApiKey = false
+}) => {
   const [input, setInput] = useState("");
   const [apiKeyInput, setApiKeyInput] = useState("");
-  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
-  const [apiKeyValidated, setApiKeyValidated] = useState(false);
+  const [showApiKeyInput, setShowApiKeyInput] = useState(!propHasValidApiKey);
+  const [apiKeyValidated, setLocalApiKeyValidated] = useState(propHasValidApiKey);
   const [messages, setMessages] = useState<ChatMessageProps[]>([
     {
       role: "assistant",
@@ -33,21 +46,39 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const apiKeyInputRef = useRef<HTMLInputElement>(null);
 
-  // Check API key on load
+  // Update state when props change
+  useEffect(() => {
+    setShowApiKeyInput(!propHasValidApiKey);
+    setLocalApiKeyValidated(propHasValidApiKey);
+  }, [propHasValidApiKey]);
+
+  // Check API key on load only if we don't already know it's valid
   useEffect(() => {
     const checkApiKey = async () => {
+      // If we already know it's valid from props, skip validation
+      if (propHasValidApiKey) {
+        return;
+      }
+      
       const hasApiKey = !!getApiKey();
       
       if (hasApiKey) {
+        // First check if the API key was previously validated
+        if (isApiKeyValidated()) {
+          setLocalApiKeyValidated(true);
+          setShowApiKeyInput(false);
+          return;
+        }
+        
         setValidatingApiKey(true);
         try {
           const isValid = await validateApiKey();
           if (isValid) {
-            setApiKeyValidated(true);
+            setLocalApiKeyValidated(true);
             setShowApiKeyInput(false);
           } else {
             clearApiKey();
-            setApiKeyValidated(false);
+            setLocalApiKeyValidated(false);
             setShowApiKeyInput(true);
             setMessages([
               {
@@ -59,13 +90,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
           }
         } catch (error) {
           console.error("Error validating API key:", error);
-          setApiKeyValidated(false);
+          setLocalApiKeyValidated(false);
           setShowApiKeyInput(true);
         } finally {
           setValidatingApiKey(false);
         }
       } else {
-        setApiKeyValidated(false);
+        setLocalApiKeyValidated(false);
         setShowApiKeyInput(true);
       }
     };
@@ -73,7 +104,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     if (isOpen) {
       checkApiKey();
     }
-  }, [isOpen]);
+  }, [isOpen, propHasValidApiKey]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -105,9 +136,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       const isValid = await validateApiKey();
       
       if (isValid) {
-        setApiKeyValidated(true);
+        setLocalApiKeyValidated(true);
         setShowApiKeyInput(false);
         setApiKeyInput("");
+        setApiKeyValidated(true); // Set the localStorage flag
         toast.success("API key validated successfully");
         
         // Update welcome message
@@ -120,7 +152,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         ]);
       } else {
         clearApiKey();
-        setApiKeyValidated(false);
+        setLocalApiKeyValidated(false);
         toast.error("Invalid API key. Please check and try again.");
       }
     } catch (error) {
@@ -165,7 +197,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       const isValid = await validateApiKey();
       if (!isValid) {
         clearApiKey();
-        setApiKeyValidated(false);
+        setLocalApiKeyValidated(false);
         setShowApiKeyInput(true);
         setMessages((prev) => [
           ...prev,
@@ -192,7 +224,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
 
   const handleChangeApiKey = () => {
     clearApiKey();
-    setApiKeyValidated(false);
+    setLocalApiKeyValidated(false);
     setShowApiKeyInput(true);
     setMessages([
       {
