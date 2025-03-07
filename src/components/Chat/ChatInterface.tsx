@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
+  // Define activeConversation before it's used in the useEffect below
+  const activeConversation = conversations.find(c => c.id === activeConversationId);
+  const messages = activeConversation?.messages || [];
+
   useEffect(() => {
     const storedConversations = localStorage.getItem(STORAGE_KEY);
     if (storedConversations) {
@@ -93,10 +98,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [activeConversation?.messages, isLoading]);
-
-  const activeConversation = conversations.find(c => c.id === activeConversationId);
-  const messages = activeConversation?.messages || [];
+  }, [messages, isLoading]);
 
   const createNewConversation = () => {
     const newId = uuidv4();
