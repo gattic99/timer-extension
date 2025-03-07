@@ -1,9 +1,11 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Bot, X, PlusCircle, Settings } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ChatMessage, { ChatMessageProps } from "./ChatMessage";
+import { cn } from "@/lib/utils";
 import { getAIResponse, getApiKey, setApiKey, validateApiKey } from "@/utils/openaiUtils";
 import { toast } from "sonner";
 import ChatHistory, { ChatConversation } from "./ChatHistory";
@@ -53,6 +55,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
+  // Define activeConversation before it's used in useEffect
   const activeConversation = conversations.find(c => c.id === activeConversationId);
   const messages = activeConversation?.messages || [];
   
@@ -90,9 +93,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [conversations]);
 
+  // Check if API key is available
   useEffect(() => {
-    if (conversations.length === 0) {
-      createNewConversation();
+    const apiKey = getApiKey();
+    if (!apiKey && conversations.length === 0) {
+      // Create a new conversation with a special welcome message
+      const newId = uuidv4();
+      const welcomeMessage: ChatMessageProps = {
+        role: "assistant",
+        content: "Welcome! To use the AI chat feature, you'll need to provide your OpenAI API key. Click the ⚙️ (Settings) icon in the top right to enter your key. You can get an API key from https://platform.openai.com/account/api-keys",
+        timestamp: new Date(),
+      };
+      
+      const newConversation: ChatConversation = {
+        id: newId,
+        title: "Welcome",
+        messages: [welcomeMessage],
+        createdAt: new Date()
+      };
+      
+      setConversations([newConversation]);
+      setActiveConversationId(newId);
     }
   }, [conversations.length]);
 
@@ -234,12 +255,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     try {
       setApiKey(apiKeyInput.trim());
       
+      // Validate the API key
       const isValid = await validateApiKey();
       
       if (isValid) {
-        toast.success("API key saved successfully. You will now receive personalized responses.");
+        toast.success("API key saved successfully");
         setIsSettingsOpen(false);
         setApiKeyInput("");
+        
+        // Create a new conversation if none exists
+        if (conversations.length === 0) {
+          createNewConversation();
+        }
       } else {
         toast.error("Invalid API key. Please check and try again.");
       }
@@ -353,18 +380,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
       </Card>
 
+      {/* API Key Settings Dialog */}
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>AI Assistant Settings</DialogTitle>
             <DialogDescription>
-              By default, the AI assistant works without an API key. If you'd like more personalized responses, you can optionally add your OpenAI API key.
+              Enter your OpenAI API key to enable AI chat functionality. You can get an API key from the OpenAI platform.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="apiKey" className="text-right">
-                API Key (Optional)
+                API Key
               </label>
               <Input
                 id="apiKey"
@@ -376,8 +404,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               />
             </div>
             <div className="text-sm text-muted-foreground">
-              The assistant works without an API key. Adding your own OpenAI key enables more personalized responses.
-              Your API key is stored only in your browser's local storage.
+              Your API key is stored only in your browser's local storage and is never sent to our servers.
             </div>
           </div>
           <DialogFooter>

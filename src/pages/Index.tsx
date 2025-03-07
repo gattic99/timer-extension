@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -10,11 +11,14 @@ import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
 import PlatformerGame from "@/components/PlatformerGame";
 import ChatBubble from "@/components/Chat/ChatBubble";
+import { toast } from "sonner";
+import { getApiKey } from "@/utils/openaiUtils";
 
 const Index: React.FC = () => {
   const [settings, setSettings] = useState<TimerSettings>(defaultTimerSettings);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
 
   const {
     timerState,
@@ -27,6 +31,12 @@ const Index: React.FC = () => {
   } = useTimer({
     settings
   });
+
+  useEffect(() => {
+    // Check if API key is available
+    const apiKey = getApiKey();
+    setHasApiKey(!!apiKey);
+  }, []);
 
   useEffect(() => {
     if (timerState.mode === 'break' && timerState.completed) {
@@ -76,6 +86,13 @@ const Index: React.FC = () => {
   const handleOpenChat = () => {
     setIsChatOpen(true);
     setIsTimerOpen(false); // Close timer when chat is opened
+    
+    // Notify user about API key requirement if not set
+    if (!hasApiKey) {
+      toast.info("To use the AI chat, you'll need to add your OpenAI API key in the settings", {
+        duration: 5000,
+      });
+    }
   };
 
   const handleCloseChat = () => {
