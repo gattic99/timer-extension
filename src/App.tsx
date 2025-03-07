@@ -10,7 +10,10 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 // Configure for extension context
-const isExtension = window.chrome && chrome.runtime && chrome.runtime.id;
+const isExtension = typeof window !== 'undefined' && 
+  window.chrome !== undefined && 
+  window.chrome.runtime !== undefined && 
+  window.chrome.runtime.id !== undefined;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
