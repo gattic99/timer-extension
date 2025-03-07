@@ -18,13 +18,13 @@ export const useTimer = ({ settings }: UseTimerProps) => {
   });
 
   const intervalRef = useRef<number | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const breakAudioRef = useRef<HTMLAudioElement | null>(null);
+  const focusAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Initialize audio
   useEffect(() => {
-    audioRef.current = new Audio('/notification.mp3');
     breakAudioRef.current = new Audio('/time-for-break.mp3');
+    focusAudioRef.current = new Audio('/time-for-focus.mp3');
     
     return () => {
       if (intervalRef.current) {
@@ -32,6 +32,23 @@ export const useTimer = ({ settings }: UseTimerProps) => {
       }
     };
   }, []);
+
+  const resetTimer = useCallback((mode: TimerMode) => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    setTimerState({
+      mode,
+      timeRemaining: mode === 'focus' 
+        ? minutesToSeconds(settings.focusDuration) 
+        : minutesToSeconds(settings.breakDuration),
+      isRunning: false,
+      breakActivity: null,
+      completed: false
+    });
+  }, [settings.focusDuration, settings.breakDuration]);
 
   const startTimer = useCallback(() => {
     if (timerState.isRunning) return;
@@ -72,8 +89,8 @@ export const useTimer = ({ settings }: UseTimerProps) => {
               completed: true
             };
           } else {
-            if (audioRef.current) {
-              audioRef.current.play().catch(err => console.error("Error playing audio:", err));
+            if (focusAudioRef.current) {
+              focusAudioRef.current.play().catch(err => console.error("Error playing audio:", err));
             }
             toast("Break complete! Ready to focus again?");
             
@@ -96,7 +113,7 @@ export const useTimer = ({ settings }: UseTimerProps) => {
         };
       });
     }, 1000);
-  }, [timerState.mode, timerState.timeRemaining, timerState.isRunning, settings.focusDuration, settings.breakDuration]);
+  }, [timerState.isRunning, timerState.timeRemaining, timerState.mode, resetTimer, settings.breakDuration, settings.focusDuration]);
 
   const pauseTimer = useCallback(() => {
     if (!timerState.isRunning) return;
@@ -108,23 +125,6 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     
     setTimerState(prev => ({ ...prev, isRunning: false }));
   }, [timerState.isRunning]);
-
-  const resetTimer = useCallback((mode: TimerMode) => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    
-    setTimerState({
-      mode,
-      timeRemaining: mode === 'focus' 
-        ? minutesToSeconds(settings.focusDuration) 
-        : minutesToSeconds(settings.breakDuration),
-      isRunning: false,
-      breakActivity: null,
-      completed: false
-    });
-  }, [settings.focusDuration, settings.breakDuration]);
 
   const selectBreakActivity = useCallback((activity: BreakActivity) => {
     setTimerState(prev => ({ ...prev, breakActivity: activity }));
