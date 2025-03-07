@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Bot, X, ChevronLeft } from "lucide-react";
+import { Send, Bot, X, ChevronLeft, PlusCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ChatMessage, { ChatMessageProps } from "./ChatMessage";
 import { cn } from "@/lib/utils";
