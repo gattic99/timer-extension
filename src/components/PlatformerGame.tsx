@@ -155,7 +155,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
   return <div className="fixed inset-0 top-auto bottom-0 w-full h-screen bg-blue-100 z-50 flex flex-col items-center" onClick={handleUserInteraction}>
       <div className="text-center mt-4 mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Office Escape 🏃🏼‍♂️‍➡️🏃🏼‍♀️‍➡️</h2>
-        <p className="text-muted-foreground text-sm font-semibold py-[8px] text-center">Dodge obstacles and collect coins—inside them are your colleagues, Sina and Cristina! Everything except coins and trees will take you out!</p>
+        <p className="text-muted-foreground text-sm font-semibold py-[8px] text-center">Dodge obstacles and collect coins—inside them are your colleagues, Sina and Cristina! Everything except coins and trees will take you out! You can also jump on the shelves—they are not obstacles!</p>
       </div>
       
       <div className="relative w-full max-w-4xl mx-auto">
