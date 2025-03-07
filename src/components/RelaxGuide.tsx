@@ -33,7 +33,11 @@ const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn, timerState }) => {
       <div className="text-center mb-4">
         <div className="flex items-center justify-center mb-2">
           <Dumbbell className="text-break-green mr-2" size={20} />
+          {/* Added timer next to the title */}
           <h2 className="text-xl font-bold text-dark-text">Relax & Stretch</h2>
+          <div className="ml-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-md text-xs">
+            {formatTime(timerState.timeRemaining)}
+          </div>
         </div>
         <p className="text-sm text-muted-foreground">
           Take a moment to relax your mind and body with these exercises.
@@ -83,10 +87,7 @@ const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn, timerState }) => {
           <p className="text-dark-text text-sm">{relaxSteps[currentStep].shortDescription}</p>
         </div>
         
-        {/* Timer in bottom left */}
-        <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-md text-xs">
-          {formatTime(timerState.timeRemaining)}
-        </div>
+        {/* Removed timer from bottom left */}
       </div>
       
       <div className="flex justify-center">
