@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
@@ -10,6 +9,7 @@ import { X } from "lucide-react";
 import FigmaBackground from "@/components/FigmaBackground";
 import FloatingTimer from "@/components/FloatingTimer";
 import PlatformerGame from "@/components/PlatformerGame";
+import ChatBubble from "@/components/Chat/ChatBubble";
 import { toast } from "sonner";
 
 const Index: React.FC = () => {
@@ -71,12 +71,16 @@ const Index: React.FC = () => {
     return <PlatformerGame onReturn={handleReturnFromGame} timerState={timerState} onStart={startTimer} onPause={pauseTimer} />;
   }
 
-  return <div className="min-h-screen relative overflow-hidden">
+  return (
+    <div className="min-h-screen relative overflow-hidden">
       <FigmaBackground />
+      
+      <ChatBubble />
       
       <FloatingTimer isOpen={isOpen} timerState={timerState} togglePopup={togglePopup} />
       
-      {isOpen && <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
+      {isOpen && (
+        <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
           <Card className="glass-panel w-[420px] p-8 shadow-xl px-[24px] py-[24px]">
             <div className="flex justify-between items-center mb-6">
               <div>
@@ -91,12 +95,32 @@ const Index: React.FC = () => {
               </div>
             </div>
             
-            {timerState.mode === 'focus' ? <FocusMode timerState={timerState} onStart={handleStartTimer} onPause={pauseTimer} onReset={() => resetTimer('focus')} focusDuration={settings.focusDuration} breakDuration={settings.breakDuration} onChangeFocusDuration={handleFocusDurationChange} onChangeBreakDuration={handleBreakDurationChange} /> : <BreakMode timerState={timerState} onStart={handleStartTimer} onPause={pauseTimer} onReset={() => resetTimer('break')} onSelectActivity={selectBreakActivity} breakDuration={settings.breakDuration} onChangeBreakDuration={handleBreakDurationChange} />}
-            
-            
+            {timerState.mode === 'focus' 
+              ? <FocusMode 
+                  timerState={timerState} 
+                  onStart={handleStartTimer} 
+                  onPause={pauseTimer} 
+                  onReset={() => resetTimer('focus')} 
+                  focusDuration={settings.focusDuration} 
+                  breakDuration={settings.breakDuration} 
+                  onChangeFocusDuration={handleFocusDurationChange} 
+                  onChangeBreakDuration={handleBreakDurationChange} 
+                /> 
+              : <BreakMode 
+                  timerState={timerState} 
+                  onStart={handleStartTimer} 
+                  onPause={pauseTimer} 
+                  onReset={() => resetTimer('break')} 
+                  onSelectActivity={selectBreakActivity} 
+                  breakDuration={settings.breakDuration} 
+                  onChangeBreakDuration={handleBreakDurationChange} 
+                />
+            }
           </Card>
-        </div>}
-    </div>;
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Index;
