@@ -1,8 +1,7 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Bot, X, ChevronLeft, PlusCircle } from "lucide-react";
+import { Send, Bot, X, PlusCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ChatMessage, { ChatMessageProps } from "./ChatMessage";
 import { cn } from "@/lib/utils";
@@ -44,7 +43,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
-  const [showHistory, setShowHistory] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -112,12 +110,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setConversations(prev => [newConversation, ...prev]);
     setActiveConversationId(newId);
     setInput("");
-    setShowHistory(false);
   };
 
   const handleSelectConversation = (id: string) => {
     setActiveConversationId(id);
-    setShowHistory(false);
   };
 
   const handleDeleteConversation = (id: string) => {
@@ -222,22 +218,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-  const toggleHistory = () => {
-    setShowHistory(!showHistory);
-  };
-
   if (!isOpen) return null;
 
   return (
     <div className="fixed bottom-24 left-6 z-50 animate-scale-in">
-      <Card className="glass-panel w-[420px] h-[460px] shadow-xl px-[24px] py-[24px] flex">
-        {/* Chat History Sidebar */}
-        <div 
-          className={cn(
-            "absolute inset-0 bg-white bg-opacity-95 z-10 transition-transform duration-300 flex flex-col",
-            showHistory ? "translate-x-0" : "-translate-x-full"
-          )}
-        >
+      <Card className="glass-panel w-[650px] h-[460px] shadow-xl flex flex-row overflow-hidden">
+        {/* Always visible chat history sidebar */}
+        <div className="w-[200px] border-r border-gray-200 dark:border-gray-700 bg-white bg-opacity-95">
           <ChatHistory
             conversations={conversations}
             activeConversation={activeConversationId}
@@ -249,18 +236,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
         
         {/* Main Chat Area */}
-        <div className="flex flex-col w-full h-full">
-          <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col flex-1 h-full">
+          <div className="flex justify-between items-center px-[24px] py-[16px] border-b border-gray-200">
             <div className="flex items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleHistory}
-                className="h-8 w-8 mr-2"
-                aria-label="Toggle history"
-              >
-                <ChevronLeft size={18} />
-              </Button>
               <Bot className="text-focus-purple mr-2" size={20} />
               <h2 className="font-semibold">AI Assistant</h2>
             </div>
@@ -275,62 +253,60 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </Button>
           </div>
           
-          <>
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-2 space-y-4 mb-4 bg-white bg-opacity-50 rounded-xl">
-              {activeConversationId ? (
-                <>
-                  {messages.map((msg, index) => (
-                    <ChatMessage key={index} {...msg} />
-                  ))}
-                  {isLoading && (
-                    <div className="flex justify-start mb-4">
-                      <div className="bg-muted rounded-2xl rounded-tl-none px-4 py-3">
-                        <div className="flex space-x-2">
-                          <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse"></div>
-                          <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse delay-150"></div>
-                          <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse delay-300"></div>
-                        </div>
+          {activeConversationId ? (
+            <div className="flex-1 flex flex-col px-[24px] py-[16px]">
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto space-y-4 mb-4 bg-white bg-opacity-50 rounded-xl p-2">
+                {messages.map((msg, index) => (
+                  <ChatMessage key={index} {...msg} />
+                ))}
+                {isLoading && (
+                  <div className="flex justify-start mb-4">
+                    <div className="bg-muted rounded-2xl rounded-tl-none px-4 py-3">
+                      <div className="flex space-x-2">
+                        <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse"></div>
+                        <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse delay-150"></div>
+                        <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse delay-300"></div>
                       </div>
                     </div>
-                  )}
-                </>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <Button
-                    onClick={createNewConversation}
-                    className="bg-focus-purple hover:bg-focus-purple-dark text-white"
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+              
+              {/* Input */}
+              <form onSubmit={handleSubmit} className="border-t pt-4">
+                <div className="flex gap-2">
+                  <Input
+                    ref={inputRef}
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Type your message..."
+                    className="flex-1"
+                    disabled={isLoading}
+                  />
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading || !input.trim()}
+                    className="bg-focus-purple hover:bg-focus-purple-dark"
                   >
-                    <PlusCircle size={16} className="mr-2" />
-                    Start New Chat
+                    <Send size={16} />
                   </Button>
                 </div>
-              )}
-              <div ref={messagesEndRef} />
+              </form>
             </div>
-            
-            {/* Input */}
-            <form onSubmit={handleSubmit} className="border-t pt-4">
-              <div className="flex gap-2">
-                <Input
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1"
-                  disabled={isLoading || !activeConversationId}
-                />
-                <Button 
-                  type="submit" 
-                  disabled={isLoading || !input.trim() || !activeConversationId}
-                  className="bg-focus-purple hover:bg-focus-purple-dark"
-                >
-                  <Send size={16} />
-                </Button>
-              </div>
-            </form>
-          </>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <Button
+                onClick={createNewConversation}
+                className="bg-focus-purple hover:bg-focus-purple-dark text-white"
+              >
+                <PlusCircle size={16} className="mr-2" />
+                Start New Chat
+              </Button>
+            </div>
+          )}
         </div>
       </Card>
     </div>
