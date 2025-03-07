@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -129,8 +128,14 @@ export default {
 				'pulse-soft': 'pulse-soft 2s infinite',
 				'flip': 'flip 0.5s ease-out forwards',
 				'flip-back': 'flip-back 0.5s ease-out forwards'
-			}
+			},
+			scrollbar: {
+				thin: '8px',
+			},
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		require('tailwind-scrollbar'),
+	],
 } satisfies Config;

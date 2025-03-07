@@ -46,14 +46,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Load conversations from localStorage
   useEffect(() => {
     const storedConversations = localStorage.getItem(STORAGE_KEY);
     if (storedConversations) {
       try {
         const parsedConversations = JSON.parse(storedConversations);
-        // Convert string dates back to Date objects
         const conversations = parsedConversations.map((conv: any) => ({
           ...conv,
           createdAt: new Date(conv.createdAt),
@@ -64,7 +63,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         }));
         setConversations(conversations);
         
-        // Set active conversation to the most recent one if any exist
         if (conversations.length > 0) {
           setActiveConversationId(conversations[0].id);
         }
@@ -74,7 +72,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, []);
 
-  // Save conversations to localStorage whenever they change
   useEffect(() => {
     if (conversations.length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
@@ -89,12 +86,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     if (isOpen) {
       setTimeout(() => {
         inputRef.current?.focus();
+        scrollToBottom();
       }, 100);
     }
-    scrollToBottom();
   }, [isOpen, activeConversationId]);
 
-  // Get active conversation
+  useEffect(() => {
+    scrollToBottom();
+  }, [activeConversation?.messages, isLoading]);
+
   const activeConversation = conversations.find(c => c.id === activeConversationId);
   const messages = activeConversation?.messages || [];
 
@@ -119,7 +119,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const handleDeleteConversation = (id: string) => {
     setConversations(prev => prev.filter(c => c.id !== id));
     
-    // If the active conversation is deleted, select another one or create a new one
     if (id === activeConversationId) {
       const remaining = conversations.filter(c => c.id !== id);
       if (remaining.length > 0) {
@@ -154,7 +153,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     e.preventDefault();
     if (!input.trim()) return;
 
-    // If no conversation exists, create one
     if (!activeConversationId) {
       createNewConversation();
     }
@@ -165,13 +163,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       timestamp: new Date(),
     };
 
-    // Update the title if this is the first user message
     const currentMessages = activeConversation?.messages || [];
     if (currentMessages.length === 1 && currentMessages[0].role === "assistant") {
       updateConversationTitle(activeConversationId!, input.trim());
     }
 
-    // Add user message to chat
     const updatedMessages = [...currentMessages, userMessage];
     updateConversationMessages(activeConversationId!, updatedMessages);
     
@@ -179,7 +175,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setIsLoading(true);
 
     try {
-      // Get response from OpenAI API
       const aiContent = await getAIResponse(userMessage.content);
       
       const newMessage: ChatMessageProps = {
@@ -191,14 +186,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       const finalMessages = [...updatedMessages, newMessage];
       updateConversationMessages(activeConversationId!, finalMessages);
       
-      // Reset error count on successful response
       if (errorCount > 0) {
         setErrorCount(0);
       }
     } catch (error) {
       console.error("Error in chat interface:", error);
       
-      // Increment error count
       setErrorCount(prev => prev + 1);
       
       const errorMessage: ChatMessageProps = {
@@ -209,7 +202,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       
       updateConversationMessages(activeConversationId!, [...updatedMessages, errorMessage]);
       
-      // If multiple consecutive errors, show toast notification
       if (errorCount >= 2) {
         toast.error("There appears to be an issue with the AI service. You can continue using other features while this is resolved.");
       }
@@ -223,7 +215,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   return (
     <div className="fixed bottom-24 left-6 z-50 animate-scale-in">
       <Card className="glass-panel w-[650px] h-[460px] shadow-xl flex flex-row overflow-hidden">
-        {/* Always visible chat history sidebar */}
         <div className="w-[200px] border-r border-gray-200 dark:border-gray-700 bg-white bg-opacity-95">
           <ChatHistory
             conversations={conversations}
@@ -235,7 +226,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           />
         </div>
         
-        {/* Main Chat Area */}
         <div className="flex flex-col flex-1 h-full">
           <div className="flex justify-between items-center px-[24px] py-[16px] border-b border-gray-200">
             <div className="flex items-center">
@@ -254,28 +244,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </div>
           
           {activeConversationId ? (
-            <div className="flex-1 flex flex-col px-[24px] py-[16px]">
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto space-y-4 mb-4 bg-white bg-opacity-50 rounded-xl p-2">
-                {messages.map((msg, index) => (
-                  <ChatMessage key={index} {...msg} />
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start mb-4">
-                    <div className="bg-muted rounded-2xl rounded-tl-none px-4 py-3">
-                      <div className="flex space-x-2">
-                        <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse"></div>
-                        <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse delay-150"></div>
-                        <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse delay-300"></div>
+            <div className="flex-1 flex flex-col px-[24px] py-[16px] overflow-hidden">
+              <div 
+                ref={messagesContainerRef}
+                className="flex-1 overflow-y-auto scrollbar-thin mb-4 bg-white bg-opacity-50 rounded-xl p-2 pr-1"
+                style={{ maxHeight: "calc(100% - 80px)" }}
+              >
+                <div className="space-y-4 min-h-full">
+                  {messages.map((msg, index) => (
+                    <ChatMessage key={index} {...msg} />
+                  ))}
+                  {isLoading && (
+                    <div className="flex justify-start mb-4">
+                      <div className="bg-muted rounded-2xl rounded-tl-none px-4 py-3">
+                        <div className="flex space-x-2">
+                          <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse"></div>
+                          <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse delay-150"></div>
+                          <div className="w-2 h-2 rounded-full bg-focus-purple/50 animate-pulse delay-300"></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
               </div>
               
-              {/* Input */}
-              <form onSubmit={handleSubmit} className="border-t pt-4">
+              <form onSubmit={handleSubmit} className="border-t pt-4 mt-auto">
                 <div className="flex gap-2">
                   <Input
                     ref={inputRef}
