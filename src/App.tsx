@@ -6,21 +6,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { isExtensionContext } from "./utils/chromeUtils";
 
 const queryClient = new QueryClient();
-
-// Configure for extension context
-const isExtension = typeof window !== 'undefined' && 
-  window.chrome !== undefined && 
-  window.chrome.runtime !== undefined && 
-  window.chrome.runtime.id !== undefined;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename={isExtension ? '' : '/'}>
+      <BrowserRouter basename={isExtensionContext() ? '' : '/'}>
         <Routes>
           <Route path="/" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
