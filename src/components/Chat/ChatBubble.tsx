@@ -33,7 +33,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
       <ChatInterface 
         isOpen={isOpen} 
         onClose={onClose}
-        hasValidApiKey={true}
+        hasValidApiKey={true} // Always true now since API key is on the server
       />
     </>
   );

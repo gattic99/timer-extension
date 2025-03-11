@@ -1,56 +1,53 @@
 
 import { toast } from "sonner";
 
+// Determine the backend API URL based on environment
+const getBackendUrl = () => {
+  // In production, you would use your deployed backend URL
+  // For development, we can use a local server
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://your-deployed-api.com'; // REPLACE THIS with your actual deployed backend URL
+  }
+  return 'http://localhost:3000'; // Local development server
+};
+
 // Add a flag to localStorage to track if API key has been validated
 export const getApiKey = (): string | null => {
-  return localStorage.getItem("openai_api_key");
+  // We're no longer using the API key directly in the frontend
+  // This is kept for backward compatibility
+  return null;
 };
 
 export const setApiKey = (key: string): void => {
-  // Basic validation for OpenAI API key format (starts with "sk-")
-  if (!key.startsWith("sk-")) {
-    toast.error("Invalid API key format. OpenAI API keys typically start with 'sk-'");
-    throw new Error("Invalid API key format");
-  }
-  
-  localStorage.setItem("openai_api_key", key);
-  // Set as validated when a user enters a key
-  setApiKeyValidated(true);
+  // This function is no longer needed but kept for backward compatibility
+  toast.info("The API key is now managed securely on the server.");
 };
 
 export const clearApiKey = (): void => {
+  // Clear any legacy API key storage
   localStorage.removeItem("openai_api_key");
   localStorage.removeItem("openai_api_key_validated");
 };
 
 // Set a flag when API key is validated
 export const setApiKeyValidated = (isValid: boolean): void => {
+  // The validation now happens on the server
   localStorage.setItem("openai_api_key_validated", isValid ? "true" : "false");
 };
 
 // Check if API key has been validated before
 export const isApiKeyValidated = (): boolean => {
-  return localStorage.getItem("openai_api_key_validated") === "true";
+  // We'll assume the backend API key is valid
+  return true;
 };
 
 export const validateApiKey = async (): Promise<boolean> => {
-  const apiKey = getApiKey();
-  if (!apiKey) return false;
-  
+  // Check if our backend API is available
   try {
-    const response = await fetch("https://api.openai.com/v1/models", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`
-      }
-    });
-    
-    const isValid = response.ok;
-    setApiKeyValidated(isValid);
-    return isValid;
+    const response = await fetch(`${getBackendUrl()}/api/health`);
+    return response.ok;
   } catch (error) {
-    console.error("Error validating API key:", error);
-    setApiKeyValidated(false);
+    console.error("Error checking backend health:", error);
     return false;
   }
 };
@@ -76,51 +73,23 @@ export const getAIResponse = async (message: string): Promise<string> => {
   }
 
   try {
-    const apiKey = getApiKey();
-    
-    // No API key, use fallback responses
-    if (!apiKey) {
+    // Call our secure backend instead of OpenAI directly
+    const response = await fetch(`${getBackendUrl()}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.warn("Backend API error:", errorData);
       return getFallbackResponse(message);
     }
 
-    // Try to use the OpenAI API if we have a key
-    try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini", // Using OpenAI's latest model for best performance/cost ratio
-          messages: [
-            { role: "system", content: "You are a helpful assistant focused on productivity and well-being. Keep your responses concise and practical." },
-            { role: "user", content: message }
-          ],
-          max_tokens: 500,
-          temperature: 0.7
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.warn("OpenAI API error:", errorData);
-        
-        if (response.status === 401) {
-          // Invalid API key
-          clearApiKey(); // Clear the invalid key
-          return "Your OpenAI API key appears to be invalid. Please check your key and try again.";
-        }
-        
-        return getFallbackResponse(message);
-      }
-
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch (apiError) {
-      console.error("Error in OpenAI API call:", apiError);
-      return getFallbackResponse(message);
-    }
+    const data = await response.json();
+    return data.content;
   } catch (error) {
     console.error("Error fetching AI response:", error);
     return getFallbackResponse(message);
