@@ -4,6 +4,13 @@ import App from "./App.tsx";
 
 import "./index.css";
 
+// Declare the hasRun property on the window object
+declare global {
+  interface Window {
+    hasRun?: boolean;
+  }
+}
+
 // Check if the extension has already run in this context
 if (!window.hasRun) {
   window.hasRun = true;
