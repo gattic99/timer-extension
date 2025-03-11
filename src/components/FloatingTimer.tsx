@@ -27,7 +27,7 @@ const FloatingTimer: React.FC<FloatingTimerProps> = ({
     <button 
       onClick={togglePopup}
       className={cn(
-        "fixed bottom-6 right-6 z-50 shadow-lg flex items-center justify-center transition-all duration-300 rounded-full",
+        "fixed bottom-6 right-6 z-[10000] shadow-lg flex items-center justify-center transition-all duration-300 rounded-full",
         isTimerActive 
           ? `${timerColor} w-auto min-w-[110px] h-14 px-4` 
           : `${timerColor} w-14 h-14`

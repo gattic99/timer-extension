@@ -37,6 +37,18 @@ export default defineConfig(({ mode }) => ({
       }
     })
   ].filter(Boolean),
+  build: {
+    cssCodeSplit: false,
+    rollupOptions: {
+      input: {
+        content: "./src/content.tsx",
+      },
+      output: {
+        entryFileNames: "[name].js",
+        assetFileNames: "styles.css",
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

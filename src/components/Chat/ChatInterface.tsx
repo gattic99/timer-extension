@@ -278,7 +278,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-24 left-6 z-50 animate-scale-in">
+    <div className="fixed bottom-24 left-6 z-[10000] animate-scale-in">
       <Card className="glass-panel w-[650px] h-[460px] shadow-xl flex flex-row overflow-hidden">
         <div className="w-[200px] border-r border-gray-200 dark:border-gray-700 bg-white bg-opacity-95">
           <ChatHistory

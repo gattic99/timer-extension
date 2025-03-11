@@ -87,7 +87,7 @@ const Index: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div>
       {/* Removed the FigmaBackground component */}
       
       <ChatBubble 
@@ -103,7 +103,7 @@ const Index: React.FC = () => {
       />
       
       {isTimerOpen && (
-        <div className="fixed bottom-24 right-6 z-50 animate-scale-in">
+        <div className="fixed bottom-24 right-6 z-[10000] animate-scale-in">
           <Card className="glass-panel w-[420px] p-8 shadow-xl px-[24px] py-[24px]">
             <div className="flex justify-between items-center mb-6">
               <div>

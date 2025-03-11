@@ -1,8 +1,8 @@
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { TimerMode, TimerState, BreakActivity, TimerSettings } from "@/types";
 import { toast } from "sonner";
 import { minutesToSeconds } from "@/utils/timerUtils";
+import { isExtensionContext } from "@/utils/chromeUtils";
 
 interface UseTimerProps {
   settings: TimerSettings;
@@ -10,7 +10,7 @@ interface UseTimerProps {
 
 export const useTimer = ({ settings }: UseTimerProps) => {
   const [timerState, setTimerState] = useState<TimerState>({
-    mode: 'focus',
+    mode: "focus",
     timeRemaining: minutesToSeconds(settings.focusDuration),
     isRunning: false,
     breakActivity: null,
@@ -23,9 +23,17 @@ export const useTimer = ({ settings }: UseTimerProps) => {
 
   // Initialize audio
   useEffect(() => {
-    breakAudioRef.current = new Audio('/time-for-break.mp3');
-    focusAudioRef.current = new Audio('/time-for-focus.mp3');
-    
+    breakAudioRef.current = new Audio(
+      isExtensionContext()
+        ? chrome.runtime.getURL("/assets/time-for-break.mp3")
+        : "/assets/time-for-break.mp3"
+    );
+    focusAudioRef.current = new Audio(
+      isExtensionContext()
+        ? chrome.runtime.getURL("/assets/time-for-focus.mp3")
+        : "/assets/time-for-focus.mp3"
+    );
+
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -33,124 +41,150 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     };
   }, []);
 
-  const resetTimer = useCallback((mode: TimerMode) => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    
-    setTimerState({
-      mode,
-      timeRemaining: mode === 'focus' 
-        ? minutesToSeconds(settings.focusDuration) 
-        : minutesToSeconds(settings.breakDuration),
-      isRunning: false,
-      breakActivity: null,
-      completed: false
-    });
-  }, [settings.focusDuration, settings.breakDuration]);
+  const resetTimer = useCallback(
+    (mode: TimerMode) => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+
+      setTimerState({
+        mode,
+        timeRemaining:
+          mode === "focus"
+            ? minutesToSeconds(settings.focusDuration)
+            : minutesToSeconds(settings.breakDuration),
+        isRunning: false,
+        breakActivity: null,
+        completed: false,
+      });
+    },
+    [settings.focusDuration, settings.breakDuration]
+  );
 
   const startTimer = useCallback(() => {
     if (timerState.isRunning) return;
-    
+
     if (timerState.timeRemaining <= 0) {
       // Reset timer if it's at 0
       resetTimer(timerState.mode);
     }
-    
-    setTimerState(prev => ({ ...prev, isRunning: true }));
-    
+
+    setTimerState((prev) => ({ ...prev, isRunning: true }));
+
     // Clear any existing interval before setting a new one
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-    
+
     intervalRef.current = window.setInterval(() => {
-      setTimerState(prev => {
+      setTimerState((prev) => {
         if (prev.timeRemaining <= 1) {
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
           }
-          
+
           // Play notification sound when timer completes
-          if (prev.mode === 'focus') {
+          if (prev.mode === "focus") {
             if (breakAudioRef.current) {
-              breakAudioRef.current.play().catch(err => console.error("Error playing break audio:", err));
+              breakAudioRef.current
+                .play()
+                .catch((err) =>
+                  console.error("Error playing break audio:", err)
+                );
             }
             toast("Focus session complete! Time for a break.");
-            
+
             // Switch to break mode
             return {
               ...prev,
-              mode: 'break',
+              mode: "break",
               timeRemaining: minutesToSeconds(settings.breakDuration),
               isRunning: false,
-              completed: true
+              completed: true,
             };
           } else {
             if (focusAudioRef.current) {
-              focusAudioRef.current.play().catch(err => console.error("Error playing audio:", err));
+              focusAudioRef.current
+                .play()
+                .catch((err) => console.error("Error playing audio:", err));
             }
             toast("Break complete! Ready to focus again?");
-            
+
             // Switch to focus mode
             return {
               ...prev,
-              mode: 'focus',
+              mode: "focus",
               timeRemaining: minutesToSeconds(settings.focusDuration),
               isRunning: false,
               breakActivity: null,
-              completed: true
+              completed: true,
             };
           }
         }
-        
+
         return {
           ...prev,
           timeRemaining: prev.timeRemaining - 1,
-          completed: false
+          completed: false,
         };
       });
     }, 1000);
-  }, [timerState.isRunning, timerState.timeRemaining, timerState.mode, resetTimer, settings.breakDuration, settings.focusDuration]);
+  }, [
+    timerState.isRunning,
+    timerState.timeRemaining,
+    timerState.mode,
+    resetTimer,
+    settings.breakDuration,
+    settings.focusDuration,
+  ]);
 
   const pauseTimer = useCallback(() => {
     if (!timerState.isRunning) return;
-    
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-    
-    setTimerState(prev => ({ ...prev, isRunning: false }));
+
+    setTimerState((prev) => ({ ...prev, isRunning: false }));
   }, [timerState.isRunning]);
 
-  const selectBreakActivity = useCallback((activity: BreakActivity) => {
-    setTimerState(prev => ({ ...prev, breakActivity: activity }));
-    // Auto-start the timer when an activity is selected
-    if (activity && !timerState.isRunning) {
-      setTimeout(() => startTimer(), 100); // Small timeout to ensure state updates first
-    }
-  }, [timerState.isRunning, startTimer]);
+  const selectBreakActivity = useCallback(
+    (activity: BreakActivity) => {
+      setTimerState((prev) => ({ ...prev, breakActivity: activity }));
+      // Auto-start the timer when an activity is selected
+      if (activity && !timerState.isRunning) {
+        setTimeout(() => startTimer(), 100); // Small timeout to ensure state updates first
+      }
+    },
+    [timerState.isRunning, startTimer]
+  );
 
-  const updateFocusDuration = useCallback((minutes: number) => {
-    if (!timerState.isRunning && timerState.mode === 'focus') {
-      setTimerState(prev => ({ 
-        ...prev, 
-        timeRemaining: minutesToSeconds(minutes)
-      }));
-    }
-  }, [timerState.isRunning, timerState.mode]);
+  const updateFocusDuration = useCallback(
+    (minutes: number) => {
+      if (!timerState.isRunning && timerState.mode === "focus") {
+        setTimerState((prev) => ({
+          ...prev,
+          timeRemaining: minutesToSeconds(minutes),
+        }));
+      }
+    },
+    [timerState.isRunning, timerState.mode]
+  );
 
-  const updateBreakDuration = useCallback((minutes: number) => {
-    if (!timerState.isRunning && timerState.mode === 'break') {
-      setTimerState(prev => ({ 
-        ...prev, 
-        timeRemaining: minutesToSeconds(minutes)
-      }));
-    }
-  }, [timerState.isRunning, timerState.mode]);
+  const updateBreakDuration = useCallback(
+    (minutes: number) => {
+      if (!timerState.isRunning && timerState.mode === "break") {
+        setTimerState((prev) => ({
+          ...prev,
+          timeRemaining: minutesToSeconds(minutes),
+        }));
+      }
+    },
+    [timerState.isRunning, timerState.mode]
+  );
 
   return {
     timerState,
@@ -159,6 +193,6 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     resetTimer,
     selectBreakActivity,
     updateFocusDuration,
-    updateBreakDuration
+    updateBreakDuration,
   };
 };

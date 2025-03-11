@@ -1,4 +1,5 @@
 import { Coin } from "@/types/gameTypes";
+import { isExtensionContext } from "../chromeUtils";
 
 // Create the face image outside the function to ensure it's only created once
 const sinaImage = new Image();
@@ -9,7 +10,9 @@ sinaImage.onload = () => {
 sinaImage.onerror = (err) => {
   console.error("Error loading coin image:", err);
 };
-sinaImage.src = "/coin-sina.png";
+sinaImage.src = isExtensionContext()
+  ? chrome.runtime.getURL("/assets/coin-sina.png")
+  : "/assets/coin-sina.png";
 
 // Create the face image outside the function to ensure it's only created once
 const cristinaImage = new Image();
@@ -20,7 +23,9 @@ cristinaImage.onload = () => {
 cristinaImage.onerror = (err) => {
   console.error("Error loading coin image:", err);
 };
-cristinaImage.src = "/coin-cristina.png";
+cristinaImage.src = isExtensionContext()
+  ? chrome.runtime.getURL("/assets/coin-cristina.png")
+  : "/assets/coin-cristina.png";
 
 // Draw collectibles with variety
 export const drawCollectibles = (

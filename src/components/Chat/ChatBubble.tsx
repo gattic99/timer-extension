@@ -22,7 +22,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
       <button
         onClick={onOpen}
         className={cn(
-          "fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-focus-purple hover:bg-focus-purple-dark shadow-lg flex items-center justify-center transition-all duration-300",
+          "fixed bottom-6 left-6 z-[10000] w-14 h-14 rounded-full bg-focus-purple hover:bg-focus-purple-dark shadow-lg flex items-center justify-center transition-all duration-300",
           className
         )}
         aria-label={isOpen ? "Close chat" : "Open chat"}
