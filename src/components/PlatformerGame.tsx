@@ -6,13 +6,15 @@ import useGameEngine from "@/hooks/useGameEngine";
 import { drawBackground, drawPlatforms, drawObstacles, drawCollectibles, drawCharacter, drawUI, drawGameOver } from "@/utils/gameRenderUtils";
 import { initialCharacter, initialPlatforms, initialObstacles, initialCoins } from "@/data/gameData";
 import { toast } from "sonner";
-import { isExtensionContext } from "@/utils/chromeUtils";
+import { getExtensionURL } from "@/utils/chromeUtils";
+
 interface PlatformerGameProps {
   onReturn: () => void;
   timerState: TimerState;
   onStart?: () => void;
   onPause?: () => void;
 }
+
 const PlatformerGame: React.FC<PlatformerGameProps> = ({
   onReturn,
   timerState,
@@ -21,6 +23,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
   const {
     gameState,
     gameStarted,
@@ -38,9 +41,10 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
     initialObstacles,
     initialCoins
   });
+
   useEffect(() => {
     try {
-      audioRef.current = new Audio(isExtensionContext() ? chrome.runtime.getURL('/assets/office-ambience.mp3') : '/assets/office-ambience.mp3');
+      audioRef.current = new Audio(getExtensionURL('/assets/office-ambience.mp3'));
       audioRef.current.volume = 0.3;
       audioRef.current.loop = true;
       audioRef.current.play().catch(error => {
@@ -66,6 +70,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       }
     };
   }, []);
+
   useEffect(() => {
     setGameStarted(true);
     resetGame();
@@ -78,6 +83,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       }
     };
   }, []);
+
   useEffect(() => {
     if (!gameStarted) return;
     const canvas = canvasRef.current;
@@ -94,6 +100,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       clearInterval(gameLoop);
     };
   }, [gameStarted, gameState.gameOver, updateGame]);
+
   const renderGame = (ctx: CanvasRenderingContext2D) => {
     drawBackground(ctx, gameState.cameraOffsetX);
     drawPlatforms(ctx, platformsRef.current, gameState.cameraOffsetX);
@@ -105,6 +112,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       drawGameOver(ctx, gameState.score);
     }
   };
+
   const handleReturn = () => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -112,6 +120,7 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
     }
     onReturn();
   };
+
   const handleUserInteraction = () => {
     if (audioRef.current && audioRef.current.paused) {
       audioRef.current.play().catch(err => {
@@ -119,7 +128,9 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
       });
     }
   };
-  return <div className="fixed inset-0 top-auto bottom-0 w-full h-screen bg-blue-100 z-[10000] flex flex-col items-center" onClick={handleUserInteraction}>
+
+  return (
+    <div className="fixed inset-0 top-auto bottom-0 w-full h-screen bg-blue-100 z-[10000] flex flex-col items-center" onClick={handleUserInteraction}>
       <div className="text-center mt-4 mb-2">
         <h2 className="text-xl font-bold text-focus-purple">Office Escape 🏃🏼‍♂️‍➡️🏃🏼‍♀️‍➡️</h2>
         <p className="text-muted-foreground text-sm font-semibold py-[8px] text-center max-w-4xl w-full mx-auto px-4">Dodge obstacles and collect coins—they're your colleagues, Sina and Cristina! Everything except coins and trees will take you out! You can also jump on the shelves—they are not obstacles! The more coins you collect, the higher your score!</p>
@@ -139,6 +150,8 @@ const PlatformerGame: React.FC<PlatformerGameProps> = ({
           Return to Timer
         </button>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default PlatformerGame;

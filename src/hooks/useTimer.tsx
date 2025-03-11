@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { TimerMode, TimerState, BreakActivity, TimerSettings } from "@/types";
 import { toast } from "sonner";
 import { minutesToSeconds } from "@/utils/timerUtils";
-import { isExtensionContext } from "@/utils/chromeUtils";
+import { isExtensionContext, getExtensionURL } from "@/utils/chromeUtils";
 
 interface UseTimerProps {
   settings: TimerSettings;
@@ -24,14 +24,10 @@ export const useTimer = ({ settings }: UseTimerProps) => {
   // Initialize audio
   useEffect(() => {
     breakAudioRef.current = new Audio(
-      isExtensionContext()
-        ? chrome.runtime.getURL("/assets/time-for-break.mp3")
-        : "/assets/time-for-break.mp3"
+      getExtensionURL("/assets/time-for-break.mp3")
     );
     focusAudioRef.current = new Audio(
-      isExtensionContext()
-        ? chrome.runtime.getURL("/assets/time-for-focus.mp3")
-        : "/assets/time-for-focus.mp3"
+      getExtensionURL("/assets/time-for-focus.mp3")
     );
 
     return () => {

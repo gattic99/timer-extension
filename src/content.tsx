@@ -1,8 +1,10 @@
+
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 
 import "./index.css";
 
+// Check if the extension has already run in this context
 if (!window.hasRun) {
   window.hasRun = true;
 
@@ -10,5 +12,8 @@ if (!window.hasRun) {
   appContainer.id = "chrome-extension-root";
   document.body.appendChild(appContainer);
 
-  createRoot(document.getElementById("chrome-extension-root")).render(<App />);
+  const rootElement = document.getElementById("chrome-extension-root");
+  if (rootElement) {
+    createRoot(rootElement).render(<App />);
+  }
 }

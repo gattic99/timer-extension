@@ -12,6 +12,16 @@ export const isExtensionContext = (): boolean => {
 };
 
 /**
+ * Safely gets a URL from Chrome's runtime
+ */
+export const getExtensionURL = (path: string): string => {
+  if (isExtensionContext() && chrome.runtime && chrome.runtime.getURL) {
+    return chrome.runtime.getURL(path);
+  }
+  return path; // Fallback to relative path
+};
+
+/**
  * Saves data to Chrome's sync storage
  */
 export const saveToStorage = async (key: string, value: any): Promise<void> => {

@@ -8,6 +8,7 @@ interface Chrome {
     lastError?: {
       message: string;
     };
+    getURL(path: string): string;
     getManifest(): {
       version: string;
       name: string;
@@ -34,6 +35,7 @@ interface Chrome {
 declare global {
   interface Window {
     chrome?: Chrome;
+    hasRun?: boolean;
   }
   var chrome: Chrome | undefined;
 }
