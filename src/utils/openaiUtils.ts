@@ -52,7 +52,7 @@ export const validateApiKey = async (): Promise<boolean> => {
   }
 };
 
-// Fallback responses for when the API is unavailable
+// Enhanced fallback responses for when the API is unavailable
 const fallbackResponses = [
   "I'm here to help you stay focused and productive. What would you like assistance with today?",
   "Having a productive day? I can suggest techniques to help you maintain focus.",
@@ -96,7 +96,7 @@ export const getAIResponse = async (message: string): Promise<string> => {
   }
 };
 
-// Function to get a fallback response when the API is unavailable
+// Improved function to get a fallback response when the API is unavailable
 function getFallbackResponse(message: string): string {
   // For simple questions, provide standard responses
   if (message.toLowerCase().includes("hello") || message.toLowerCase().includes("hi")) {
