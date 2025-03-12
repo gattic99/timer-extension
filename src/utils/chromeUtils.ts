@@ -54,3 +54,37 @@ export const getFromStorage = async <T>(key: string): Promise<T | null> => {
     });
   });
 };
+
+/**
+ * Gets the current timer state from the background script
+ */
+export const getTimerState = async () => {
+  if (!isExtensionContext()) return null;
+  
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ action: 'GET_TIMER_STATE' }, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response?.timerState || null);
+      }
+    });
+  });
+};
+
+/**
+ * Sends a message to the background script
+ */
+export const sendMessageToBackground = async (message: any) => {
+  if (!isExtensionContext()) return null;
+  
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(message, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
+};

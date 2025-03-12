@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import { TimerMode, TimerState, BreakActivity, TimerSettings } from "@/types";
 import { toast } from "sonner";
 import { minutesToSeconds } from "@/utils/timerUtils";
-import { isExtensionContext, getExtensionURL } from "@/utils/chromeUtils";
+import { isExtensionContext } from "@/utils/chromeUtils";
 
 interface UseTimerProps {
   settings: TimerSettings;
@@ -17,154 +18,109 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     completed: false,
   });
 
-  const intervalRef = useRef<number | null>(null);
-  const breakAudioRef = useRef<HTMLAudioElement | null>(null);
-  const focusAudioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Initialize audio
+  // Listen for timer state updates from the background script
   useEffect(() => {
-    breakAudioRef.current = new Audio(
-      getExtensionURL("/assets/time-for-break.mp3")
-    );
-    focusAudioRef.current = new Audio(
-      getExtensionURL("/assets/time-for-focus.mp3")
-    );
+    const handleTimerUpdate = (event: any) => {
+      if (event.detail && event.detail.timerState) {
+        setTimerState(event.detail.timerState);
+      }
+    };
+
+    window.addEventListener('FOCUSFLOW_UPDATE', handleTimerUpdate);
+
+    // Initial timer state request
+    if (isExtensionContext()) {
+      chrome.runtime.sendMessage({ action: 'GET_TIMER_STATE' }, (response) => {
+        if (response && response.timerState) {
+          setTimerState(response.timerState);
+        }
+      });
+    }
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      window.removeEventListener('FOCUSFLOW_UPDATE', handleTimerUpdate);
     };
   }, []);
 
   const resetTimer = useCallback(
     (mode: TimerMode) => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
+      if (isExtensionContext()) {
+        chrome.runtime.sendMessage({ 
+          action: 'RESET_TIMER',
+          mode
+        });
+      } else {
+        // Fallback for non-extension context (development)
+        setTimerState({
+          mode,
+          timeRemaining:
+            mode === "focus"
+              ? minutesToSeconds(settings.focusDuration)
+              : minutesToSeconds(settings.breakDuration),
+          isRunning: false,
+          breakActivity: null,
+          completed: false,
+        });
       }
-
-      setTimerState({
-        mode,
-        timeRemaining:
-          mode === "focus"
-            ? minutesToSeconds(settings.focusDuration)
-            : minutesToSeconds(settings.breakDuration),
-        isRunning: false,
-        breakActivity: null,
-        completed: false,
-      });
     },
     [settings.focusDuration, settings.breakDuration]
   );
 
   const startTimer = useCallback(() => {
-    if (timerState.isRunning) return;
-
-    if (timerState.timeRemaining <= 0) {
-      // Reset timer if it's at 0
-      resetTimer(timerState.mode);
+    if (isExtensionContext()) {
+      chrome.runtime.sendMessage({ action: 'START_TIMER' });
+    } else {
+      // Fallback for non-extension context (development)
+      setTimerState((prev) => ({ ...prev, isRunning: true, completed: false }));
     }
-
-    setTimerState((prev) => ({ ...prev, isRunning: true }));
-
-    // Clear any existing interval before setting a new one
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    intervalRef.current = window.setInterval(() => {
-      setTimerState((prev) => {
-        if (prev.timeRemaining <= 1) {
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
-
-          // Play notification sound when timer completes
-          if (prev.mode === "focus") {
-            if (breakAudioRef.current) {
-              breakAudioRef.current
-                .play()
-                .catch((err) =>
-                  console.error("Error playing break audio:", err)
-                );
-            }
-            toast("Focus session complete! Time for a break.");
-
-            // Switch to break mode
-            return {
-              ...prev,
-              mode: "break",
-              timeRemaining: minutesToSeconds(settings.breakDuration),
-              isRunning: false,
-              completed: true,
-            };
-          } else {
-            if (focusAudioRef.current) {
-              focusAudioRef.current
-                .play()
-                .catch((err) => console.error("Error playing audio:", err));
-            }
-            toast("Break complete! Ready to focus again?");
-
-            // Switch to focus mode
-            return {
-              ...prev,
-              mode: "focus",
-              timeRemaining: minutesToSeconds(settings.focusDuration),
-              isRunning: false,
-              breakActivity: null,
-              completed: true,
-            };
-          }
-        }
-
-        return {
-          ...prev,
-          timeRemaining: prev.timeRemaining - 1,
-          completed: false,
-        };
-      });
-    }, 1000);
-  }, [
-    timerState.isRunning,
-    timerState.timeRemaining,
-    timerState.mode,
-    resetTimer,
-    settings.breakDuration,
-    settings.focusDuration,
-  ]);
+  }, []);
 
   const pauseTimer = useCallback(() => {
-    if (!timerState.isRunning) return;
-
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    if (isExtensionContext()) {
+      chrome.runtime.sendMessage({ action: 'PAUSE_TIMER' });
+    } else {
+      // Fallback for non-extension context (development)
+      setTimerState((prev) => ({ ...prev, isRunning: false }));
     }
-
-    setTimerState((prev) => ({ ...prev, isRunning: false }));
-  }, [timerState.isRunning]);
+  }, []);
 
   const selectBreakActivity = useCallback(
     (activity: BreakActivity) => {
-      setTimerState((prev) => ({ ...prev, breakActivity: activity }));
-      // Auto-start the timer when an activity is selected
-      if (activity && !timerState.isRunning) {
-        setTimeout(() => startTimer(), 100); // Small timeout to ensure state updates first
+      if (isExtensionContext()) {
+        chrome.runtime.sendMessage({ 
+          action: 'SELECT_BREAK_ACTIVITY',
+          activity 
+        });
+        
+        // Auto-start the timer when an activity is selected
+        if (activity && !timerState.isRunning) {
+          setTimeout(() => {
+            chrome.runtime.sendMessage({ action: 'START_TIMER' });
+          }, 100);
+        }
+      } else {
+        // Fallback for non-extension context (development)
+        setTimerState((prev) => ({ ...prev, breakActivity: activity }));
       }
     },
-    [timerState.isRunning, startTimer]
+    [timerState.isRunning]
   );
 
   const updateFocusDuration = useCallback(
     (minutes: number) => {
-      if (!timerState.isRunning && timerState.mode === "focus") {
-        setTimerState((prev) => ({
-          ...prev,
-          timeRemaining: minutesToSeconds(minutes),
-        }));
+      if (isExtensionContext()) {
+        chrome.runtime.sendMessage({ 
+          action: 'UPDATE_FOCUS_DURATION',
+          duration: minutes 
+        });
+      } else {
+        // Fallback for non-extension context (development)
+        if (!timerState.isRunning && timerState.mode === "focus") {
+          setTimerState((prev) => ({
+            ...prev,
+            timeRemaining: minutesToSeconds(minutes),
+          }));
+        }
       }
     },
     [timerState.isRunning, timerState.mode]
@@ -172,11 +128,19 @@ export const useTimer = ({ settings }: UseTimerProps) => {
 
   const updateBreakDuration = useCallback(
     (minutes: number) => {
-      if (!timerState.isRunning && timerState.mode === "break") {
-        setTimerState((prev) => ({
-          ...prev,
-          timeRemaining: minutesToSeconds(minutes),
-        }));
+      if (isExtensionContext()) {
+        chrome.runtime.sendMessage({ 
+          action: 'UPDATE_BREAK_DURATION',
+          duration: minutes 
+        });
+      } else {
+        // Fallback for non-extension context (development)
+        if (!timerState.isRunning && timerState.mode === "break") {
+          setTimerState((prev) => ({
+            ...prev,
+            timeRemaining: minutesToSeconds(minutes),
+          }));
+        }
       }
     },
     [timerState.isRunning, timerState.mode]
