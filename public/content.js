@@ -20,11 +20,20 @@ const appRoot = document.createElement('div');
 appRoot.id = 'focusflow-root';
 shadow.appendChild(appRoot);
 
+// Listen for timer state updates from background
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === 'TIMER_STATE_UPDATED') {
+    window.dispatchEvent(
+      new CustomEvent('FOCUSFLOW_UPDATE', {
+        detail: { timerState: message.timerState }
+      })
+    );
+  }
+});
+
 // Initialize the React app
 import('./index.js').then((module) => {
   const { createRoot } = require('react-dom/client');
-  const { App } = module;
-  
   const root = createRoot(appRoot);
-  root.render(<App />);
+  root.render(React.createElement(module.default));
 }).catch(console.error);

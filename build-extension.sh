@@ -5,7 +5,7 @@
 echo "Building FocusFlow Chrome Extension..."
 
 # Create build directories
-mkdir -p build/extension
+mkdir -p build/extension/assets
 
 # Clean previous builds
 rm -rf build/extension/*
@@ -22,6 +22,10 @@ cp -r dist/* build/extension/
 cp public/manifest.json build/extension/
 cp public/icon-*.png build/extension/
 
+# Copy audio and image assets
+cp public/assets/*.mp3 build/extension/assets/
+cp public/assets/*.png build/extension/assets/
+
 # Copy content script template
 cp public/content.js build/extension/
 
@@ -31,6 +35,17 @@ cat > build/extension/background.js << 'EOF'
 // FocusFlow Background Script
 chrome.runtime.onInstalled.addListener(() => {
   console.log('FocusFlow extension installed');
+  
+  // Initialize storage with default values
+  chrome.storage.local.set({
+    timerState: {
+      mode: 'focus',
+      timeRemaining: 1500, // 25 minutes in seconds
+      isRunning: false,
+      breakActivity: null,
+      completed: false
+    }
+  });
 });
 
 // Handle messages from content script
@@ -41,6 +56,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ timerState: result.timerState });
     });
     return true;
+  }
+  
+  if (request.action === 'UPDATE_TIMER_STATE') {
+    chrome.storage.local.set({ timerState: request.timerState }, () => {
+      // Broadcast to all tabs
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+          if (tab.id !== sender.tab?.id) {
+            chrome.tabs.sendMessage(tab.id, {
+              type: 'TIMER_STATE_UPDATED',
+              timerState: request.timerState
+            });
+          }
+        });
+      });
+    });
+  }
+});
+
+// Listen for tab updates to reinject content if needed
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete') {
+    chrome.scripting.executeScript({
+      target: { tabId },
+      files: ['content.js']
+    });
   }
 });
 EOF

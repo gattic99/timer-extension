@@ -25,7 +25,8 @@
     "<all_urls>"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -39,7 +40,12 @@
       "resources": [
         "index.js",
         "*.css",
-        "assets/*"
+        "assets/*",
+        "office-ambience.mp3",
+        "time-for-break.mp3",
+        "time-for-focus.mp3",
+        "coin-cristina.png",
+        "coin-sina.png"
       ],
       "matches": ["<all_urls>"]
     }
