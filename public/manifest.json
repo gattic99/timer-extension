@@ -16,11 +16,17 @@
     "48": "icon-48.png",
     "128": "icon-128.png"
   },
-  "permissions": ["storage", "scripting", "tabs"],
+  "permissions": [
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "background.js"
   },
-  "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -30,12 +36,12 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["assets/*"],
+      "resources": [
+        "index.js",
+        "*.css",
+        "assets/*"
+      ],
       "matches": ["<all_urls>"]
     }
-  ],
-  "author": "FocusFlow Team",
-  "homepage_url": "https://focusflow.app",
-  "minimum_chrome_version": "88",
-  "offline_enabled": true
+  ]
 }
