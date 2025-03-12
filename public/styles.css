@@ -3,10 +3,11 @@
 
 #focusflow-container {
   z-index: 2147483647 !important; /* Maximum z-index value */
+  pointer-events: auto !important;
 }
 
 #focusflow-btn:hover {
-  transform: scale(1.05);
+  transform: scale(1.05) !important;
 }
 
 @keyframes pulse {

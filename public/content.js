@@ -3,14 +3,15 @@
 // This script injects the timer UI into web pages
 
 (function() {
+  console.log('FocusFlow content script initialized');
+  
   // Create the container for our floating timer
   const container = document.createElement('div');
   container.id = 'focusflow-container';
   container.style.position = 'fixed';
   container.style.bottom = '20px';
   container.style.right = '20px';
-  container.style.zIndex = '9999999';
-  container.style.borderRadius = '50%';
+  container.style.zIndex = '2147483647'; // Maximum z-index value
   document.body.appendChild(container);
 
   // Create the floating button
@@ -19,7 +20,7 @@
   floatingBtn.style.width = '50px';
   floatingBtn.style.height = '50px';
   floatingBtn.style.borderRadius = '50%';
-  floatingBtn.style.backgroundColor = '#8B5CF6';
+  floatingBtn.style.backgroundColor = '#8B5CF6'; // Purple color
   floatingBtn.style.color = 'white';
   floatingBtn.style.border = 'none';
   floatingBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
@@ -31,21 +32,12 @@
   floatingBtn.innerHTML = '25:00';
   floatingBtn.title = 'Start Focus Timer';
   
-  floatingBtn.addEventListener('mouseover', () => {
-    floatingBtn.style.transform = 'scale(1.05)';
-  });
-  
-  floatingBtn.addEventListener('mouseout', () => {
-    floatingBtn.style.transform = 'scale(1)';
-  });
-  
   container.appendChild(floatingBtn);
 
   // State variables
   let isTimerRunning = false;
   let timerMode = 'focus';
   let timerSeconds = 25 * 60; // 25 minutes by default
-  let timerInterval;
 
   // Event listener for the floating button
   floatingBtn.addEventListener('click', () => {
@@ -102,15 +94,4 @@
       updateTimerDisplay(response.timerState);
     }
   });
-
-  // Add necessary styles
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-  `;
-  document.head.appendChild(style);
 })();

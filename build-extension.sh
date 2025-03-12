@@ -5,32 +5,35 @@
 echo "Building FocusFlow Chrome Extension..."
 
 # Create a build directory if it doesn't exist
-mkdir -p build
-
-# Clean previous builds
-rm -rf build/extension
 mkdir -p build/extension
 
-# Copy public files
+# Clean previous builds
+rm -rf build/extension/*
+
+# Copy manifest and other public files
 echo "Copying files..."
 cp -r public/* build/extension/
 
-echo "Extension files prepared in build/extension/"
-echo "You can now load this directory in Chrome's developer mode"
-echo "or package it for the Chrome Web Store."
+# Make sure the manifest.json exists
+if [ ! -f "build/extension/manifest.json" ]; then
+  echo "ERROR: manifest.json not found after build!"
+  exit 1
+else
+  echo "✓ manifest.json successfully copied"
+fi
+
+# List files in the extension directory
+echo ""
+echo "Files in extension directory:"
+ls -la build/extension/
 
 echo ""
-echo "To load in Chrome developer mode:"
+echo "Extension files prepared in build/extension/"
+echo "You can now load this directory in Chrome's developer mode"
+echo "To load in Chrome:"
 echo "1. Go to chrome://extensions/"
 echo "2. Enable 'Developer mode' toggle in the top-right corner"
 echo "3. Click 'Load unpacked' and select the 'build/extension' folder"
-
-echo ""
-echo "To package for distribution:"
-echo "1. Go to chrome://extensions/"
-echo "2. Click 'Pack extension'"
-echo "3. Enter the path to 'build/extension' folder"
-echo "4. This will create a .crx file that can be distributed"
 
 # Make the script executable
 chmod +x build-extension.sh
