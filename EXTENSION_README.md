@@ -23,7 +23,7 @@ FocusFlow is a productivity extension that helps you stay focused by implementin
 - **Cross-tab Synchronization**: Timer runs consistently across all browser tabs
 - **Customizable Durations**: Adjust focus sessions (1-120 minutes) and breaks (1-15 minutes)
 - **Break Activities**: Choose between playing a game or following a guided relaxation routine
-- **Productivity Assistant**: Chat with an AI assistant to get productivity tips and advice
+- **Floating UI**: Minimally invasive interface that stays out of your way
 
 ## Usage
 - Click the purple timer icon to start a focus session
