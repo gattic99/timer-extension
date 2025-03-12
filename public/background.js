@@ -1,156 +1,109 @@
 
 // FocusFlow Background Script
-// Manages timer state across tabs and persists timer data
-
 console.log('FocusFlow background script initialized');
-
-// Default timer settings
-const DEFAULT_FOCUS_DURATION = 25 * 60; // 25 minutes in seconds
-const DEFAULT_BREAK_DURATION = 5 * 60;  // 5 minutes in seconds
 
 // Timer state
 let timerState = {
-  mode: 'focus', // 'focus' or 'break'
+  mode: 'focus',
+  timeRemaining: 25 * 60, // 25 minutes in seconds
   isRunning: false,
-  secondsRemaining: DEFAULT_FOCUS_DURATION,
-  completed: false,
-  focusDuration: DEFAULT_FOCUS_DURATION,
-  breakDuration: DEFAULT_BREAK_DURATION
+  completed: false
 };
 
 let timerInterval = null;
 
-// Timer functions
+// Format time as MM:SS
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Start the timer
 function startTimer() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
+  if (timerInterval) clearInterval(timerInterval);
   
   timerState.isRunning = true;
   timerState.completed = false;
   
   timerInterval = setInterval(() => {
-    if (timerState.secondsRemaining > 0) {
-      timerState.secondsRemaining--;
-      broadcastTimerState();
+    if (timerState.timeRemaining > 0) {
+      timerState.timeRemaining--;
     } else {
-      completeTimer();
+      // Timer completed
+      clearInterval(timerInterval);
+      timerState.isRunning = false;
+      timerState.completed = true;
+      
+      // Switch modes
+      if (timerState.mode === 'focus') {
+        timerState.mode = 'break';
+        timerState.timeRemaining = 5 * 60; // 5 minute break
+      } else {
+        timerState.mode = 'focus';
+        timerState.timeRemaining = 25 * 60; // 25 minute focus
+      }
     }
+    
+    // Update all tabs with new timer state
+    updateAllTabs();
   }, 1000);
-  
-  broadcastTimerState();
 }
 
+// Pause the timer
 function pauseTimer() {
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null;
   }
-  
   timerState.isRunning = false;
-  broadcastTimerState();
+  updateAllTabs();
 }
 
-function resetTimer(mode = 'focus') {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
+// Toggle timer between running and paused
+function toggleTimer() {
+  if (timerState.isRunning) {
+    pauseTimer();
+  } else {
+    startTimer();
   }
-  
-  timerState.mode = mode;
-  timerState.isRunning = false;
-  timerState.secondsRemaining = mode === 'focus' ? timerState.focusDuration : timerState.breakDuration;
-  timerState.completed = false;
-  
-  broadcastTimerState();
 }
 
-function completeTimer() {
-  pauseTimer();
-  
-  timerState.completed = true;
-  timerState.secondsRemaining = 0;
-  
-  // Play sound or notification here if needed
-  
-  // Switch modes
-  const nextMode = timerState.mode === 'focus' ? 'break' : 'focus';
-  
-  // After a short delay, reset the timer to the next mode
-  setTimeout(() => {
-    resetTimer(nextMode);
-  }, 3000);
-  
-  broadcastTimerState();
-}
-
-// Broadcast timer state to all tabs
-function broadcastTimerState() {
+// Update all tabs with current timer state
+function updateAllTabs() {
   chrome.tabs.query({}, (tabs) => {
     tabs.forEach(tab => {
       chrome.tabs.sendMessage(tab.id, {
-        action: 'TIMER_UPDATE',
-        timerState: timerState
-      }).catch(() => {
-        // Ignore errors for tabs that can't receive messages
+        action: 'UPDATE_TIMER',
+        timeDisplay: formatTime(timerState.timeRemaining),
+        mode: timerState.mode,
+        isRunning: timerState.isRunning,
+        completed: timerState.completed
+      }).catch(err => {
+        // Suppress errors for tabs that don't have content script running
       });
     });
   });
-  
-  // Save state to storage
-  chrome.storage.local.set({ timerState: timerState });
 }
 
-// Message handlers
+// Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  switch (message.action) {
-    case 'START_TIMER':
-      startTimer();
-      sendResponse({ status: 'success', timerState: timerState });
-      break;
-      
-    case 'PAUSE_TIMER':
-      pauseTimer();
-      sendResponse({ status: 'success', timerState: timerState });
-      break;
-      
-    case 'RESET_TIMER':
-      resetTimer(message.mode || 'focus');
-      sendResponse({ status: 'success', timerState: timerState });
-      break;
-      
-    case 'GET_TIMER_STATE':
-      sendResponse({ status: 'success', timerState: timerState });
-      break;
-      
-    case 'UPDATE_SETTINGS':
-      if (message.focusDuration) {
-        timerState.focusDuration = message.focusDuration;
-      }
-      if (message.breakDuration) {
-        timerState.breakDuration = message.breakDuration;
-      }
-      sendResponse({ status: 'success', timerState: timerState });
-      break;
+  if (message.action === 'TOGGLE_TIMER') {
+    toggleTimer();
+    sendResponse({status: 'success'});
   }
-  
-  return true; // Required for async response
+  else if (message.action === 'GET_TIMER_STATE') {
+    sendResponse({
+      timeDisplay: formatTime(timerState.timeRemaining),
+      mode: timerState.mode,
+      isRunning: timerState.isRunning,
+      completed: timerState.completed
+    });
+  }
+  return true; // Keeps the message channel open for async responses
 });
 
-// Initialize from storage if available
-chrome.storage.local.get(['timerState'], (result) => {
-  if (result.timerState) {
-    timerState = result.timerState;
-    
-    // If the timer was running when the browser closed, restart it
-    if (timerState.isRunning) {
-      startTimer();
-    }
-  }
-});
-
-// When extension is installed or updated
+// Handle installation
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('FocusFlow extension installed or updated');
-  resetTimer('focus');
+  console.log('FocusFlow extension installed');
 });
