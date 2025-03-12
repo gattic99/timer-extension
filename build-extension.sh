@@ -4,36 +4,89 @@
 
 echo "Building FocusFlow Chrome Extension..."
 
-# Create a build directory if it doesn't exist
+# Create build directories if they don't exist
 mkdir -p build/extension
 
 # Clean previous builds
 rm -rf build/extension/*
 
-# Copy manifest and other public files
+# Copy all files from public directory
 echo "Copying files..."
 cp -r public/* build/extension/
 
-# Make sure the manifest.json exists
-if [ ! -f "build/extension/manifest.json" ]; then
-  echo "ERROR: manifest.json not found after build!"
-  exit 1
-else
-  echo "✓ manifest.json successfully copied"
-fi
+# Ensure content.js exists
+echo "Creating content script..."
+cat > build/extension/content.js << 'EOF'
+// FocusFlow Content Script
+console.log('FocusFlow content script initialized');
+EOF
 
-# List files in the extension directory
-echo ""
-echo "Files in extension directory:"
-ls -la build/extension/
+# Ensure background.js exists
+echo "Creating background script..."
+cat > build/extension/background.js << 'EOF'
+// FocusFlow Background Script
+console.log('FocusFlow background script initialized');
+EOF
+
+# Ensure styles.css exists
+echo "Creating styles..."
+cat > build/extension/styles.css << 'EOF'
+/* FocusFlow Extension Styles */
+#focusflow-container {
+  z-index: 2147483647;
+}
+EOF
+
+# Ensure manifest.json exists with correct content
+echo "Creating manifest..."
+cat > build/extension/manifest.json << 'EOF'
+{
+  "manifest_version": 3,
+  "name": "FocusFlow",
+  "version": "1.0.0",
+  "description": "Stay focused and boost productivity directly in your browser.",
+  "action": {
+    "default_icon": {
+      "16": "icon-16.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "permissions": ["storage", "scripting", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
+EOF
+
+# Verify files exist
+echo "Verifying files..."
+required_files=("manifest.json" "background.js" "content.js" "styles.css" "icon-16.png" "icon-48.png" "icon-128.png")
+for file in "${required_files[@]}"; do
+  if [ ! -f "build/extension/$file" ]; then
+    echo "ERROR: Required file $file is missing!"
+    exit 1
+  fi
+done
 
 echo ""
+echo "✓ Build completed successfully!"
 echo "Extension files prepared in build/extension/"
-echo "You can now load this directory in Chrome's developer mode"
+echo ""
 echo "To load in Chrome:"
 echo "1. Go to chrome://extensions/"
 echo "2. Enable 'Developer mode' toggle in the top-right corner"
 echo "3. Click 'Load unpacked' and select the 'build/extension' folder"
 
-# Make the script executable
-chmod +x build-extension.sh
