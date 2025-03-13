@@ -29,10 +29,40 @@ shadow.appendChild(appRoot);
 
 // Listen for timer state updates from background
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.type === 'TIMER_STATE_UPDATED') {
+  console.log('Content script received message:', message);
+  
+  if (message.action === 'UPDATE_TIMER') {
     window.dispatchEvent(
       new CustomEvent('FOCUSFLOW_UPDATE', {
-        detail: { timerState: message.timerState }
+        detail: { 
+          timerState: {
+            mode: message.mode,
+            timeRemaining: message.timeRemaining || 0,
+            isRunning: message.isRunning,
+            breakActivity: null,
+            completed: message.completed
+          }
+        }
+      })
+    );
+  }
+});
+
+// Request initial timer state
+chrome.runtime.sendMessage({ action: 'GET_TIMER_STATE' }, (response) => {
+  if (response) {
+    console.log('Initial timer state:', response);
+    window.dispatchEvent(
+      new CustomEvent('FOCUSFLOW_UPDATE', {
+        detail: { 
+          timerState: {
+            mode: response.mode,
+            timeRemaining: response.timeRemaining || 0,
+            isRunning: response.isRunning,
+            breakActivity: null,
+            completed: response.completed
+          }
+        }
       })
     );
   }

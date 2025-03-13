@@ -41,7 +41,15 @@ function initializeContentScript() {
     if (message.action === 'UPDATE_TIMER') {
       // Dispatch a custom event that will be caught by the App component
       window.dispatchEvent(new CustomEvent('FOCUSFLOW_UPDATE', { 
-        detail: message
+        detail: {
+          timerState: {
+            mode: message.mode,
+            timeRemaining: message.timeRemaining || 0,
+            isRunning: message.isRunning,
+            breakActivity: null,
+            completed: message.completed
+          }
+        }
       }));
     }
     else if (message.action === 'PLAY_BREAK_SOUND') {
@@ -59,7 +67,15 @@ function initializeContentScript() {
     console.log("Initial timer state:", response);
     if (response) {
       window.dispatchEvent(new CustomEvent('FOCUSFLOW_UPDATE', { 
-        detail: response
+        detail: {
+          timerState: {
+            mode: response.mode,
+            timeRemaining: response.timeRemaining || response.timeDisplay ? parseInt(response.timeDisplay.split(':')[0]) * 60 + parseInt(response.timeDisplay.split(':')[1]) : 0,
+            isRunning: response.isRunning,
+            breakActivity: null,
+            completed: response.completed
+          }
+        }
       }));
     }
   });
