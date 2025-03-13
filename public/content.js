@@ -9,11 +9,18 @@ document.body.appendChild(appContainer);
 // Create a shadow DOM for isolation
 const shadow = appContainer.attachShadow({ mode: 'open' });
 
-// Inject styles
-const styleSheet = document.createElement('link');
-styleSheet.setAttribute('rel', 'stylesheet');
-styleSheet.setAttribute('href', chrome.runtime.getURL('styles.css'));
-shadow.appendChild(styleSheet);
+// Inject styles directly
+const styleElement = document.createElement('style');
+fetch(chrome.runtime.getURL('styles.css'))
+  .then(response => response.text())
+  .then(css => {
+    styleElement.textContent = css;
+    shadow.appendChild(styleElement);
+    console.log('FocusFlow styles loaded successfully');
+  })
+  .catch(error => {
+    console.error('Error loading FocusFlow styles:', error);
+  });
 
 // Create the app root
 const appRoot = document.createElement('div');
@@ -31,9 +38,20 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 });
 
-// Initialize the React app
-import('./index.js').then((module) => {
-  const { createRoot } = require('react-dom/client');
-  const root = createRoot(appRoot);
-  root.render(React.createElement(module.default));
-}).catch(console.error);
+// Wait for DOM to be fully loaded
+window.addEventListener('load', () => {
+  // Initialize the React app
+  try {
+    console.log('Loading FocusFlow app...');
+    import(chrome.runtime.getURL('index.js')).then((module) => {
+      const { createRoot } = require('react-dom/client');
+      const root = createRoot(appRoot);
+      root.render(React.createElement(module.default));
+      console.log('FocusFlow app loaded successfully');
+    }).catch(error => {
+      console.error('Error loading FocusFlow app:', error);
+    });
+  } catch (error) {
+    console.error('Error initializing FocusFlow app:', error);
+  }
+});

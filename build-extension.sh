@@ -22,9 +22,12 @@ cp -r dist/* build/extension/
 cp public/manifest.json build/extension/
 cp public/icon-*.png build/extension/
 
+# Copy CSS file directly to ensure it's available
+cp public/styles.css build/extension/
+
 # Copy audio and image assets
-cp public/assets/*.mp3 build/extension/assets/
-cp public/assets/*.png build/extension/assets/
+cp public/assets/*.mp3 build/extension/
+cp public/assets/*.png build/extension/
 
 # Copy content script template
 cp public/content.js build/extension/
