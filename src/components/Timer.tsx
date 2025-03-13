@@ -5,6 +5,7 @@ import { TimerState } from "@/types";
 import { Pause, Play, RotateCcw, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
+import { cn } from "@/lib/utils";
 
 interface TimerProps {
   timerState: TimerState;
@@ -51,11 +52,14 @@ const Timer: React.FC<TimerProps> = ({
       }}>
         <Progress 
           value={calculateProgress()} 
-          className="h-2 w-full absolute -bottom-4 rounded-full"
+          className={cn(
+            "h-2 w-full absolute -bottom-4 rounded-full",
+            "bg-[#e5e7eb]" // Use className for background instead of style
+          )}
+          // Use a properly styled indicator with tailwind classes
           style={{ 
-            backgroundColor: '#e5e7eb',
-          }}
-          indicatorClassName="bg-focus-purple"
+            "--progress-background": "var(--focus-purple)", // Custom property for indicator color
+          } as React.CSSProperties}
         />
         <div className={`timer-text ${timerTextColor} text-4xl font-bold`}>
           {formatTime(timeRemaining)}
