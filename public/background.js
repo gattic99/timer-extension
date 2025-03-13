@@ -111,7 +111,6 @@ function updateAllTabs() {
       try {
         chrome.tabs.sendMessage(tab.id, {
           action: 'UPDATE_TIMER',
-          timeDisplay: formatTime(timerState.timeRemaining),
           timeRemaining: timerState.timeRemaining,
           mode: timerState.mode,
           isRunning: timerState.isRunning,
@@ -146,7 +145,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   else if (message.action === 'GET_TIMER_STATE') {
     sendResponse({
-      timeDisplay: formatTime(timerState.timeRemaining),
       timeRemaining: timerState.timeRemaining,
       mode: timerState.mode,
       isRunning: timerState.isRunning,

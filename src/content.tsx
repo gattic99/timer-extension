@@ -44,7 +44,7 @@ function initializeContentScript() {
         detail: {
           timerState: {
             mode: message.mode,
-            timeRemaining: message.timeRemaining || 0,
+            timeRemaining: message.timeRemaining,
             isRunning: message.isRunning,
             breakActivity: null,
             completed: message.completed
@@ -70,7 +70,7 @@ function initializeContentScript() {
         detail: {
           timerState: {
             mode: response.mode,
-            timeRemaining: response.timeRemaining || response.timeDisplay ? parseInt(response.timeDisplay.split(':')[0]) * 60 + parseInt(response.timeDisplay.split(':')[1]) : 0,
+            timeRemaining: response.timeRemaining,
             isRunning: response.isRunning,
             breakActivity: null,
             completed: response.completed

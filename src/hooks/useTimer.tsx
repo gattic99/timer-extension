@@ -21,8 +21,12 @@ export const useTimer = ({ settings }: UseTimerProps) => {
   // Listen for timer state updates from the background script
   useEffect(() => {
     const handleTimerUpdate = (event: any) => {
+      console.log("Timer update received:", event.detail);
       if (event.detail && event.detail.timerState) {
-        setTimerState(event.detail.timerState);
+        setTimerState(prevState => ({
+          ...prevState,
+          ...event.detail.timerState
+        }));
       }
     };
 
@@ -31,8 +35,15 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     // Initial timer state request
     if (isExtensionContext()) {
       chrome.runtime.sendMessage({ action: 'GET_TIMER_STATE' }, (response) => {
-        if (response && response.timerState) {
-          setTimerState(response.timerState);
+        console.log("Initial timer state response:", response);
+        if (response) {
+          setTimerState(prevState => ({
+            ...prevState,
+            mode: response.mode,
+            timeRemaining: response.timeRemaining,
+            isRunning: response.isRunning,
+            completed: response.completed
+          }));
         }
       });
     }

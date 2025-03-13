@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener((message) => {
         detail: { 
           timerState: {
             mode: message.mode,
-            timeRemaining: message.timeRemaining || 0,
+            timeRemaining: message.timeRemaining,
             isRunning: message.isRunning,
             breakActivity: null,
             completed: message.completed
@@ -57,7 +57,7 @@ chrome.runtime.sendMessage({ action: 'GET_TIMER_STATE' }, (response) => {
         detail: { 
           timerState: {
             mode: response.mode,
-            timeRemaining: response.timeRemaining || 0,
+            timeRemaining: response.timeRemaining,
             isRunning: response.isRunning,
             breakActivity: null,
             completed: response.completed
