@@ -53,13 +53,8 @@ const Timer: React.FC<TimerProps> = ({
         <Progress 
           value={calculateProgress()} 
           className={cn(
-            "h-2 w-full absolute -bottom-4 rounded-full",
-            "bg-[#e5e7eb]" // Use className for background instead of style
+            "relative h-2 w-full overflow-hidden rounded-full bg-muted absolute -bottom-4"
           )}
-          // Use a properly styled indicator with tailwind classes
-          style={{ 
-            "--progress-background": "var(--focus-purple)", // Custom property for indicator color
-          } as React.CSSProperties}
         />
         <div className={`timer-text ${timerTextColor} text-4xl font-bold`}>
           {formatTime(timeRemaining)}
