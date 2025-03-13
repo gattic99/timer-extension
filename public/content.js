@@ -39,18 +39,20 @@ chrome.runtime.onMessage.addListener((message) => {
 });
 
 // Wait for DOM to be fully loaded
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
   // Initialize the React app
   try {
     console.log('Loading FocusFlow app...');
-    import(chrome.runtime.getURL('index.js')).then((module) => {
-      const { createRoot } = require('react-dom/client');
-      const root = createRoot(appRoot);
-      root.render(React.createElement(module.default));
-      console.log('FocusFlow app loaded successfully');
-    }).catch(error => {
-      console.error('Error loading FocusFlow app:', error);
-    });
+    const script = document.createElement('script');
+    script.src = chrome.runtime.getURL('index.js');
+    script.type = 'module';
+    script.onload = function() {
+      console.log('FocusFlow script loaded successfully');
+    };
+    script.onerror = function(error) {
+      console.error('Error loading FocusFlow script:', error);
+    };
+    document.head.appendChild(script);
   } catch (error) {
     console.error('Error initializing FocusFlow app:', error);
   }

@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'time-for-break.mp3', 'time-for-focus.mp3'],
+      includeAssets: ['favicon.ico', 'assets/time-for-break.mp3', 'assets/time-for-focus.mp3'],
       manifest: {
         name: 'FocusFlow',
         short_name: 'FocusFlow',
@@ -30,22 +30,27 @@ export default defineConfig(({ mode }) => ({
             src: 'favicon.ico',
             sizes: '64x64',
             type: 'image/x-icon'
-          },
-          // For a production app, you should add more icon sizes:
-          // 192x192, 512x512, maskable icons, etc.
+          }
         ]
       }
     })
   ].filter(Boolean),
   build: {
     cssCodeSplit: false,
+    outDir: 'dist',
+    assetsDir: 'assets',
     rollupOptions: {
       input: {
-        content: "./src/content.tsx",
+        index: "./src/content.tsx",
       },
       output: {
-        entryFileNames: "[name].js",
-        assetFileNames: "styles.css",
+        entryFileNames: "index.js",
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name.endsWith('.css')) {
+            return 'styles.css';
+          }
+          return `assets/[name][extname]`;
+        },
       },
     },
   },

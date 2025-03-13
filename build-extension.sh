@@ -5,6 +5,7 @@
 echo "Building FocusFlow Chrome Extension..."
 
 # Create build directories
+mkdir -p build/extension
 mkdir -p build/extension/assets
 
 # Clean previous builds
@@ -26,8 +27,11 @@ cp public/icon-*.png build/extension/
 cp public/styles.css build/extension/
 
 # Copy audio and image assets
+mkdir -p build/extension/assets
+cp public/assets/*.mp3 build/extension/assets/
+cp public/assets/*.png build/extension/assets/
+# Also copy audio files to root for backwards compatibility
 cp public/assets/*.mp3 build/extension/
-cp public/assets/*.png build/extension/
 
 # Copy content script template
 cp public/content.js build/extension/
@@ -84,7 +88,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     chrome.scripting.executeScript({
       target: { tabId },
       files: ['content.js']
-    });
+    }).catch(err => console.error("Error executing content script:", err));
   }
 });
 EOF
