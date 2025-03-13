@@ -4,6 +4,7 @@ import { formatTime } from "@/utils/timerUtils";
 import { TimerState } from "@/types";
 import { Pause, Play, RotateCcw, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { Progress } from "./ui/progress";
 
 interface TimerProps {
   timerState: TimerState;
@@ -29,13 +30,34 @@ const Timer: React.FC<TimerProps> = ({
   // Always use purple regardless of mode
   const timerTextColor = 'text-focus-purple';
   
+  // Calculate progress percentage
+  const calculateProgress = () => {
+    if (!totalDuration) return 100;
+    const progress = Math.min(100, Math.max(0, (timeRemaining / totalDuration) * 100));
+    return progress;
+  };
+
+  console.log("Timer rendering with timeRemaining:", timeRemaining, "formatted as:", formatTime(timeRemaining));
+  
   return (
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
       <div className="timer-display mb-0" style={{
         width: "140px",
-        height: "140px"
+        height: "140px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative"
       }}>
-        <div className={`timer-text ${timerTextColor} text-3xl font-bold`}>
+        <Progress 
+          value={calculateProgress()} 
+          className="h-2 w-full absolute -bottom-4 rounded-full"
+          style={{ 
+            backgroundColor: '#e5e7eb',
+          }}
+          indicatorClassName="bg-focus-purple"
+        />
+        <div className={`timer-text ${timerTextColor} text-4xl font-bold`}>
           {formatTime(timeRemaining)}
         </div>
       </div>

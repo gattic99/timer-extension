@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { TimerMode, TimerState, BreakActivity, TimerSettings } from "@/types";
 import { toast } from "sonner";
@@ -20,20 +19,29 @@ export const useTimer = ({ settings }: UseTimerProps) => {
 
   // Listen for timer state updates from the background script
   useEffect(() => {
-    const handleTimerUpdate = (event: any) => {
-      console.log("Timer update received:", event.detail);
+    const handleTimerUpdate = (event: CustomEvent) => {
+      console.log("Timer update received in useTimer:", event.detail);
       if (event.detail && event.detail.timerState) {
+        const newState = event.detail.timerState;
+        console.log("Setting new timer state:", newState);
+        
         setTimerState(prevState => ({
           ...prevState,
-          ...event.detail.timerState
+          mode: newState.mode,
+          timeRemaining: newState.timeRemaining,
+          isRunning: newState.isRunning,
+          completed: newState.completed,
+          // Keep breakActivity from previous state unless explicitly provided
+          breakActivity: newState.breakActivity !== undefined ? newState.breakActivity : prevState.breakActivity
         }));
       }
     };
 
-    window.addEventListener('FOCUSFLOW_UPDATE', handleTimerUpdate);
+    window.addEventListener('FOCUSFLOW_UPDATE', handleTimerUpdate as EventListener);
 
     // Initial timer state request
     if (isExtensionContext()) {
+      console.log("Requesting initial timer state from background");
       chrome.runtime.sendMessage({ action: 'GET_TIMER_STATE' }, (response) => {
         console.log("Initial timer state response:", response);
         if (response) {
@@ -49,12 +57,13 @@ export const useTimer = ({ settings }: UseTimerProps) => {
     }
 
     return () => {
-      window.removeEventListener('FOCUSFLOW_UPDATE', handleTimerUpdate);
+      window.removeEventListener('FOCUSFLOW_UPDATE', handleTimerUpdate as EventListener);
     };
   }, []);
 
   const resetTimer = useCallback(
     (mode: TimerMode) => {
+      console.log("Resetting timer to mode:", mode);
       if (isExtensionContext()) {
         chrome.runtime.sendMessage({ 
           action: 'RESET_TIMER',
@@ -78,6 +87,7 @@ export const useTimer = ({ settings }: UseTimerProps) => {
   );
 
   const startTimer = useCallback(() => {
+    console.log("Starting timer");
     if (isExtensionContext()) {
       chrome.runtime.sendMessage({ action: 'START_TIMER' });
     } else {
@@ -87,6 +97,7 @@ export const useTimer = ({ settings }: UseTimerProps) => {
   }, []);
 
   const pauseTimer = useCallback(() => {
+    console.log("Pausing timer");
     if (isExtensionContext()) {
       chrome.runtime.sendMessage({ action: 'PAUSE_TIMER' });
     } else {
@@ -97,11 +108,18 @@ export const useTimer = ({ settings }: UseTimerProps) => {
 
   const selectBreakActivity = useCallback(
     (activity: BreakActivity) => {
+      console.log("Selecting break activity:", activity);
       if (isExtensionContext()) {
         chrome.runtime.sendMessage({ 
           action: 'SELECT_BREAK_ACTIVITY',
           activity 
         });
+        
+        // Update local state immediately
+        setTimerState(prev => ({
+          ...prev,
+          breakActivity: activity
+        }));
         
         // Auto-start the timer when an activity is selected
         if (activity && !timerState.isRunning) {
@@ -119,6 +137,7 @@ export const useTimer = ({ settings }: UseTimerProps) => {
 
   const updateFocusDuration = useCallback(
     (minutes: number) => {
+      console.log("Updating focus duration to:", minutes, "minutes");
       if (isExtensionContext()) {
         chrome.runtime.sendMessage({ 
           action: 'UPDATE_FOCUS_DURATION',
@@ -139,6 +158,7 @@ export const useTimer = ({ settings }: UseTimerProps) => {
 
   const updateBreakDuration = useCallback(
     (minutes: number) => {
+      console.log("Updating break duration to:", minutes, "minutes");
       if (isExtensionContext()) {
         chrome.runtime.sendMessage({ 
           action: 'UPDATE_BREAK_DURATION',

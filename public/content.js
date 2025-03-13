@@ -32,6 +32,8 @@ chrome.runtime.onMessage.addListener((message) => {
   console.log('Content script received message:', message);
   
   if (message.action === 'UPDATE_TIMER') {
+    console.log('Dispatching UPDATE_TIMER event with timeRemaining:', message.timeRemaining);
+    
     window.dispatchEvent(
       new CustomEvent('FOCUSFLOW_UPDATE', {
         detail: { 
@@ -51,7 +53,9 @@ chrome.runtime.onMessage.addListener((message) => {
 // Request initial timer state
 chrome.runtime.sendMessage({ action: 'GET_TIMER_STATE' }, (response) => {
   if (response) {
-    console.log('Initial timer state:', response);
+    console.log('Initial timer state in content.js:', response);
+    console.log('Initial timeRemaining in seconds:', response.timeRemaining);
+    
     window.dispatchEvent(
       new CustomEvent('FOCUSFLOW_UPDATE', {
         detail: { 

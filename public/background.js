@@ -26,10 +26,13 @@ function startTimer() {
   timerState.isRunning = true;
   timerState.completed = false;
   
+  console.log('Starting timer with', timerState.timeRemaining, 'seconds remaining');
+  
   timerInterval = setInterval(() => {
     if (timerState.timeRemaining > 0) {
       timerState.timeRemaining--;
       updateAllTabs();
+      console.log(`Timer tick: ${formatTime(timerState.timeRemaining)}`);
     } else {
       // Timer completed
       clearInterval(timerInterval);
@@ -79,6 +82,7 @@ function resetTimer(mode) {
   timerState.isRunning = false;
   timerState.completed = false;
   
+  console.log('Timer reset to', timerState.timeRemaining, 'seconds');
   updateAllTabs();
 }
 

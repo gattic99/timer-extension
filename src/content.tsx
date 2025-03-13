@@ -36,9 +36,11 @@ function initializeContentScript() {
 
   // Set up event listener for messages from background script
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Message received in content script:", message);
+    console.log("Message received in content.tsx:", message);
     
     if (message.action === 'UPDATE_TIMER') {
+      console.log("Updating timer state in content.tsx. Time remaining:", message.timeRemaining);
+      
       // Dispatch a custom event that will be caught by the App component
       window.dispatchEvent(new CustomEvent('FOCUSFLOW_UPDATE', { 
         detail: {
@@ -64,7 +66,8 @@ function initializeContentScript() {
 
   // Initial request for timer state
   chrome.runtime.sendMessage({ action: 'GET_TIMER_STATE' }, (response) => {
-    console.log("Initial timer state:", response);
+    console.log("Initial timer state in content.tsx:", response);
+    
     if (response) {
       window.dispatchEvent(new CustomEvent('FOCUSFLOW_UPDATE', { 
         detail: {
