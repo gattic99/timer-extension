@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { getRelaxationSteps } from "@/utils/timerUtils";
-import { ChevronLeft, ChevronRight, Yoga } from "lucide-react";
+import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 
 interface RelaxGuideProps {
   onReturn: () => void;
@@ -27,7 +27,7 @@ const RelaxGuide: React.FC<RelaxGuideProps> = ({ onReturn }) => {
     <div className="break-card p-8 w-full max-w-xl mx-auto animate-scale-in">
       <div className="text-center mb-6">
         <div className="flex items-center justify-center mb-2">
-          <Yoga className="text-break-green mr-2" size={24} />
+          <Zap className="text-break-green mr-2" size={24} />
           <h2 className="text-2xl font-bold text-dark-text">Relax & Stretch</h2>
         </div>
         <p className="text-muted-foreground">
