@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Timer from "./Timer";
 import { TimerState, BreakActivity } from "@/types";
-import { formatTime } from "@/utils/timerUtils";
-import PlatformerGame from "./PlatformerGame";
+import { minutesToSeconds } from "@/utils/timerUtils";
+import MemoryGame from "./MemoryGame";
 import RelaxGuide from "./RelaxGuide";
-import { AlarmClock, Gamepad, Dumbbell, ChevronRight } from "lucide-react";
-import { Button } from "./ui/button";
+import { AlarmClock, Gamepad, Yoga } from "lucide-react";
 
 interface BreakModeProps {
   timerState: TimerState;
@@ -14,7 +13,6 @@ interface BreakModeProps {
   onReset: () => void;
   onSelectActivity: (activity: BreakActivity) => void;
   breakDuration: number;
-  onChangeBreakDuration: (duration: number) => void;
 }
 
 const BreakMode: React.FC<BreakModeProps> = ({
@@ -23,73 +21,65 @@ const BreakMode: React.FC<BreakModeProps> = ({
   onPause,
   onReset,
   onSelectActivity,
-  breakDuration,
-  onChangeBreakDuration
+  breakDuration
 }) => {
-  const { breakActivity, timeRemaining, isRunning } = timerState;
+  const totalDuration = minutesToSeconds(breakDuration);
+  const { breakActivity } = timerState;
   
-  // Display the timer at the top of the break mode
-  const displayTimer = () => (
-    <div className="mb-4">
-      <Timer timerState={timerState} />
-      <div className="flex justify-center gap-4 mt-2">
-        <Button variant="outline" onClick={onReset} disabled={!isRunning} className="border-gray-300 text-gray-700 font-semibold px-6 py-1.5 rounded-full text-sm h-9">
-          Reset <ChevronRight size={16} className="ml-1" />
-        </Button>
-        
-        <Button onClick={isRunning ? onPause : onStart} className="bg-focus-purple hover:bg-focus-purple-dark text-white font-semibold px-6 py-1.5 rounded-full text-sm h-9">
-          {isRunning ? "Pause" : "Start"} <ChevronRight size={16} className="ml-1" />
-        </Button>
-      </div>
-    </div>
-  );
-  
+  // If a break activity is selected, render it
   if (breakActivity === 'game') {
-    return <PlatformerGame 
-      onReturn={() => onSelectActivity(null)} 
-      timerState={timerState} 
-      onStart={onStart} 
-      onPause={onPause} 
-    />;
+    return <MemoryGame onReturn={() => onSelectActivity(null)} />;
   }
   
   if (breakActivity === 'relax') {
-    return <RelaxGuide onReturn={() => onSelectActivity(null)} timerState={timerState} />;
+    return <RelaxGuide onReturn={() => onSelectActivity(null)} />;
   }
   
+  // Otherwise render break timer with activity options
   return (
-    <div className="bg-white bg-opacity-80 backdrop-blur-md rounded-xl border border-white border-opacity-20 shadow-md p-6 w-full max-w-xl mx-auto animate-scale-in">
-      <div className="text-center mb-6">
+    <div className="break-card p-8 w-full max-w-xl mx-auto animate-scale-in">
+      <div className="text-center mb-8">
         <div className="flex items-center justify-center mb-2">
-          <AlarmClock className="text-focus-purple mr-2" size={20} />
-          <h2 className="text-xl font-bold text-dark-text">Break Time</h2>
-          <span className="ml-2 text-sm font-medium text-focus-purple">{formatTime(timeRemaining)}</span>
+          <AlarmClock className="text-break-green mr-2" size={24} />
+          <h2 className="text-2xl font-bold text-dark-text">Break Time</h2>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Take a moment to relax. Choose an activity below.
+        <p className="text-muted-foreground">
+          Take a moment to relax. Choose an activity below or just take a break.
         </p>
-        
-        {/* Display the timer in break mode */}
-        {displayTimer()}
       </div>
       
-      <div className="mt-4">
-        <div className="grid grid-cols-2 gap-3">
+      <Timer
+        timerState={timerState}
+        onStart={onStart}
+        onPause={onPause}
+        onReset={onReset}
+        totalDuration={totalDuration}
+      />
+      
+      <div className="mt-10">
+        <h3 className="text-center text-lg font-semibold mb-4">Choose a break activity:</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div 
-            className="bg-white bg-opacity-80 backdrop-blur-md rounded-lg border border-white border-opacity-20 shadow-sm p-3 flex flex-col items-center animate-slide-up cursor-pointer hover:bg-gray-50 transition-colors" 
+            className="option-card game-card flex flex-col items-center animate-slide-up" 
             onClick={() => onSelectActivity('game')}
           >
-            <Gamepad size={22} className="mb-2 text-focus-purple" />
-            <h4 className="text-sm font-medium">Play Game <ChevronRight size={14} className="inline-block ml-1" /></h4>
+            <Gamepad size={36} className="mb-4 text-game-orange" />
+            <h4 className="text-lg font-semibold mb-2">Play a Game</h4>
+            <p className="text-sm text-center text-muted-foreground">
+              Have fun with a quick memory matching game to refresh your mind.
+            </p>
           </div>
           
           <div 
-            className="bg-white bg-opacity-80 backdrop-blur-md rounded-lg border border-white border-opacity-20 shadow-sm p-3 flex flex-col items-center animate-slide-up cursor-pointer hover:bg-gray-50 transition-colors" 
+            className="option-card break-card flex flex-col items-center animate-slide-up" 
             style={{ animationDelay: '0.1s' }}
             onClick={() => onSelectActivity('relax')}
           >
-            <Dumbbell size={22} className="mb-2 text-focus-purple" />
-            <h4 className="text-sm font-medium">Relax & Stretch <ChevronRight size={14} className="inline-block ml-1" /></h4>
+            <Yoga size={36} className="mb-4 text-break-green" />
+            <h4 className="text-lg font-semibold mb-2">Relax & Stretch</h4>
+            <p className="text-sm text-center text-muted-foreground">
+              Follow guided stretching exercises to relieve tension.
+            </p>
           </div>
         </div>
       </div>

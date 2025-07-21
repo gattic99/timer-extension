@@ -1,147 +1,135 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { defaultTimerSettings } from "@/utils/timerUtils";
 import { useTimer } from "@/hooks/useTimer";
 import FocusMode from "@/components/FocusMode";
 import BreakMode from "@/components/BreakMode";
 import { TimerSettings } from "@/types";
-import { X } from "lucide-react";
-import FloatingTimer from "@/components/FloatingTimer";
-import PlatformerGame from "@/components/PlatformerGame";
-import ChatBubble from "@/components/Chat/ChatBubble";
+import { Sliders } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle,
+  DialogTrigger 
+} from "@/components/ui/dialog";
 
 const Index: React.FC = () => {
   const [settings, setSettings] = useState<TimerSettings>(defaultTimerSettings);
-  const [isTimerOpen, setIsTimerOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
-  const {
-    timerState,
-    startTimer,
-    pauseTimer,
-    resetTimer,
-    selectBreakActivity,
-    updateFocusDuration,
-    updateBreakDuration
-  } = useTimer({
-    settings
-  });
-
-  useEffect(() => {
-    if (timerState.mode === 'break' && timerState.completed) {
-      openTimerPopup();
-    }
-  }, [timerState.mode, timerState.completed]);
-
-  const handleFocusDurationChange = (newDuration: number) => {
-    const newSettings = {
+  
+  const { 
+    timerState, 
+    startTimer, 
+    pauseTimer, 
+    resetTimer, 
+    selectBreakActivity 
+  } = useTimer({ settings });
+  
+  const updateFocusDuration = (value: number[]) => {
+    setSettings({
       ...settings,
-      focusDuration: newDuration
-    };
-    setSettings(newSettings);
-    updateFocusDuration(newDuration);
-  };
-
-  const handleBreakDurationChange = (newDuration: number) => {
-    const newSettings = {
-      ...settings,
-      breakDuration: newDuration
-    };
-    setSettings(newSettings);
-    updateBreakDuration(newDuration);
-  };
-
-  const openTimerPopup = () => {
-    setIsTimerOpen(true);
-    setIsChatOpen(false); // Close chat when timer is opened
-  };
-
-  const closeTimerPopup = () => {
-    setIsTimerOpen(false);
-  };
-
-  const handleStartTimer = () => {
-    startTimer();
-    if (timerState.mode === 'focus') {
-      closeTimerPopup();
+      focusDuration: value[0]
+    });
+    
+    // If in focus mode and not running, reset timer with new duration
+    if (timerState.mode === 'focus' && !timerState.isRunning) {
+      resetTimer('focus');
     }
   };
-
-  const handleReturnFromGame = () => {
-    selectBreakActivity(null);
+  
+  const updateBreakDuration = (value: number[]) => {
+    setSettings({
+      ...settings,
+      breakDuration: value[0]
+    });
+    
+    // If in break mode and not running, reset timer with new duration
+    if (timerState.mode === 'break' && !timerState.isRunning) {
+      resetTimer('break');
+    }
   };
-
-  // Pass state setters to ChatBubble
-  const handleOpenChat = () => {
-    setIsChatOpen(true);
-    setIsTimerOpen(false); // Close timer when chat is opened
-  };
-
-  const handleCloseChat = () => {
-    setIsChatOpen(false);
-  };
-
-  if (timerState.mode === 'break' && timerState.breakActivity === 'game') {
-    return <PlatformerGame onReturn={handleReturnFromGame} timerState={timerState} onStart={startTimer} onPause={pauseTimer} />;
-  }
-
+  
   return (
-    <div>
-      {/* Removed the FigmaBackground component */}
-      
-      <ChatBubble 
-        isOpen={isChatOpen}
-        onOpen={handleOpenChat}
-        onClose={handleCloseChat}
-      />
-      
-      <FloatingTimer 
-        isOpen={isTimerOpen} 
-        timerState={timerState} 
-        togglePopup={openTimerPopup} 
-      />
-      
-      {isTimerOpen && (
-        <div className="fixed bottom-24 right-6 z-[10000] animate-scale-in">
-          <Card className="glass-panel w-[420px] p-8 shadow-xl px-[24px] py-[24px]">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h1 className="text-2xl font-bold text-focus-purple">FocusFlow</h1>
-                <p className="text-sm text-gray-500 mt-1">Stay focused, take mindful breaks, and boost productivity.</p>
-              </div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-white">
+      <Card className="glass-panel w-full max-w-2xl p-6 mb-6 animate-fade-in">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-focus-purple">Focus Timer</h1>
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <button 
+                className="btn-secondary flex items-center space-x-2"
+                aria-label="Timer Settings"
+              >
+                <Sliders size={18} />
+                <span>Settings</span>
+              </button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Timer Settings</DialogTitle>
+              </DialogHeader>
               
-              <div className="flex space-x-2">
-                <button onClick={closeTimerPopup} className="p-2 rounded-full hover:bg-gray-100" aria-label="Close Timer">
-                  <X size={18} />
-                </button>
+              <div className="py-4 space-y-8">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <label className="font-medium">Focus Duration</label>
+                    <span className="text-sm text-muted-foreground">{settings.focusDuration} minutes</span>
+                  </div>
+                  <Slider 
+                    value={[settings.focusDuration]} 
+                    min={5} 
+                    max={60} 
+                    step={5} 
+                    onValueChange={updateFocusDuration}
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <label className="font-medium">Break Duration</label>
+                    <span className="text-sm text-muted-foreground">{settings.breakDuration} minutes</span>
+                  </div>
+                  <Slider 
+                    value={[settings.breakDuration]} 
+                    min={1} 
+                    max={15} 
+                    step={1} 
+                    onValueChange={updateBreakDuration}
+                  />
+                </div>
               </div>
-            </div>
-            
-            {timerState.mode === 'focus' 
-              ? <FocusMode 
-                  timerState={timerState} 
-                  onStart={handleStartTimer} 
-                  onPause={pauseTimer} 
-                  onReset={() => resetTimer('focus')} 
-                  focusDuration={settings.focusDuration} 
-                  breakDuration={settings.breakDuration} 
-                  onChangeFocusDuration={handleFocusDurationChange} 
-                  onChangeBreakDuration={handleBreakDurationChange} 
-                /> 
-              : <BreakMode 
-                  timerState={timerState} 
-                  onStart={handleStartTimer} 
-                  onPause={pauseTimer} 
-                  onReset={() => resetTimer('break')} 
-                  onSelectActivity={selectBreakActivity} 
-                  breakDuration={settings.breakDuration} 
-                  onChangeBreakDuration={handleBreakDurationChange} 
-                />
-            }
-          </Card>
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
+        
+        {timerState.mode === 'focus' ? (
+          <FocusMode
+            timerState={timerState}
+            onStart={startTimer}
+            onPause={pauseTimer}
+            onReset={() => resetTimer('focus')}
+            focusDuration={settings.focusDuration}
+          />
+        ) : (
+          <BreakMode
+            timerState={timerState}
+            onStart={startTimer}
+            onPause={pauseTimer}
+            onReset={() => resetTimer('break')}
+            onSelectActivity={selectBreakActivity}
+            breakDuration={settings.breakDuration}
+          />
+        )}
+      </Card>
+      
+      <p className="text-sm text-muted-foreground text-center animate-fade-in">
+        A minimalist productivity tool designed for remote teams.
+        <br />
+        Focus deeply, then take mindful breaks to stay energized.
+      </p>
     </div>
   );
 };
